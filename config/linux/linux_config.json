@@ -1,0 +1,4 @@
+{
+    "platform" : "linux",
+    "cacheDir" : "$HOME/.cahce/net-runner"
+}
