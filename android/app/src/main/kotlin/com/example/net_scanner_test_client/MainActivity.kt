@@ -1,4 +1,4 @@
-package com.example.net_scanner_test_client
+package com.example.net_runner
 
 import io.flutter.embedding.android.FlutterActivity
 

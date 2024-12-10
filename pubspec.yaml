@@ -1,5 +1,5 @@
-name: net_scanner_test_client
-description: "A new Flutter project."
+name: net_runner
+description: "Client for scan local network"
 publish_to: 'none'
 version: 0.1.0
 

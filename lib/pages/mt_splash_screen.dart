@@ -1,9 +1,8 @@
 import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-//import 'package:net_scanner_test_client/main.dart';
+//import 'package:net_runner/main.dart';
 
 class SplashLoadingScreen extends StatefulWidget {
   final VoidCallback oninitializationComplete;

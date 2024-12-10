@@ -18,7 +18,7 @@ class _MtContentTileState extends State<MtContentTile>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 300),
     );
     _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
   }
@@ -53,16 +53,16 @@ class _MtContentTileState extends State<MtContentTile>
             child: Column(
               children: [
                 Container(
-                  padding: EdgeInsets.all(16),
-                  child: Text(
+                  padding: const EdgeInsets.all(16),
+                  child: const Text(
                     'Title',
                     style: TextStyle(color: Colors.black, fontSize: 20),
                   ),
                 ),
                 if (_isExpanded)
                   Container(
-                    padding: EdgeInsets.all(16),
-                    child: Text(
+                    padding: const EdgeInsets.all(16),
+                    child: const Text(
                       'This is the description that appears when the container is expanded.',
                       style: TextStyle(color: Colors.black),
                     ),
