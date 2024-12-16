@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
+import 'package:net_runner/pages/mt_headpage.dart';
 import 'package:net_runner/pages/mt_splash_screen.dart';
 
 void main() {
@@ -13,19 +13,5 @@ void main() {
 }
 
 void runStartPoint() {
-  runApp(MaterialApp(
-    home: Scaffold(
-      appBar: AppBar(
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.blue,
-        title: Text(
-          'NetRunner',
-          style: GoogleFonts.comfortaa(),
-        ),
-      ),
-      body: Center(
-        child: Container(),
-      ),
-    ),
-  ));
+  runApp(const MaterialApp(home: MtHeadpage()));
 }
