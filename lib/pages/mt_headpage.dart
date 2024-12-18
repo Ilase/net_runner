@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:net_runner/l10n/netrunner_localizations.dart';
-import 'package:net_runner/l10n/netrunner_localizations_ru.dart';
+//import 'package:net_runner/l10n/netrunner_localizations_ru.dart';
 import 'package:net_runner/modules/mt_dropmenu.dart';
 
 class MtHeadpage extends StatefulWidget {
@@ -34,7 +34,7 @@ class _MtHeadpageState extends State<MtHeadpage> {
       // Main Navigator
       appBar: AppBar(
         title: AutoSizeText(
-          AppLocalizations.of(context)!.appName,
+          AppLocalizations.of(context)!.appBarAppTitle,
           minFontSize: 36,
           maxFontSize: 48,
           overflow: TextOverflow.ellipsis,
@@ -44,7 +44,14 @@ class _MtHeadpageState extends State<MtHeadpage> {
         ),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
-        actions: const [MtDropmenu()],
+        actions: [
+          MtDropmenu(
+            title: AppLocalizations.of(context)!.appBarActionsButtonTitle,
+          ),
+          MtDropmenu(
+            title: AppLocalizations.of(context)!.appBarInfoButtonTitle,
+          ),
+        ],
       ),
       bottomNavigationBar: Padding(
           padding: const EdgeInsets.all(8),

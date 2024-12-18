@@ -7,7 +7,7 @@ import 'package:net_runner/pages/mt_splash_screen.dart';
 void main() {
   String os = Platform.operatingSystem;
   //print(_os);
-  runApp(runStartPoint(platform: os));
+  runApp(RunStartPoint(platform: os));
   // SplashLoadingScreen(
   //   key: UniqueKey(),
   //   platform: os,
@@ -18,8 +18,8 @@ void main() {
 //   runApp(const MaterialApp(home: _createRoute(MtHeadpage())));
 // }
 
-class runStartPoint extends StatelessWidget {
-  const runStartPoint({super.key, required this.platform});
+class RunStartPoint extends StatelessWidget {
+  const RunStartPoint({super.key, required this.platform});
   final String platform;
   static final GlobalKey<NavigatorState> navigatorKey =
       GlobalKey<NavigatorState>();

@@ -95,11 +95,23 @@ abstract class AppLocalizations {
     Locale('ru')
   ];
 
-  /// No description provided for @appName.
+  /// No description provided for @appBarAppTitle.
   ///
   /// In en, this message translates to:
-  /// **'НетРаннер'**
-  String get appName;
+  /// **'NetRunner'**
+  String get appBarAppTitle;
+
+  /// No description provided for @appBarActionsButtonTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions'**
+  String get appBarActionsButtonTitle;
+
+  /// No description provided for @appBarInfoButtonTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Help'**
+  String get appBarInfoButtonTitle;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

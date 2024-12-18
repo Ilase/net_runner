@@ -7,5 +7,11 @@ class AppLocalizationsRu extends AppLocalizations {
   AppLocalizationsRu([String locale = 'ru']) : super(locale);
 
   @override
-  String get appName => 'НетРаннер';
+  String get appBarAppTitle => 'NetRunner';
+
+  @override
+  String get appBarActionsButtonTitle => 'Actions';
+
+  @override
+  String get appBarInfoButtonTitle => 'Help';
 }

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+// ignore: must_be_immutable
 class MtDropmenu extends StatelessWidget {
-  const MtDropmenu({super.key});
-
+  MtDropmenu({super.key, this.title});
+  String? title;
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton(
@@ -24,7 +25,7 @@ class MtDropmenu extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Text(
-            'HelpMenu',
+            title!,
             style: GoogleFonts.comfortaa(),
           ),
         ),

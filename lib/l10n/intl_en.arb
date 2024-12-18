@@ -1,4 +1,15 @@
 {
     "@@locale": "en",
-    "appName": "NetRunner"
+
+    "appBarAppTitle": "NetRunner",
+    "@appBarAppTitle": {},
+
+    "appBarActionsButtonTitle": "Actions",
+    "@appBarActionsButtonTitle": {},
+    
+    "appBarInfoButtonTitle": "Help",
+    "@appBarInfoButtonTitle": {},
+
+    "splashScreenLoading": "Loading",
+    "@splashScreenLoading": {}
 }
