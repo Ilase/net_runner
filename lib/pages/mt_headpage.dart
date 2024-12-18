@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:net_runner/l10n/netrunner_localizations.dart';
+import 'package:net_runner/l10n/netrunner_localizations_ru.dart';
 import 'package:net_runner/modules/mt_dropmenu.dart';
 
 class MtHeadpage extends StatefulWidget {
@@ -31,8 +33,8 @@ class _MtHeadpageState extends State<MtHeadpage> {
     return Scaffold(
       // Main Navigator
       appBar: AppBar(
-        title: const AutoSizeText(
-          'NetRunner',
+        title: AutoSizeText(
+          AppLocalizations.of(context)!.appName,
           minFontSize: 36,
           maxFontSize: 48,
           overflow: TextOverflow.ellipsis,

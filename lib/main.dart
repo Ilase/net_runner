@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:net_runner/l10n/netrunner_localizations.dart';
 import 'package:net_runner/pages/mt_headpage.dart';
 import 'package:net_runner/pages/mt_splash_screen.dart';
 
@@ -25,6 +26,10 @@ class runStartPoint extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      //locales
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      //!locales
       navigatorKey: navigatorKey,
       home: SplashLoadingScreen(
           oninitializationComplete: () {
