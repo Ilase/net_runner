@@ -17,6 +17,7 @@ dependencies:
   flutter_zoom_drawer: ^3.2.0
   google_fonts: ^6.2.1
   auto_size_text: ^3.0.0
+  package_info_plus: ^8.1.2
 dev_dependencies:
   flutter_test:
     sdk: flutter

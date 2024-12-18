@@ -1,75 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-class MtContentTile extends StatefulWidget {
-  const MtContentTile({super.key});
-
-  @override
-  State<MtContentTile> createState() => _MtContentTileState();
-}
-
-class _MtContentTileState extends State<MtContentTile>
-    with SingleTickerProviderStateMixin {
-  bool _isExpanded = false;
-  late AnimationController _controller;
-  late Animation<double> _animation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
-    _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _toggleAnimations() {
-    setState(() {
-      _isExpanded = !_isExpanded;
-      if (_isExpanded) {
-        _controller.forward();
-      } else {
-        _controller.reverse();
-      }
-    });
-  }
+class MtContentTileBottom extends StatelessWidget {
+  const MtContentTileBottom({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-        onTap: _toggleAnimations,
-        child: SizeTransition(
-          sizeFactor: _animation,
-          axisAlignment: -1,
+    return Stack(
+      children: [
+        FittedBox(
+          fit: BoxFit.fill,
           child: Container(
+            height: double.maxFinite,
             decoration: BoxDecoration(
-                color: Colors.blue, borderRadius: BorderRadius.circular(25)),
-            child: Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  child: const Text(
-                    'Title',
-                    style: TextStyle(color: Colors.black, fontSize: 20),
-                  ),
-                ),
-                if (_isExpanded)
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    child: const Text(
-                      'This is the description that appears when the container is expanded.',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  ),
-              ],
+                borderRadius: BorderRadius.circular(15),
+                color: Colors.white,
+                boxShadow: const [
+                  BoxShadow(
+                      color: Colors.black26,
+                      offset: Offset(3, 6),
+                      blurRadius: 4),
+                ]),
+            child: Text(
+              'data',
+              style: GoogleFonts.comfortaa(),
             ),
           ),
-        ));
+        ),
+        Align(
+          alignment: AlignmentDirectional.bottomCenter,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.blue,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Text(
+              'data',
+              style: GoogleFonts.comfortaa(),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
