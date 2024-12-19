@@ -10,8 +10,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get appBarAppTitle => 'NetRunner';
 
   @override
-  String get appBarActionsButtonTitle => 'Actions';
+  String get appBarActionsButtonTitle => 'Действия';
 
   @override
-  String get appBarInfoButtonTitle => 'Help';
+  String get appBarInfoButtonTitle => 'Справка';
+
+  @override
+  String get splashScreenLoading => 'Загрузка';
 }

@@ -14,4 +14,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get appBarInfoButtonTitle => 'Help';
+
+  @override
+  String get splashScreenLoading => 'Loading';
 }

@@ -112,6 +112,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Help'**
   String get appBarInfoButtonTitle;
+
+  /// No description provided for @splashScreenLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading'**
+  String get splashScreenLoading;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

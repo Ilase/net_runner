@@ -2,32 +2,34 @@ import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:net_runner/modules/data_loader.dart';
 //import 'package:net_runner/main.dart';
 
-Route _createRoute(page) {
-  return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => page(),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(0.0, 1.0);
-        const end = Offset.zero;
-        const curve = Curves.ease;
+// Route _createRoute(page) {
+//   return PageRouteBuilder(
+//       pageBuilder: (context, animation, secondaryAnimation) => page(),
+//       transitionsBuilder: (context, animation, secondaryAnimation, child) {
+//         const begin = Offset(0.0, 1.0);
+//         const end = Offset.zero;
+//         const curve = Curves.ease;
 
-        var tween =
-            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-        return SlideTransition(
-          position: animation.drive(tween),
-          child: child,
-        );
-      });
-}
+//         var tween =
+//             Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+//         return SlideTransition(
+//           position: animation.drive(tween),
+//           child: child,
+//         );
+//       });
+// }
 
 class SplashLoadingScreen extends StatefulWidget {
   final VoidCallback oninitializationComplete;
-  final String platform;
+  final TaskLoader loader;
+
   const SplashLoadingScreen(
       {super.key,
       required this.oninitializationComplete,
-      required this.platform});
+      required this.loader});
 
   @override
   State<SplashLoadingScreen> createState() => _SplashLoadingScreenState();
@@ -35,7 +37,6 @@ class SplashLoadingScreen extends StatefulWidget {
 
 class _SplashLoadingScreenState extends State<SplashLoadingScreen> {
   bool _hasError = false;
-
   @override
   void initState() {
     super.initState();
@@ -44,6 +45,8 @@ class _SplashLoadingScreenState extends State<SplashLoadingScreen> {
 
   Future<void> _initializeAsyncDependencies() async {
     try {
+      widget.loader.runInParallel();
+
       ///
       ///
       /// initialization of connection to server and other!
@@ -87,6 +90,9 @@ class _SplashLoadingScreenState extends State<SplashLoadingScreen> {
                               textDirection: TextDirection.ltr,
                               child: LoadingAnimationWidget.stretchedDots(
                                   color: Colors.blue, size: 125))),
+                      const SizedBox(
+                        height: 10,
+                      ),
                       Directionality(
                           textDirection: TextDirection.ltr,
                           child: Text('Loading',

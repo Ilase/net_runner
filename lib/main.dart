@@ -1,13 +1,20 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:net_runner/l10n/netrunner_localizations.dart';
+import 'package:net_runner/modules/data_loader.dart';
+import 'package:net_runner/modules/platform.dart';
 import 'package:net_runner/pages/mt_headpage.dart';
 import 'package:net_runner/pages/mt_splash_screen.dart';
+import 'package:platform_detector/widgets/platform_type_widget.dart';
+
+// String _platform_ = "Unknown";
 
 void main() {
-  String os = Platform.operatingSystem;
+  // String os = Platform.operatingSystem;
+
   //print(_os);
-  runApp(RunStartPoint(platform: os));
+  runApp(const StartPoint());
   // SplashLoadingScreen(
   //   key: UniqueKey(),
   //   platform: os,
@@ -18,11 +25,15 @@ void main() {
 //   runApp(const MaterialApp(home: _createRoute(MtHeadpage())));
 // }
 
-class RunStartPoint extends StatelessWidget {
-  const RunStartPoint({super.key, required this.platform});
-  final String platform;
+class StartPoint extends StatelessWidget {
+  //
+  const StartPoint({super.key});
+  static var logger = Logger(printer: PrettyPrinter());
+  static String platform = "Unknown";
   static final GlobalKey<NavigatorState> navigatorKey =
       GlobalKey<NavigatorState>();
+  //
+  //
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -32,16 +43,31 @@ class RunStartPoint extends StatelessWidget {
       //!locales
       navigatorKey: navigatorKey,
       home: SplashLoadingScreen(
-          oninitializationComplete: () {
-            navigatorKey.currentState
-                ?.pushReplacement(createRoute(const MtHeadpage()));
-            //Navigator.pushReplacement(context, createRoute(MtHeadpage()));
-          },
-          platform: platform),
+        //load tasks in queue or
+        loader: TaskLoader(tasks: [getPlatform]),
+        oninitializationComplete: () {
+          navigatorKey.currentState
+              ?.pushReplacement(createRoute(PlatformDetectByType(
+            web: MtHeadpage(
+              platform: platform,
+            ),
+            desktop: MtHeadpage(
+              platform: platform,
+            ),
+            mobile: null,
+          )));
+          //Navigator.pushReplacement(context, createRoute(MtHeadpage()));
+        },
+      ),
     );
+  }
+
+  Future<dynamic> getPlatform() async {
+    platform = detectOpSys().toString();
   }
 }
 
+///TODO:useless shit!! it doesn work correctly
 Route createRoute(page) {
   return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => page,

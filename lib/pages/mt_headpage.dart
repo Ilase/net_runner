@@ -6,8 +6,8 @@ import 'package:net_runner/l10n/netrunner_localizations.dart';
 import 'package:net_runner/modules/mt_dropmenu.dart';
 
 class MtHeadpage extends StatefulWidget {
-  const MtHeadpage({super.key});
-
+  MtHeadpage({super.key, this.platform});
+  String? platform;
   @override
   State<MtHeadpage> createState() => _MtHeadpageState();
 }
@@ -15,8 +15,6 @@ class MtHeadpage extends StatefulWidget {
 class _MtHeadpageState extends State<MtHeadpage> {
   //late PageController _pageController;
   // int _selectedIndex = 0;
-  String version = '';
-  String platform = '';
 
   // @override
   // void initState(){
@@ -58,7 +56,7 @@ class _MtHeadpageState extends State<MtHeadpage> {
           child: Align(
             alignment: AlignmentDirectional.bottomEnd,
             child: Text(
-              'data',
+              widget.platform!,
               style: GoogleFonts.comfortaa(color: Colors.black54),
             ),
           )),
