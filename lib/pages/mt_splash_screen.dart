@@ -5,23 +5,6 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:net_runner/modules/data_loader.dart';
 //import 'package:net_runner/main.dart';
 
-// Route _createRoute(page) {
-//   return PageRouteBuilder(
-//       pageBuilder: (context, animation, secondaryAnimation) => page(),
-//       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-//         const begin = Offset(0.0, 1.0);
-//         const end = Offset.zero;
-//         const curve = Curves.ease;
-
-//         var tween =
-//             Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-//         return SlideTransition(
-//           position: animation.drive(tween),
-//           child: child,
-//         );
-//       });
-// }
-
 class SplashLoadingScreen extends StatefulWidget {
   final VoidCallback oninitializationComplete;
   final TaskLoader loader;
@@ -45,13 +28,8 @@ class _SplashLoadingScreenState extends State<SplashLoadingScreen> {
 
   Future<void> _initializeAsyncDependencies() async {
     try {
-      widget.loader.runInParallel();
-
-      ///
-      ///
-      /// initialization of connection to server and other!
-      ///
-      ///
+      ///@Ilase !!! important thisng
+      await widget.loader.runInParallel();
       await Future.delayed(const Duration(seconds: 5), () {
         widget.oninitializationComplete();
         //Navigator.pushReplacement(context, _createRoute(MtHeadpage()));

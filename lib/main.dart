@@ -1,9 +1,7 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:net_runner/l10n/netrunner_localizations.dart';
 import 'package:net_runner/modules/data_loader.dart';
-import 'package:net_runner/modules/platform.dart';
 import 'package:net_runner/pages/mt_headpage.dart';
 import 'package:net_runner/pages/mt_splash_screen.dart';
 import 'package:platform_detector/widgets/platform_type_widget.dart';
@@ -44,8 +42,8 @@ class StartPoint extends StatelessWidget {
       navigatorKey: navigatorKey,
       home: SplashLoadingScreen(
         //load tasks in queue or
-        loader: TaskLoader(tasks: [getPlatform]),
-        oninitializationComplete: () {
+        loader: TaskLoader(tasks: []),
+        oninitializationComplete: () async {
           navigatorKey.currentState
               ?.pushReplacement(createRoute(PlatformDetectByType(
             web: MtHeadpage(
@@ -60,10 +58,6 @@ class StartPoint extends StatelessWidget {
         },
       ),
     );
-  }
-
-  Future<dynamic> getPlatform() async {
-    platform = detectOpSys().toString();
   }
 }
 

@@ -11,5 +11,8 @@
     "@appBarInfoButtonTitle": {},
 
     "splashScreenLoading": "Загрузка",
-    "@splashScreenLoading": {}
+    "@splashScreenLoading": {},
+    
+    "closeButton": "Закрыть",
+    "@closeButton": {}
 }

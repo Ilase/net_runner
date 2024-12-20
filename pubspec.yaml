@@ -26,6 +26,7 @@ dependencies:
   universal_platform: ^1.1.0
   platform_detector: ^0.2.0
   logger: ^2.5.0
+  http: ^1.2.2
 dev_dependencies:
   flutter_test:
     sdk: flutter

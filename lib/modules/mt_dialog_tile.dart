@@ -4,11 +4,15 @@ import 'package:google_fonts/google_fonts.dart';
 
 // ignore: must_be_immutable
 class MTOpenDialogButton extends StatelessWidget {
-  const MTOpenDialogButton({super.key, this.child});
+  MTOpenDialogButton({super.key, this.child, this.dialogueTitle});
   final Widget? child;
+  String? dialogueTitle = 'Untitled';
+
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
+      style: const ButtonStyle(
+          backgroundColor: WidgetStatePropertyAll<Color>(Colors.blue)),
       onPressed: () {
         _showCustomDialog(context);
       },
