@@ -67,6 +67,10 @@ class _MtHeadpageState extends State<MtHeadpage> {
               child: Row(
             children: [
               NavigationRail(
+                  useIndicator: true,
+                  indicatorColor: null,
+                  backgroundColor: null,
+                  selectedIconTheme: null,
                   groupAlignment: -1,
                   labelType: NavigationRailLabelType.selected,
                   onDestinationSelected: (int index) {
@@ -77,28 +81,70 @@ class _MtHeadpageState extends State<MtHeadpage> {
                           curve: Curves.easeInOut);
                     });
                   },
-                  destinations: const <NavigationRailDestination>[
+                  destinations: <NavigationRailDestination>[
                     NavigationRailDestination(
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.home,
                         size: 45,
+                        color: Colors.blue,
                       ),
-                      selectedIcon: Icon(Icons.home_outlined),
-                      label: Text('Главная'),
+                      selectedIcon: const Icon(
+                        Icons.home_outlined,
+                        size: 45,
+                        color: Colors.blue,
+                      ),
+                      label: Text(
+                        'Главная',
+                        style: GoogleFonts.comfortaa(color: Colors.blue),
+                      ),
                     ),
                     NavigationRailDestination(
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.radar,
                         size: 45,
+                        color: Colors.blue,
                       ),
-                      label: Text('Сканирование'),
+                      selectedIcon: const Icon(
+                        Icons.radio_button_checked_sharp,
+                        size: 45,
+                        color: Colors.blue,
+                      ),
+                      label: Text(
+                        'Сканирование',
+                        style: GoogleFonts.comfortaa(color: Colors.blue),
+                      ),
                     ),
                     NavigationRailDestination(
-                        icon: Icon(
-                          Icons.document_scanner,
+                      icon: const Icon(
+                        Icons.document_scanner,
+                        size: 45,
+                        color: Colors.blue,
+                      ),
+                      selectedIcon: const Icon(
+                        Icons.document_scanner_outlined,
+                        size: 45,
+                        color: Colors.blue,
+                      ),
+                      label: Text(
+                        'Отчёты',
+                        style: GoogleFonts.comfortaa(color: Colors.blue),
+                      ),
+                    ),
+                    NavigationRailDestination(
+                        icon: const Icon(
+                          Icons.share_rounded,
                           size: 45,
+                          color: Colors.blue,
                         ),
-                        label: Text('Отчёты'))
+                        selectedIcon: const Icon(
+                          Icons.share_outlined,
+                          size: 45,
+                          color: Colors.blue,
+                        ),
+                        label: Text(
+                          'Сеть',
+                          style: GoogleFonts.comfortaa(color: Colors.blue),
+                        ))
                   ],
                   selectedIndex: _selectedIndex),
               Expanded(
@@ -109,20 +155,22 @@ class _MtHeadpageState extends State<MtHeadpage> {
                 scrollDirection: Axis.vertical,
                 children: [
                   Container(
-                    color: Colors.blue[100],
                     child: const Center(
                       child: MtDialogSendScanRequest(),
                     ),
                   ),
                   Container(
-                    color: Colors.green[100],
                     child: const Center(
                       child: MtDialogSendScanRequest(),
                     ),
                   ),
                   Container(
-                    color: Colors.red[100],
                     child: const Center(child: Text('Info Page')),
+                  ),
+                  Container(
+                    child: const Center(
+                      child: Text('Graphical network?'),
+                    ),
                   ),
                 ],
               )),
