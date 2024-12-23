@@ -5,6 +5,7 @@ import 'package:net_runner/l10n/netrunner_localizations.dart';
 import 'package:net_runner/modules/dialogs/mt_dialog_send_scan_request.dart';
 import 'package:net_runner/modules/mt_dropmenu.dart';
 import 'package:net_runner/modules/mt_navigation_rail.dart';
+import 'package:net_runner/pages/mt_homepage_pg.dart';
 
 // ignore: must_be_immutable
 class MtHeadpage extends StatefulWidget {
@@ -13,18 +14,6 @@ class MtHeadpage extends StatefulWidget {
   @override
   State<MtHeadpage> createState() => _MtHeadpageState();
 }
-
-final List<Widget> _pages = [
-  Center(
-    child: Text('Page 1'),
-  ),
-  Center(
-    child: Text('Page 2'),
-  ),
-  Center(
-    child: Text('Page 3'),
-  ),
-];
 
 class _MtHeadpageState extends State<MtHeadpage> {
   int _selectedIndex = 0;
@@ -67,10 +56,27 @@ class _MtHeadpageState extends State<MtHeadpage> {
               child: Row(
             children: [
               NavigationRail(
+                  trailing: null,
+                  leading: null,
+                  // IconButton(
+                  //   onPressed: () {},
+                  //   selectedIcon: Icon(
+                  //     Icons.account_circle_rounded,
+                  //     size: 45,
+                  //     color: Colors.blue,
+                  //   ),
+                  //   icon: Icon(
+                  //     Icons.account_circle,
+                  //     size: 45,
+                  //     color: Colors.blue,
+                  //   ),
+                  // ),
                   useIndicator: true,
                   indicatorColor: null,
                   backgroundColor: null,
-                  selectedIconTheme: null,
+                  selectedIconTheme: IconThemeData(
+                    opacity: 1,
+                  ),
                   groupAlignment: -1,
                   labelType: NavigationRailLabelType.selected,
                   onDestinationSelected: (int index) {
@@ -95,6 +101,22 @@ class _MtHeadpageState extends State<MtHeadpage> {
                       ),
                       label: Text(
                         'Главная',
+                        style: GoogleFonts.comfortaa(color: Colors.blue),
+                      ),
+                    ),
+                    NavigationRailDestination(
+                      icon: const Icon(
+                        Icons.group,
+                        size: 45,
+                        color: Colors.blue,
+                      ),
+                      selectedIcon: const Icon(
+                        Icons.group_outlined,
+                        size: 45,
+                        color: Colors.blue,
+                      ),
+                      label: Text(
+                        'Хосты',
                         style: GoogleFonts.comfortaa(color: Colors.blue),
                       ),
                     ),
@@ -155,18 +177,40 @@ class _MtHeadpageState extends State<MtHeadpage> {
                 scrollDirection: Axis.vertical,
                 children: [
                   Container(
-                    child: const Center(
-                      child: MtDialogSendScanRequest(),
+                    //homepage|main
+                    child: const MtHomepagePg(),
+                  ),
+                  //hosts
+                  Container(
+                      child: const Center(
+                    child: Text('Hosts'),
+                  )),
+                  //scans
+                  Container(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          MtDialogSendScanRequest(),
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.blue,
+                                  borderRadius: BorderRadius.circular(15)),
+                              child: Text('data'),
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
+                  //otcetiki
                   Container(
                     child: const Center(
-                      child: MtDialogSendScanRequest(),
+                      child: Text('Otchetiki'),
                     ),
                   ),
-                  Container(
-                    child: const Center(child: Text('Info Page')),
-                  ),
+                  //network
                   Container(
                     child: const Center(
                       child: Text('Graphical network?'),
