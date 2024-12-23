@@ -83,6 +83,7 @@ class _MtHeadpageState extends State<MtHeadpage> {
                         Icons.home,
                         size: 45,
                       ),
+                      selectedIcon: Icon(Icons.home_outlined),
                       label: Text('Главная'),
                     ),
                     NavigationRailDestination(

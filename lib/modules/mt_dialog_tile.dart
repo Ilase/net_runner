@@ -4,9 +4,15 @@ import 'package:google_fonts/google_fonts.dart';
 
 // ignore: must_be_immutable
 class MTOpenDialogButton extends StatelessWidget {
-  MTOpenDialogButton({super.key, this.child, this.dialogueTitle});
+  MTOpenDialogButton({
+    super.key,
+    this.child,
+    this.buttonTitle,
+    this.dialogueTitle,
+  });
   final Widget? child;
-  String? dialogueTitle = 'Untitled';
+  String? dialogueTitle;
+  String? buttonTitle;
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +23,7 @@ class MTOpenDialogButton extends StatelessWidget {
         _showCustomDialog(context);
       },
       child: Text(
-        'Открыть окно',
+        buttonTitle ?? 'Untitled',
         style: GoogleFonts.comfortaa(),
       ),
     );
@@ -53,7 +59,7 @@ class MTOpenDialogButton extends StatelessWidget {
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(15), topRight: Radius.circular(15))),
           child: AutoSizeText(
-            'Заголовок окна',
+            dialogueTitle ?? 'Untitled',
             minFontSize: 36,
             maxFontSize: 48,
             style: GoogleFonts.comfortaa(color: Colors.white),

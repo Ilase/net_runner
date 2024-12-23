@@ -64,6 +64,8 @@ class _MtDialogSendScanRequestState extends State<MtDialogSendScanRequest> {
   @override
   Widget build(BuildContext context) {
     return MTOpenDialogButton(
+      dialogueTitle: 'Новое сканирование',
+      buttonTitle: 'Сканировать',
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -92,7 +94,7 @@ class _MtDialogSendScanRequestState extends State<MtDialogSendScanRequest> {
               style: const ButtonStyle(),
               onPressed: sendScanRequest,
               child: const Text(
-                'Запустить задачу',
+                'Запустить сканирование',
                 style: TextStyle(color: Colors.blue),
               ),
             )
