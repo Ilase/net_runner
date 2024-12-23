@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:net_runner/l10n/netrunner_localizations.dart';
-import 'package:net_runner/modules/dialogs/mt_dialog_send_scan_request.dart';
-import 'package:net_runner/modules/mt_dropmenu.dart';
-import 'package:net_runner/modules/mt_navigation_rail.dart';
-import 'package:net_runner/pages/mt_homepage_pg.dart';
+import 'package:net_runner/locale/netrunner_localizations.dart';
+import 'package:net_runner/features/scanning/presentation/mt_dialog_send_scan_request.dart';
+import 'package:net_runner/core/presentation/widgets/mt_dropmenu.dart';
+import 'package:net_runner/features/statistic/presentation/mt_homepage_pg.dart';
 
 // ignore: must_be_immutable
 class MtHeadpage extends StatefulWidget {
@@ -58,23 +57,10 @@ class _MtHeadpageState extends State<MtHeadpage> {
               NavigationRail(
                   trailing: null,
                   leading: null,
-                  // IconButton(
-                  //   onPressed: () {},
-                  //   selectedIcon: Icon(
-                  //     Icons.account_circle_rounded,
-                  //     size: 45,
-                  //     color: Colors.blue,
-                  //   ),
-                  //   icon: Icon(
-                  //     Icons.account_circle,
-                  //     size: 45,
-                  //     color: Colors.blue,
-                  //   ),
-                  // ),
                   useIndicator: true,
                   indicatorColor: null,
                   backgroundColor: null,
-                  selectedIconTheme: IconThemeData(
+                  selectedIconTheme: const IconThemeData(
                     opacity: 1,
                   ),
                   groupAlignment: -1,

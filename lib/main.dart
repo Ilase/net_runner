@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:net_runner/l10n/netrunner_localizations.dart';
-import 'package:net_runner/modules/data_loader.dart';
-import 'package:net_runner/pages/mt_headpage.dart';
-import 'package:net_runner/pages/mt_splash_screen.dart';
+import 'package:net_runner/locale/netrunner_localizations.dart';
+import 'package:net_runner/core/presentation/widgets/data_loader.dart';
+import 'package:net_runner/core/presentation/mt_headpage.dart';
+import 'package:net_runner/core/presentation/mt_splash_screen.dart';
 import 'package:platform_detector/widgets/platform_type_widget.dart';
 
 // String _platform_ = "Unknown";

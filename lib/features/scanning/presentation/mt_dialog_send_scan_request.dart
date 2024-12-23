@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:net_runner/modules/mt_dialog_tile.dart';
+import 'package:net_runner/core/presentation/widgets/mt_dialog_tile.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 

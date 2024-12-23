@@ -18,7 +18,7 @@ import 'netrunner_localizations_ru.dart';
 /// `supportedLocales` list. For example:
 ///
 /// ```dart
-/// import 'l10n/netrunner_localizations.dart';
+/// import 'locale/netrunner_localizations.dart';
 ///
 /// return MaterialApp(
 ///   localizationsDelegates: AppLocalizations.localizationsDelegates,
