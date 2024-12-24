@@ -17,4 +17,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get splashScreenLoading => 'Loading';
+
+  @override
+  String get closeButton => 'Close';
 }

@@ -10,6 +10,6 @@ class MtHomepagePg extends StatefulWidget {
 class _MtHomepagePgState extends State<MtHomepagePg> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Center(child: const Text('Homepage'));
   }
 }

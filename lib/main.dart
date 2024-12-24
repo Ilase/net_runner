@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:net_runner/locale/netrunner_localizations.dart';
-import 'package:net_runner/core/presentation/widgets/data_loader.dart';
+import 'package:net_runner/core/data/data_loader.dart';
 import 'package:net_runner/core/presentation/mt_headpage.dart';
-import 'package:net_runner/core/presentation/mt_splash_screen.dart';
+import 'package:net_runner/features/splash_screen/mt_splash_screen.dart';
 import 'package:platform_detector/widgets/platform_type_widget.dart';
 
 // String _platform_ = "Unknown";
@@ -35,6 +35,9 @@ class StartPoint extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+
+      ),
       //locales
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,

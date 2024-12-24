@@ -63,7 +63,7 @@ class _MtDialogSendScanRequestState extends State<MtDialogSendScanRequest> {
 
   @override
   Widget build(BuildContext context) {
-    return MTOpenDialogButton(
+    return MtOpenDialogButton(
       dialogueTitle: 'Новое сканирование',
       buttonTitle: 'Сканировать',
       child: Padding(

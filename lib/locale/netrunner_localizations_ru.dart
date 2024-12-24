@@ -17,4 +17,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get splashScreenLoading => 'Загрузка';
+
+  @override
+  String get closeButton => 'Закрыть';
 }
