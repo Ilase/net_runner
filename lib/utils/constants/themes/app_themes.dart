@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:net_runner/utils/constants/themes/buttons_themes.dart';
 import 'package:net_runner/utils/constants/themes/text_styles.dart';
 
 class AppTheme {
@@ -17,7 +18,8 @@ class AppTheme {
           error: Colors.red,
           onError: Colors.white,
           surface: Colors.white,
-          onSurface: Colors.black),
+          onSurface: Colors.blue, //color for icons
+          ),
       //appbar theme
       appBarTheme: AppBarTheme(
           backgroundColor: Colors.blue,
@@ -27,7 +29,8 @@ class AppTheme {
           )
       ),
       //text styles
-      textTheme: AppTextStyle.lightTextTheme
+      textTheme: AppTextStyle.lightTextTheme,
+     // popupMenuTheme: AppButtonStyle.actionsButtonsTheme,
     );
   }
 }

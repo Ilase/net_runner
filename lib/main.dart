@@ -5,6 +5,7 @@ import 'package:net_runner/core/presentation/widgets/data_loader.dart';
 import 'package:net_runner/core/presentation/mt_headpage.dart';
 import 'package:net_runner/core/presentation/mt_splash_screen.dart';
 import 'package:platform_detector/widgets/platform_type_widget.dart';
+import 'package:net_runner/utils/constants/themes/app_themes.dart';
 
 // String _platform_ = "Unknown";
 
@@ -35,6 +36,7 @@ class StartPoint extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: AppTheme.lightTheme,
       //locales
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,

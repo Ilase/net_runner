@@ -11,13 +11,13 @@ class AppTextStyle {
       //title of card with info
       headlineSmall: GoogleFonts.comfortaa(fontSize: 20, color: Colors.white),
       //label of menu buttons
-      labelSmall: GoogleFonts.comfortaa(fontSize: 12, color: Colors.white),
+      labelSmall: GoogleFonts.comfortaa(fontSize: 12, color: Colors.blue),
 
       bodyMedium: GoogleFonts.comfortaa(fontSize: 28, color: Colors.white),
       //text in buttons and titles in tables
-      bodySmall: GoogleFonts.comfortaa(fontSize: 16, color: Colors.white),
+      bodySmall: GoogleFonts.comfortaa(fontSize: 14, color: Colors.black),
       //text info in cards and tables
-      displaySmall: GoogleFonts.comfortaa(fontSize: 14, color: Colors.white)
+      displaySmall: GoogleFonts.comfortaa(fontSize: 12, color: Colors.white)
   );
   // static const titleText = AutoSizeText(
   //   'NetRunner',

@@ -29,11 +29,11 @@ class _MtHeadpageState extends State<MtHeadpage> {
             maxFontSize: 48,
             overflow: TextOverflow.ellipsis,
           ),
-          titleTextStyle: GoogleFonts.comfortaa(
-            color: Colors.white,
-          ),
-          backgroundColor: Colors.blue,
-          foregroundColor: Colors.white,
+          // titleTextStyle: GoogleFonts.comfortaa(
+          //   color: Colors.white,
+          // ),
+          // backgroundColor: Colors.blue,
+          // foregroundColor: Colors.white,
           actions: [
             MtDropmenu(
               title: AppLocalizations.of(context)!.appBarActionsButtonTitle,
@@ -76,83 +76,83 @@ class _MtHeadpageState extends State<MtHeadpage> {
                   },
                   destinations: <NavigationRailDestination>[
                     NavigationRailDestination(
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.home,
                         size: 45,
-                        color: Colors.blue,
+                        color: AppTheme.lightTheme.colorScheme.onSurface,
                       ),
-                      selectedIcon: const Icon(
+                      selectedIcon: Icon(
                         Icons.home_outlined,
                         size: 45,
-                        color: Colors.blue,
+                        color: AppTheme.lightTheme.colorScheme.onSurface,
                       ),
                       label: Text(
                         'Главная',
-                        style: GoogleFonts.comfortaa(color: Colors.blue),
+                        style: AppTheme.lightTheme.textTheme.labelSmall,
                       ),
                     ),
                     NavigationRailDestination(
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.group,
                         size: 45,
-                        color: Colors.blue,
+                        color: AppTheme.lightTheme.colorScheme.onSurface,
                       ),
-                      selectedIcon: const Icon(
+                      selectedIcon: Icon(
                         Icons.group_outlined,
                         size: 45,
-                        color: Colors.blue,
+                        color: AppTheme.lightTheme.colorScheme.onSurface,
                       ),
                       label: Text(
                         'Хосты',
-                        style: GoogleFonts.comfortaa(color: Colors.blue),
+                        style: AppTheme.lightTheme.textTheme.labelSmall,
                       ),
                     ),
                     NavigationRailDestination(
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.radar,
                         size: 45,
-                        color: Colors.blue,
+                        color: AppTheme.lightTheme.colorScheme.onSurface,
                       ),
-                      selectedIcon: const Icon(
+                      selectedIcon: Icon(
                         Icons.radio_button_checked_sharp,
                         size: 45,
-                        color: Colors.blue,
+                        color: AppTheme.lightTheme.colorScheme.onSurface,
                       ),
                       label: Text(
                         'Сканирование',
-                        style: GoogleFonts.comfortaa(color: Colors.blue),
+                        style: AppTheme.lightTheme.textTheme.labelSmall,
                       ),
                     ),
                     NavigationRailDestination(
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.document_scanner,
                         size: 45,
-                        color: Colors.blue,
+                        color: AppTheme.lightTheme.colorScheme.onSurface,
                       ),
-                      selectedIcon: const Icon(
+                      selectedIcon: Icon(
                         Icons.document_scanner_outlined,
                         size: 45,
-                        color: Colors.blue,
+                        color: AppTheme.lightTheme.colorScheme.onSurface,
                       ),
                       label: Text(
                         'Отчёты',
-                        style: GoogleFonts.comfortaa(color: Colors.blue),
+                        style: AppTheme.lightTheme.textTheme.labelSmall,
                       ),
                     ),
                     NavigationRailDestination(
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.share_rounded,
                           size: 45,
-                          color: Colors.blue,
+                          color: AppTheme.lightTheme.colorScheme.onSurface,
                         ),
-                        selectedIcon: const Icon(
+                        selectedIcon: Icon(
                           Icons.share_outlined,
                           size: 45,
-                          color: Colors.blue,
+                          color: AppTheme.lightTheme.colorScheme.onSurface,
                         ),
                         label: Text(
                           'Сеть',
-                          style: GoogleFonts.comfortaa(color: Colors.blue),
+                          style: AppTheme.lightTheme.textTheme.labelSmall,
                         ))
                   ],
                   selectedIndex: _selectedIndex),
