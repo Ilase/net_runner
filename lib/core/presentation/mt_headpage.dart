@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:net_runner/features/hosts/presentation/mt_hosts_pg.dart';
 import 'package:net_runner/features/scanning/presentation/mt_scanning_pg.dart';
 import 'package:net_runner/locale/netrunner_localizations.dart';
-import 'package:net_runner/features/scanning/presentation/mt_dialog_send_scan_request.dart';
 import 'package:net_runner/core/presentation/widgets/mt_dropmenu.dart';
-import 'package:net_runner/features/statistic_headpage/presentation/mt_homepage_pg.dart';
 
 // ignore: must_be_immutable
 class MtHeadpage extends StatefulWidget {
@@ -164,6 +161,7 @@ class _MtHeadpageState extends State<MtHeadpage> {
                 controller: _pageController,
                 scrollDirection: Axis.vertical,
                 children: [
+                  //MainPage
                   Container(),
                   //hosts
                   Container(),

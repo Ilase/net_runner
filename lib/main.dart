@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
+import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
 import 'package:net_runner/locale/netrunner_localizations.dart';
 import 'package:net_runner/core/data/data_loader.dart';
 import 'package:net_runner/core/presentation/mt_headpage.dart';
@@ -34,31 +36,36 @@ class StartPoint extends StatelessWidget {
   //
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-
-      ),
-      //locales
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      //!locales
-      navigatorKey: navigatorKey,
-      home: SplashLoadingScreen(
-        //load tasks in queue or
-        loader: TaskLoader(tasks: []),
-        oninitializationComplete: () async {
-          navigatorKey.currentState
-              ?.pushReplacement(createRoute(PlatformDetectByType(
-            web: MtHeadpage(
-              platform: platform,
-            ),
-            desktop: MtHeadpage(
-              platform: platform,
-            ),
-            mobile: null,
-          )));
-          //Navigator.pushReplacement(context, createRoute(MtHeadpage()));
-        },
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<PostRequestBloc>(create: (context) => PostRequestBloc())
+      ],
+      child: MaterialApp(
+        theme: ThemeData(
+      
+        ),
+        //locales
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        //!locales
+        navigatorKey: navigatorKey,
+        home: SplashLoadingScreen(
+          //load tasks in queue or
+          loader: TaskLoader(tasks: []),
+          oninitializationComplete: () async {
+            navigatorKey.currentState
+                ?.pushReplacement(createRoute(PlatformDetectByType(
+              web: MtHeadpage(
+                platform: platform,
+              ),
+              desktop: MtHeadpage(
+                platform: platform,
+              ),
+              mobile: null,
+            )));
+            //Navigator.pushReplacement(context, createRoute(MtHeadpage()));
+          },
+        ),
       ),
     );
   }
