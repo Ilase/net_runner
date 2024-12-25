@@ -18,7 +18,6 @@ class AppTextStyle {
       bodySmall: GoogleFonts.comfortaa(fontSize: 16, color: Colors.white),
       //text info in cards and tables
       displaySmall: GoogleFonts.comfortaa(fontSize: 14, color: Colors.white)
-
   );
   // static const titleText = AutoSizeText(
   //   'NetRunner',

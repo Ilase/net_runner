@@ -6,8 +6,18 @@ class AppTheme {
   static ThemeData get lightTheme{
     return ThemeData(
       //colors
-      primaryColor: Colors.white,
-      scaffoldBackgroundColor: Colors.white,
+      // primaryColor: Colors.white,
+      // scaffoldBackgroundColor: Colors.white,
+      colorScheme: ColorScheme(
+          brightness: Brightness.light,
+          primary: Colors.white,
+          onPrimary: Colors.black,
+          secondary: Colors.grey,
+          onSecondary: Colors.black,
+          error: Colors.red,
+          onError: Colors.white,
+          surface: Colors.white,
+          onSurface: Colors.black),
       //appbar theme
       appBarTheme: AppBarTheme(
           backgroundColor: Colors.blue,
