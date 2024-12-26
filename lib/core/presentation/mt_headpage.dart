@@ -29,11 +29,6 @@ class _MtHeadpageState extends State<MtHeadpage> {
             maxFontSize: 48,
             overflow: TextOverflow.ellipsis,
           ),
-          // titleTextStyle: GoogleFonts.comfortaa(
-          //   color: Colors.white,
-          // ),
-          // backgroundColor: Colors.blue,
-          // foregroundColor: Colors.white,
           actions: [
             MtDropmenu(
               title: AppLocalizations.of(context)!.appBarActionsButtonTitle,
