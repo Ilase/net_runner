@@ -4,20 +4,13 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppTextStyle {
   static TextTheme lightTextTheme =  TextTheme(
-    //appbar title
-      titleLarge: GoogleFonts.comfortaa(fontSize: 48, color: Colors.white),
-      //title of page or part
-      titleMedium: GoogleFonts.comfortaa(fontSize: 36, color: Colors.black),
-      //title of card with info
-      headlineSmall: GoogleFonts.comfortaa(fontSize: 20, color: Colors.white),
-      //label of menu buttons
-      labelSmall: GoogleFonts.comfortaa(fontSize: 12, color: Colors.blue),
-
+      titleLarge: GoogleFonts.comfortaa(fontSize: 48, color: Colors.white), //appbar title
+      titleMedium: GoogleFonts.comfortaa(fontSize: 32, color: Colors.blue), //title of page
+      headlineSmall: GoogleFonts.comfortaa(fontSize: 20, color: Colors.white), //title of card with info
+      labelSmall: GoogleFonts.comfortaa(fontSize: 12, color: Colors.blue),   //label of menu buttons
       bodyMedium: GoogleFonts.comfortaa(fontSize: 28, color: Colors.white),
-      //text in buttons and titles in tables
-      bodySmall: GoogleFonts.comfortaa(fontSize: 14, color: Colors.black),
-      //text info in cards and tables
-      displaySmall: GoogleFonts.comfortaa(fontSize: 12, color: Colors.white)
+      bodySmall: GoogleFonts.comfortaa(fontSize: 14, color: Colors.black), //text in buttons and titles in tables
+      displaySmall: GoogleFonts.comfortaa(fontSize: 12, color: Colors.white)  //text info in cards, tables and snackbar
   );
   // static const titleText = AutoSizeText(
   //   'NetRunner',

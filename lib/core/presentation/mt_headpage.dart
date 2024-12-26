@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:net_runner/features/scanning/presentation/mt_scanning_pg.dart';
 import 'package:net_runner/locale/netrunner_localizations.dart';
 import 'package:net_runner/core/presentation/widgets/mt_dropmenu.dart';
-import 'package:net_runner/features/statistic/presentation/mt_homepage_pg.dart';
+import 'package:net_runner/features/statistic_headpage/presentation/mt_homepage_pg.dart';
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
 
 // ignore: must_be_immutable
@@ -56,6 +56,9 @@ class _MtHeadpageState extends State<MtHeadpage> {
               child: Row(
             children: [
               NavigationRail(
+                  indicatorShape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15)
+                  ),
                   trailing: null,
                   leading: null,
                   useIndicator: true,
@@ -155,7 +158,8 @@ class _MtHeadpageState extends State<MtHeadpage> {
                           style: AppTheme.lightTheme.textTheme.labelSmall,
                         ))
                   ],
-                  selectedIndex: _selectedIndex),
+                  selectedIndex: _selectedIndex
+              ),
               Expanded(
                   child: PageView(
                 physics: const NeverScrollableScrollPhysics(),

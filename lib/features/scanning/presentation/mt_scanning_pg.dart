@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
 import 'package:net_runner/features/scanning/presentation/mt_dialog_send_scan_request.dart';
+import 'package:net_runner/utils/constants/themes/app_themes.dart';
 
 class MtScanningPg extends StatefulWidget {
   const MtScanningPg({super.key});
@@ -26,10 +27,7 @@ class _MtScanningPgState extends State<MtScanningPg> {
               children: [
                 Text(
                   'Сканирование',
-                  style: GoogleFonts.comfortaa(
-                    fontSize: 32,
-                    color: Colors.blue,
-                  ),
+                  style: AppTheme.lightTheme.textTheme.titleMedium
                 ),
                 const MtDialogSendScanRequest(),
                 IconButton(onPressed: () => context.read<PostRequestBloc>().add(FetchPostRequestEvent()), icon: Icon(Icons.refresh))
@@ -48,7 +46,8 @@ class _MtScanningPgState extends State<MtScanningPg> {
                         return Center(
                           child: ElevatedButton(
                             onPressed: () => context.read<PostRequestBloc>().add(FetchPostRequestEvent()),
-                            child: const Text('Fetch!'),
+                            child: Text('Fetch!',
+                            style: AppTheme.lightTheme.textTheme.bodySmall),
                           ),
                         );
                       } else if (state is PostRequestLoadInProgressState) {

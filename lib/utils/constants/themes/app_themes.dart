@@ -11,9 +11,9 @@ class AppTheme {
       // scaffoldBackgroundColor: Colors.white,
       colorScheme: ColorScheme(
           brightness: Brightness.light,
-          primary: Colors.white,
+          primary: Colors.white, //scaffold color
           onPrimary: Colors.black,
-          secondary: Colors.grey,
+          secondary: Colors.grey, //color for shapes
           onSecondary: Colors.black,
           error: Colors.red,
           onError: Colors.white,
