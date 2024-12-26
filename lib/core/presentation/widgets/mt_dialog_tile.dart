@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 // ignore: must_be_immutable
-class MTOpenDialogButton extends StatelessWidget {
-  MTOpenDialogButton({
+class MtOpenDialogButton extends StatelessWidget {
+  MtOpenDialogButton({
     super.key,
     this.child,
     this.buttonTitle,
@@ -18,13 +18,17 @@ class MTOpenDialogButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: const ButtonStyle(
-          backgroundColor: WidgetStatePropertyAll<Color>(Colors.blue)),
+        backgroundColor: WidgetStatePropertyAll<Color>(Colors.blue),
+        // textStyle: WidgetStatePropertyAll<TextStyle>(TextStyle(color: Colors.white))
+      ),
       onPressed: () {
         _showCustomDialog(context);
       },
       child: Text(
         buttonTitle ?? 'Untitled',
-        style: GoogleFonts.comfortaa(),
+        style: GoogleFonts.comfortaa(
+          color: Colors.white
+        ),
       ),
     );
   }
@@ -36,7 +40,7 @@ class MTOpenDialogButton extends StatelessWidget {
       builder: (BuildContext context) {
         return Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.0),
+            borderRadius: BorderRadius.circular(15.0),
           ),
 
           elevation: 0, // Тень

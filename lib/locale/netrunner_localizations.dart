@@ -118,6 +118,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Loading'**
   String get splashScreenLoading;
+
+  /// No description provided for @closeButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get closeButton;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

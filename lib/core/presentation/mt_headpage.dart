@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:net_runner/features/scanning/presentation/mt_scanning_pg.dart';
 import 'package:net_runner/locale/netrunner_localizations.dart';
-import 'package:net_runner/features/scanning/presentation/mt_dialog_send_scan_request.dart';
 import 'package:net_runner/core/presentation/widgets/mt_dropmenu.dart';
 import 'package:net_runner/features/statistic/presentation/mt_homepage_pg.dart';
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
@@ -17,7 +17,7 @@ class MtHeadpage extends StatefulWidget {
 
 class _MtHeadpageState extends State<MtHeadpage> {
   int _selectedIndex = 0;
-  PageController _pageController = PageController();
+  final PageController _pageController = PageController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -163,34 +163,12 @@ class _MtHeadpageState extends State<MtHeadpage> {
                 controller: _pageController,
                 scrollDirection: Axis.vertical,
                 children: [
-                  Container(
-                    //homepage|main
-                    child: const MtHomepagePg(),
-                  ),
+                  //MainPage
+                  Container(),
                   //hosts
-                  Container(
-                      child: const Center(
-                    child: Text('Hosts'),
-                  )),
+                  Container(),
                   //scans
-                  Container(
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          MtDialogSendScanRequest(),
-                          Expanded(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.blue,
-                                  borderRadius: BorderRadius.circular(15)),
-                              child: Text('data'),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
+                  MtScanningPg(),
                   //otcetiki
                   Container(
                     child: const Center(

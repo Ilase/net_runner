@@ -11,5 +11,8 @@
     "@appBarInfoButtonTitle": {},
 
     "splashScreenLoading": "Loading",
-    "@splashScreenLoading": {}
+    "@splashScreenLoading": {},
+
+    "closeButton": "Close",
+    "@closeButton": {}
 }
