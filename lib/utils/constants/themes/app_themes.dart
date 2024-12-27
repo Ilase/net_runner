@@ -11,13 +11,13 @@ class AppTheme {
       // scaffoldBackgroundColor: Colors.white,
       colorScheme: ColorScheme(
           brightness: Brightness.light,
-          primary: Colors.white,
-          onPrimary: Colors.black,
-          secondary: Colors.grey,
+          primary: Colors.blue, //scaffold color
+          onPrimary: Colors.white,
+          secondary: Colors.grey, //color for shapes
           onSecondary: Colors.black,
           error: Colors.red,
           onError: Colors.white,
-          surface: Colors.white,
+          surface: Colors.white, //color for cards and other buttons(filter, scanning)
           onSurface: Colors.blue, //color for icons
           ),
       //appbar theme

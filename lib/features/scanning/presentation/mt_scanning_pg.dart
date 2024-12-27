@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
-import 'package:net_runner/features/scanning/presentation/mt_dialog_send_scan_request.dart';
+import 'package:net_runner/features/scanning/presentation/widgets/mt_dialog_send_scan_request.dart';
+import 'package:net_runner/utils/constants/themes/app_themes.dart';
 
 class MtScanningPg extends StatefulWidget {
   const MtScanningPg({super.key});
@@ -16,8 +17,7 @@ class _MtScanningPgState extends State<MtScanningPg> {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
+        decoration: BoxDecoration(
         ),
         child: Column(
           children: [
@@ -26,10 +26,7 @@ class _MtScanningPgState extends State<MtScanningPg> {
               children: [
                 Text(
                   'Сканирование',
-                  style: GoogleFonts.comfortaa(
-                    fontSize: 32,
-                    color: Colors.blue,
-                  ),
+                  style: AppTheme.lightTheme.textTheme.titleMedium
                 ),
                 const MtDialogSendScanRequest(),
                 IconButton(onPressed: () => context.read<PostRequestBloc>().add(FetchPostRequestEvent()), icon: Icon(Icons.refresh))
@@ -48,7 +45,8 @@ class _MtScanningPgState extends State<MtScanningPg> {
                         return Center(
                           child: ElevatedButton(
                             onPressed: () => context.read<PostRequestBloc>().add(FetchPostRequestEvent()),
-                            child: const Text('Fetch!'),
+                            child: Text('Fetch!',
+                            style: AppTheme.lightTheme.textTheme.bodySmall),
                           ),
                         );
                       } else if (state is PostRequestLoadInProgressState) {
@@ -63,7 +61,7 @@ class _MtScanningPgState extends State<MtScanningPg> {
                             final item = state.postData.keys.elementAt(index);
                             final status = state.postData[item];
                             return ListTile(
-                              title: Text('Сканирование: ${item.toString()}', style: GoogleFonts.comfortaa(),),
+                              title: Text('Сканирование: ${item.toString()}', style: AppTheme.lightTheme.textTheme.titleMedium),
                               subtitle: Text('Статус: ${status["taskStatus"]} | Процент выполнения: ${status["taskProcent"]}', style: GoogleFonts.comfortaa() ),
                               trailing: Text(''),
                             );

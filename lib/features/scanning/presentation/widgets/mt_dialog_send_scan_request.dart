@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:net_runner/core/presentation/widgets/mt_dialog_tile.dart';
 import 'dart:convert';
+import 'package:net_runner/utils/constants/themes/app_themes.dart';
 import 'package:http/http.dart' as http;
 
 class MtDialogSendScanRequest extends StatefulWidget {
@@ -21,7 +22,10 @@ class _MtDialogSendScanRequestState extends State<MtDialogSendScanRequest> {
     final String speed = _speedController.text;
     if (targets.isEmpty || ports.isEmpty || speed.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Пожалуйста, заполните все поля')),
+        SnackBar(content: Text(
+            'Пожалуйста, заполните все поля',
+            //style: AppTheme.lightTheme.textTheme.titleLarge,
+        )),
       );
       return;
     }
@@ -93,9 +97,9 @@ class _MtDialogSendScanRequestState extends State<MtDialogSendScanRequest> {
             OutlinedButton(
               style: const ButtonStyle(),
               onPressed: sendScanRequest,
-              child: const Text(
+              child:  Text(
                 'Запустить сканирование',
-                style: TextStyle(color: Colors.blue),
+                style: AppTheme.lightTheme.textTheme.labelSmall,
               ),
             )
           ],
