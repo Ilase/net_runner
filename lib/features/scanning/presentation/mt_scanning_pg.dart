@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
 import 'package:net_runner/features/scanning/presentation/widgets/mt_dialog_send_scan_request.dart';
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
+import 'package:net_runner/features/scanning/presentation/widgets/mt_gesture_card.dart';
 
 class MtScanningPg extends StatefulWidget {
   const MtScanningPg({super.key});
@@ -56,15 +57,17 @@ class _MtScanningPgState extends State<MtScanningPg> {
                           reverse: true,
                           itemCount: state.postData.length,
                           itemBuilder: (context, index){
-                            // final itemName = null;
-                            
                             final item = state.postData.keys.elementAt(index);
                             final status = state.postData[item];
-                            return ListTile(
-                              title: Text('Сканирование: ${item.toString()}', style: AppTheme.lightTheme.textTheme.titleMedium),
-                              subtitle: Text('Статус: ${status["taskStatus"]} | Процент выполнения: ${status["taskProcent"]}', style: GoogleFonts.comfortaa() ),
-                              trailing: Text(''),
+                            return MtGestureCard(
+                                title: 'Сканирование: ${item.toString()}',
+                                status: status["taskStatus"]
                             );
+                            //   ListTile(
+                            //   title: Text('Сканирование: ${item.toString()}', style: AppTheme.lightTheme.textTheme.titleMedium),
+                            //   subtitle: Text('Статус: ${status["taskStatus"]} | Процент выполнения: ${status["taskProcent"]}', style: GoogleFonts.comfortaa() ),
+                            //   trailing: Text(''),
+                            // );
                           }
                         );
                       } else if (state is PostRequestLoadFailureState){
