@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
 
 class MtGestureCard extends StatefulWidget {
-  String itemName;
-  MtGestureCard({super.key, required this.itemName});
+  String title;
+  String status;
+  MtGestureCard({super.key, required this.title, required this.status});
 
   @override
   State<MtGestureCard> createState() => _MtGestureCardState();
@@ -38,7 +39,7 @@ class _MtGestureCardState extends State<MtGestureCard> {
                       color: AppTheme.lightTheme.colorScheme.onSurface,
                       borderRadius: BorderRadius.vertical(top: Radius.circular(15))
                   ),
-                child: Text(widget.itemName,
+                child: Text(widget.title,
                 style: AppTheme.lightTheme.textTheme.headlineSmall),
             )
             ),
@@ -56,6 +57,7 @@ class _MtGestureCardState extends State<MtGestureCard> {
                       Expanded(
                       flex: 3,
                       child:
+                          /// TODO: ТЕКСТ ЗАГЛУШКИ ПОКА!!!!
                       Text(
                           'Аудит в режиме "Пентест"',
                           style: AppTheme.lightTheme.textTheme.bodySmall,//name type of scanning
@@ -81,7 +83,7 @@ class _MtGestureCardState extends State<MtGestureCard> {
                           flex: 1,
                           child:
                           Text(
-                            'Завершено',
+                            widget.status,
                             style: AppTheme.lightTheme.textTheme.bodySmall,//name type of scanning
                           )
                       ),

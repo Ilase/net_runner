@@ -24,9 +24,6 @@ class AppTheme {
       appBarTheme: AppBarTheme(
           backgroundColor: Colors.blue,
           foregroundColor: Colors.white,
-          titleTextStyle: GoogleFonts.comfortaa(
-            color: Colors.white,
-          )
       ),
       //text styles
       textTheme: AppTextStyle.lightTextTheme,

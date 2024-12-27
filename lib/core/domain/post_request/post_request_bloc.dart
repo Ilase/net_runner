@@ -18,7 +18,7 @@ class PostRequestBloc extends Bloc<PostRequestEvent, PostRequestState> {
       emit(PostRequestLoadInProgressState());
       try {
         final responce = await http.get(
-          Uri.parse('http://192.168.20.140:8080/info'),
+          Uri.parse('http://192.168.20.140:80/info'),
         );
 
         if(responce.statusCode == 200){
