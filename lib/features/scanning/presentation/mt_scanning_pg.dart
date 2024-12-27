@@ -16,15 +16,18 @@ class MtScanningPg extends StatefulWidget {
 class _MtScanningPgState extends State<MtScanningPg> {
   @override
   Widget build(BuildContext context) {
+    context.read<PostRequestBloc>().add(FetchPostRequestEvent());
     return Center(
       child: Container(
         decoration: BoxDecoration(
         ),
         child: Column(
           children: [
-            Row(
+            SizedBox(
+              height: 55,
+              child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              spacing: 10,
+              //spacing: 10,
               children: [
                 Row(
                 children: [
@@ -38,6 +41,7 @@ class _MtScanningPgState extends State<MtScanningPg> {
                  IconButton(onPressed: () => context.read<PostRequestBloc>().add(FetchPostRequestEvent()), icon: Icon(Icons.refresh, size: 30,))
               ],
             ),
+            ),
               Expanded(
                   child: BlocListener<PostRequestBloc, PostRequestState>(
                 listener: (context, state){
@@ -48,18 +52,13 @@ class _MtScanningPgState extends State<MtScanningPg> {
                 child: BlocBuilder<PostRequestBloc, PostRequestState>(
                     builder: (content, state){
                       if(state is PostRequestInitialState){
-                        return Center(
-                          child: ElevatedButton(
-                            onPressed: () => context.read<PostRequestBloc>().add(FetchPostRequestEvent()),
-                            child: Text('Fetch!',
-                            style: AppTheme.lightTheme.textTheme.bodySmall),
-                          ),
-                        );
+                        return Center(child: CircularProgressIndicator());
                       } else if (state is PostRequestLoadInProgressState) {
                           return Center(child: CircularProgressIndicator());
                       } else if(state is PostRequestLoadSuccessState){
                         return
                           ListView.builder(
+                          padding: EdgeInsets.only(right: 12),
                           reverse: true,
                           itemCount: state.postData.length,
                           itemBuilder: (context, index){

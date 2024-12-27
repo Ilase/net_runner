@@ -45,9 +45,11 @@ class _MtHeadpageState extends State<MtHeadpage> {
           padding: EdgeInsets.all(8),
           child: null,
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(6.0),
-          child: Center(
+        body:
+        // Padding(
+        //   //padding: const EdgeInsets.all(6.0),
+        //   child:
+          Center(
               child: Row(
             children: [
               NavigationRail(
@@ -184,6 +186,6 @@ class _MtHeadpageState extends State<MtHeadpage> {
               )),
             ],
           )),
-        ));
+        );
   }
 }
