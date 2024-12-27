@@ -16,6 +16,7 @@ class _MtDialogSendScanRequestState extends State<MtDialogSendScanRequest> {
   final TextEditingController _targetsController = TextEditingController();
   final TextEditingController _portsController = TextEditingController();
   final TextEditingController _speedController = TextEditingController();
+
   void sendScanRequest() async {
     final String targets = _targetsController.text;
     final String ports = _portsController.text;
@@ -68,11 +69,13 @@ class _MtDialogSendScanRequestState extends State<MtDialogSendScanRequest> {
   @override
   Widget build(BuildContext context) {
     return MtOpenDialogButton(
+      eventMethod: sendScanRequest,
       dialogueTitle: 'Новое сканирование',
       buttonTitle: 'Сканировать',
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
+          spacing: 10,
           children: [
             TextField(
               controller: _targetsController,
@@ -94,14 +97,6 @@ class _MtDialogSendScanRequestState extends State<MtDialogSendScanRequest> {
                   labelText: 'Скорость сканирования (1-5)'),
               readOnly: false,
             ),
-            OutlinedButton(
-              style: const ButtonStyle(),
-              onPressed: sendScanRequest,
-              child:  Text(
-                'Запустить сканирование',
-                style: AppTheme.lightTheme.textTheme.labelSmall,
-              ),
-            )
           ],
         ),
       ),

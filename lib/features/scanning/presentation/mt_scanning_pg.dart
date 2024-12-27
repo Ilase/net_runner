@@ -24,13 +24,18 @@ class _MtScanningPgState extends State<MtScanningPg> {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              spacing: 10,
               children: [
-                Text(
-                  'Сканирование',
+                Row(
+                children: [
+                  Text(
+                  'Сканирования',
                   style: AppTheme.lightTheme.textTheme.titleMedium
                 ),
-                const MtDialogSendScanRequest(),
-                IconButton(onPressed: () => context.read<PostRequestBloc>().add(FetchPostRequestEvent()), icon: Icon(Icons.refresh))
+                const MtDialogSendScanRequest(), //Кнопка Сканировать
+                ]
+                ),
+                 IconButton(onPressed: () => context.read<PostRequestBloc>().add(FetchPostRequestEvent()), icon: Icon(Icons.refresh, size: 30,))
               ],
             ),
               Expanded(
@@ -53,7 +58,8 @@ class _MtScanningPgState extends State<MtScanningPg> {
                       } else if (state is PostRequestLoadInProgressState) {
                           return Center(child: CircularProgressIndicator());
                       } else if(state is PostRequestLoadSuccessState){
-                        return ListView.builder(
+                        return
+                          ListView.builder(
                           reverse: true,
                           itemCount: state.postData.length,
                           itemBuilder: (context, index){
@@ -63,11 +69,6 @@ class _MtScanningPgState extends State<MtScanningPg> {
                                 title: 'Сканирование: ${item.toString()}',
                                 status: status["taskStatus"]
                             );
-                            //   ListTile(
-                            //   title: Text('Сканирование: ${item.toString()}', style: AppTheme.lightTheme.textTheme.titleMedium),
-                            //   subtitle: Text('Статус: ${status["taskStatus"]} | Процент выполнения: ${status["taskProcent"]}', style: GoogleFonts.comfortaa() ),
-                            //   trailing: Text(''),
-                            // );
                           }
                         );
                       } else if (state is PostRequestLoadFailureState){
@@ -77,7 +78,8 @@ class _MtScanningPgState extends State<MtScanningPg> {
                       }
                   }
                 ),
-              ))
+              )
+              ),
           ],
         ),
       ),

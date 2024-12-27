@@ -21,7 +21,7 @@ class MtDropmenu extends StatelessWidget {
       child: Container(
         alignment: Alignment.center,
         width: 80,
-        height: 40,
+        height: 35,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
             border: Border.all(width: 1, color: Colors.white)),
