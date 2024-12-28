@@ -46,9 +46,9 @@ class _MtHeadpageState extends State<MtHeadpage> {
           child: null,
         ),
         body:
-        // Padding(
-        //   //padding: const EdgeInsets.all(6.0),
-        //   child:
+      Padding(
+        padding: const EdgeInsets.all(4.0),
+         child:
           Center(
               child: Row(
             children: [
@@ -185,7 +185,9 @@ class _MtHeadpageState extends State<MtHeadpage> {
                 ],
               )),
             ],
-          )),
+          )
+    ),
+      )
         );
   }
 }

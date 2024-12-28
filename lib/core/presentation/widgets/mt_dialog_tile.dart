@@ -9,11 +9,11 @@ class MtOpenDialogButton extends StatelessWidget {
   MtOpenDialogButton({
     super.key,
     required this.buttonTitle,
-    required this.eventMethod,
+    this.eventMethod,
     this.child,
     this.dialogueTitle,
   });
-  VoidCallback eventMethod;
+  VoidCallback? eventMethod;
   final Widget? child;
   String? dialogueTitle;
   String buttonTitle;

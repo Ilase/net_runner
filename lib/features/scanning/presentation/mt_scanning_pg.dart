@@ -27,18 +27,17 @@ class _MtScanningPgState extends State<MtScanningPg> {
               height: 55,
               child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //spacing: 10,
               children: [
                 Row(
                 children: [
                   Text(
                   'Сканирования',
-                  style: AppTheme.lightTheme.textTheme.titleMedium
+                  //style: AppTheme.lightTheme.textTheme.titleMedium
                 ),
                 const MtDialogSendScanRequest(), //Кнопка Сканировать
                 ]
                 ),
-                 IconButton(onPressed: () => context.read<PostRequestBloc>().add(FetchPostRequestEvent()), icon: Icon(Icons.refresh, size: 30,))
+                 IconButton(onPressed: () => context.read<PostRequestBloc>().add(FetchPostRequestEvent()), icon: Icon(Icons.refresh, size: 30,)),
               ],
             ),
             ),
@@ -58,7 +57,7 @@ class _MtScanningPgState extends State<MtScanningPg> {
                       } else if(state is PostRequestLoadSuccessState){
                         return
                           ListView.builder(
-                          padding: EdgeInsets.only(right: 12),
+                          padding: EdgeInsets.only(right: 15),
                           reverse: true,
                           itemCount: state.postData.length,
                           itemBuilder: (context, index){
