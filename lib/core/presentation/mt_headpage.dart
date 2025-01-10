@@ -50,7 +50,6 @@ class _MtHeadpageState extends State<MtHeadpage> {
                   Icons.electrical_services,
                   'Scanning server*',
                   'Scanning server*',
-
             )
               ],
             ),
@@ -58,7 +57,7 @@ class _MtHeadpageState extends State<MtHeadpage> {
               width: 10,
             ),
             dropmenu.MtDropMenu(
-              title: AppLocalizations.of(context)!.appBarActionsButtonTitle,
+              title: AppLocalizations.of(context)!.appBarInfoButtonTitle,
               popupMenuItems: [
                 dropmenu.buildPopupMenuItem(
                   Icons.help,

@@ -11,14 +11,15 @@ class MtDropMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopupMenuButton(
       onSelected: (value) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("$value")));
+
+        // ScaffoldMessenger.of(context)
+        //     .showSnackBar(SnackBar(content: Text("$value")));
       },
       itemBuilder: (context) => popupMenuItems,
       child: Container(
         alignment: Alignment.center,
-        width: 80,
         height: 40,
+        //width: 80,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
             border: Border.all(width: 1, color: Colors.white)),
