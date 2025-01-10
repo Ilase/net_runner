@@ -23,16 +23,24 @@ class _MtScanningPgState extends State<MtScanningPg> {
         ),
         child: Column(
           children: [
-            Row(
+            SizedBox(
+              height: 55,
+              child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Сканирование',
-                  style: AppTheme.lightTheme.textTheme.titleMedium
+                Row(
+                children: [
+                  Text(
+                  'Сканирования',
+                  //style: AppTheme.lightTheme.textTheme.titleMedium
+                ),
+                const MtDialogSendScanRequest(), //Кнопка Сканировать
+                ]
                 ),
                 const MtDialogSendScanRequest(),
                 IconButton(onPressed: () => context.read<PostRequestBloc>().add(FetchPostRequestEvent()), icon: const Icon(Icons.refresh))
               ],
+            ),
             ),
               Expanded(
                   child: BlocListener<WebSocketBloc, WebSocketState>(
@@ -54,7 +62,9 @@ class _MtScanningPgState extends State<MtScanningPg> {
                       } else if (state is PostRequestLoadInProgressState) {
                           return const Center(child: CircularProgressIndicator());
                       } else if(state is PostRequestLoadSuccessState){
-                        return ListView.builder(
+                        return
+                          ListView.builder(
+                          padding: EdgeInsets.only(right: 15),
                           reverse: true,
                           itemCount: state.postData.length,
                           itemBuilder: (context, index){
@@ -78,7 +88,8 @@ class _MtScanningPgState extends State<MtScanningPg> {
                       }
                   }
                 ),
-              ))
+              )
+              ),
           ],
         ),
       ),

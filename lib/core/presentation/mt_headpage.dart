@@ -27,6 +27,7 @@ class _MtHeadpageState extends State<MtHeadpage> {
     return Scaffold(
         // Main Navigator
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: AutoSizeText(
             AppLocalizations.of(context)!.appBarAppTitle,
             minFontSize: 36,
@@ -73,9 +74,11 @@ class _MtHeadpageState extends State<MtHeadpage> {
           padding: EdgeInsets.all(8),
           child: null,
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(6.0),
-          child: Center(
+        body:
+      Padding(
+        padding: const EdgeInsets.all(4.0),
+         child:
+          Center(
               child: Row(
             children: [
               NavigationRail(
@@ -221,7 +224,9 @@ class _MtHeadpageState extends State<MtHeadpage> {
                 ],
               )),
             ],
-          )),
-        ));
+          )
+    ),
+      )
+        );
   }
 }
