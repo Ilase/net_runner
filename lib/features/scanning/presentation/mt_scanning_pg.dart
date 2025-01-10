@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
+import 'package:net_runner/core/domain/web_socket/web_socket_bloc.dart';
 import 'package:net_runner/features/scanning/presentation/widgets/mt_dialog_send_scan_request.dart';
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
 import 'package:net_runner/features/scanning/presentation/widgets/mt_gesture_card.dart';
@@ -16,7 +17,6 @@ class MtScanningPg extends StatefulWidget {
 class _MtScanningPgState extends State<MtScanningPg> {
   @override
   Widget build(BuildContext context) {
-    context.read<PostRequestBloc>().add(FetchPostRequestEvent());
     return Center(
       child: Container(
         decoration: BoxDecoration(
@@ -37,23 +37,31 @@ class _MtScanningPgState extends State<MtScanningPg> {
                 const MtDialogSendScanRequest(), //Кнопка Сканировать
                 ]
                 ),
-                 IconButton(onPressed: () => context.read<PostRequestBloc>().add(FetchPostRequestEvent()), icon: Icon(Icons.refresh, size: 30,)),
+                const MtDialogSendScanRequest(),
+                IconButton(onPressed: () => context.read<PostRequestBloc>().add(FetchPostRequestEvent()), icon: const Icon(Icons.refresh))
+                 //IconButton(onPressed: () => context.read<PostRequestBloc>().add(FetchPostRequestEvent()), icon: Icon(Icons.refresh, size: 30,)),
               ],
             ),
             ),
               Expanded(
-                  child: BlocListener<PostRequestBloc, PostRequestState>(
+                  child: BlocListener<WebSocketBloc, WebSocketState>(
                 listener: (context, state){
                   if(state is PostRequestLoadFailureState){
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.error)));
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.toString())));
                   }
                 },
                 child: BlocBuilder<PostRequestBloc, PostRequestState>(
                     builder: (content, state){
                       if(state is PostRequestInitialState){
-                        return Center(child: CircularProgressIndicator());
+                        return Center(
+                          child: ElevatedButton(
+                            onPressed: () => context.read<PostRequestBloc>().add(FetchPostRequestEvent()),
+                            child: Text('Fetch!',
+                            style: AppTheme.lightTheme.textTheme.bodySmall),
+                          ),
+                        );
                       } else if (state is PostRequestLoadInProgressState) {
-                          return Center(child: CircularProgressIndicator());
+                          return const Center(child: CircularProgressIndicator());
                       } else if(state is PostRequestLoadSuccessState){
                         return
                           ListView.builder(
@@ -67,12 +75,17 @@ class _MtScanningPgState extends State<MtScanningPg> {
                                 title: 'Сканирование: ${item.toString()}',
                                 status: status["taskStatus"]
                             );
+                            //   ListTile(
+                            //   title: Text('Сканирование: ${item.toString()}', style: AppTheme.lightTheme.textTheme.titleMedium),
+                            //   subtitle: Text('Статус: ${status["taskStatus"]} | Процент выполнения: ${status["taskProcent"]}', style: GoogleFonts.comfortaa() ),
+                            //   trailing: Text(''),
+                            // );
                           }
                         );
                       } else if (state is PostRequestLoadFailureState){
-                        return Center(child: Text('Failure lasd '));
+                        return const Center(child: Text('Failure lasd '));
                       } else {
-                        return Center(child: Text('Unksnad'));
+                        return const Center(child: Text('Unksnad'));
                       }
                   }
                 ),

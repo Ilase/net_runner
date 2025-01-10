@@ -6,7 +6,7 @@ import 'dart:convert';
 import 'package:net_runner/core/domain/web_socket/web_socket_bloc.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -38,7 +38,7 @@ class _WebSocketExampleState extends State<WebSocketExample> {
     super.initState();
     context
         .read<WebSocketBloc>()
-        .add(WebSocketConnect('ws://192.168.20.140:8080/wsscan'));
+        .add(const WebSocketConnect('ws://192.168.20.140:8080/wsscan'));
   }
 
   @override
@@ -67,7 +67,7 @@ class _WebSocketExampleState extends State<WebSocketExample> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('WebSocket Example'),
+        title: const Text('WebSocket Example'),
       ),
       body: BlocListener<WebSocketBloc, WebSocketState>(
         listener: (context, state) {
@@ -80,7 +80,7 @@ class _WebSocketExampleState extends State<WebSocketExample> {
         child: Column(
           children: [
             Container(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
                   ElevatedButton(
@@ -101,13 +101,13 @@ class _WebSocketExampleState extends State<WebSocketExample> {
                   children: [
                     TextField(
                       controller: _controller,
-                      decoration: InputDecoration(
-                        labelText: 'Enter JSON content',
+                      decoration: const InputDecoration(
+                        labelText: 'Enter JSON content*',
                       ),
                     ),
                     ElevatedButton(
                       onPressed: _sendJsonMessage,
-                      child: Text('Send JSON'),
+                      child: const Text('Send JSON'),
                     ),
                   ],
                 ),
@@ -117,8 +117,8 @@ class _WebSocketExampleState extends State<WebSocketExample> {
                 itemCount: messages.length,
                 itemBuilder: (context, index) {
                   return Container(
-                    margin: EdgeInsets.all(8.0),
-                    padding: EdgeInsets.all(16.0),
+                    margin: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(16.0),
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey),
                       borderRadius: BorderRadius.circular(8.0),

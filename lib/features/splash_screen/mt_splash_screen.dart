@@ -78,7 +78,7 @@ class _SplashLoadingScreenState extends State<SplashLoadingScreen> {
                   Directionality(
                     textDirection: TextDirection.ltr,
                     child: Text(
-                      'Loading',
+                      'Loading*',
                       style: GoogleFonts.comfortaa(
                         color: Colors.blue,
                         fontSize: 24,
