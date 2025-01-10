@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:net_runner/features/graph/mt_graph_pg.dart';
 import 'package:net_runner/features/hosts/presentation/mt_hosts_pg.dart';
 import 'package:net_runner/features/scanning/presentation/mt_scanning_pg.dart';
 import 'package:net_runner/locale/netrunner_localizations.dart';
-import 'package:net_runner/core/presentation/widgets/mt_dropmenu.dart';
+import 'package:net_runner/core/presentation/widgets/mt_dropmenu.dart' as dropmenu;
 import 'package:net_runner/features/statistic_headpage/presentation/mt_homepage_pg.dart';
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
+import 'package:net_runner/utils/constants/themes/text_styles.dart';
 
 // ignore: must_be_immutable
 class MtHeadpage extends StatefulWidget {
@@ -41,14 +43,30 @@ class _MtHeadpageState extends State<MtHeadpage> {
               },
             ),
             const SizedBox(width: 10,),
-            MtDropmenu(
+            dropmenu.MtDropMenu(
               title: AppLocalizations.of(context)!.appBarActionsButtonTitle,
+              popupMenuItems: [
+                dropmenu.buildPopupMenuItem(
+                  Icons.electrical_services,
+                  'Scanning server*',
+                  'Scanning server*',
+
+            )
+              ],
             ),
             const SizedBox(
               width: 10,
             ),
-            MtDropmenu(
-              title: AppLocalizations.of(context)!.appBarInfoButtonTitle,
+            dropmenu.MtDropMenu(
+              title: AppLocalizations.of(context)!.appBarActionsButtonTitle,
+              popupMenuItems: [
+                dropmenu.buildPopupMenuItem(
+                  Icons.help,
+                  'Help*',
+                  'Help*',
+
+                )
+              ],
             ),
           ],
         ),
@@ -68,7 +86,7 @@ class _MtHeadpageState extends State<MtHeadpage> {
                   trailing: null,
                   leading: null,
                   useIndicator: true,
-                  indicatorColor: Colors.black,
+                  indicatorColor: Color.fromRGBO(255, 255, 255, 0.5),
                   backgroundColor: null,
                   selectedIconTheme: const IconThemeData(
                     opacity: 1,
@@ -96,7 +114,7 @@ class _MtHeadpageState extends State<MtHeadpage> {
                         color: AppTheme.lightTheme.colorScheme.onSurface,
                       ),
                       label: Text(
-                        'Главная',
+                        'Главная*',
                         style: AppTheme.lightTheme.textTheme.labelSmall,
                       ),
                     ),
@@ -112,7 +130,7 @@ class _MtHeadpageState extends State<MtHeadpage> {
                         color: AppTheme.lightTheme.colorScheme.onSurface,
                       ),
                       label: Text(
-                        'Хосты',
+                        'Хосты*',
                         style: AppTheme.lightTheme.textTheme.labelSmall,
                       ),
                     ),
@@ -128,7 +146,7 @@ class _MtHeadpageState extends State<MtHeadpage> {
                         color: AppTheme.lightTheme.colorScheme.onSurface,
                       ),
                       label: Text(
-                        'Сканирование',
+                        'Сканирование*',
                         style: AppTheme.lightTheme.textTheme.labelSmall,
                       ),
                     ),
@@ -144,7 +162,7 @@ class _MtHeadpageState extends State<MtHeadpage> {
                         color: AppTheme.lightTheme.colorScheme.onSurface,
                       ),
                       label: Text(
-                        'Отчёты',
+                        'Отчёты*',
                         style: AppTheme.lightTheme.textTheme.labelSmall,
                       ),
                     ),
@@ -160,7 +178,7 @@ class _MtHeadpageState extends State<MtHeadpage> {
                           color: AppTheme.lightTheme.colorScheme.onSurface,
                         ),
                         label: Text(
-                          'Сеть',
+                          'Сеть*',
                           style: AppTheme.lightTheme.textTheme.labelSmall,
                         ))
                   ],
@@ -182,15 +200,25 @@ class _MtHeadpageState extends State<MtHeadpage> {
                   //otcetiki
                   Container(
                     child: const Center(
-                      child: Text('Otchetiki'),
+                      child: Text('Otchetiki*'),
                     ),
                   ),
                   //network
                   Container(
-                    child: const Center(
-                      child: Text('Graphical network?'),
-                    ),
+                    child: Center(
+                        child: Text(
+                          'Graph',
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
+                        )
+                    )
                   ),
+                  // Container(
+                  //   child: const Center(
+                  //     child: Text('Graphical network?*'),
+                  //   ),
+                  // ),
                 ],
               )),
             ],

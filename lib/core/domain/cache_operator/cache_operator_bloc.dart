@@ -11,6 +11,14 @@ class CacheOperatorBloc extends Bloc<CacheOperatorEvent, CacheOperatorState> {
   CacheOperatorBloc({required this.sharedPreferences}) : super(CacheOperatorInitial());
   @override
   Stream<CacheOperatorState> mapEventToState(CacheOperatorEvent event) async*{
+    if(event is SaveDataCacheOperatorEvent){
+      try{
+        await sharedPreferences.setString('cached_data', event.data);
+        yield CacheOperatorLoadedState(data: event.data);
+      } catch(e){
+        yield CacheOperatorErrorState(message: 'Error saving data to cache: $e');
+      }
+    }
     if(event is LoadDataCacheOperatorEvent) {
       try {
         final cachedData = sharedPreferences.getString('cached_data');
