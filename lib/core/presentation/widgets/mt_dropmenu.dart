@@ -3,8 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
 
 // ignore: must_be_immutable
-class MtDropmenu extends StatelessWidget {
-  MtDropmenu({super.key, this.title});
+class MtDropMenu extends StatelessWidget {
+  final List<PopupMenuItem> popupMenuItems;
+  MtDropMenu({super.key, this.title, required this.popupMenuItems});
   String? title;
   @override
   Widget build(BuildContext context) {
@@ -13,11 +14,7 @@ class MtDropmenu extends StatelessWidget {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text("$value")));
       },
-      itemBuilder: (context) => [
-        _buildPopupMenuItem(Icons.help, "Help", "Help"),
-        _buildPopupMenuItem(Icons.help, "Help", "Help"),
-        _buildPopupMenuItem(Icons.help, "Help", "Help"),
-      ],
+      itemBuilder: (context) => popupMenuItems,
       child: Container(
         alignment: Alignment.center,
         width: 80,
@@ -35,7 +32,7 @@ class MtDropmenu extends StatelessWidget {
   }
 }
 
-PopupMenuItem _buildPopupMenuItem(IconData icon, String text, String value) {
+PopupMenuItem buildPopupMenuItem(IconData icon, String text, String value) {
   return PopupMenuItem(
       value: value,
       child: Row(

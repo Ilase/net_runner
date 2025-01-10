@@ -31,7 +31,7 @@ class _AnimatedListExampleState extends State<AnimatedListExample> {
   void _addItem() {
     final newItem = 'Item ${_counter + 1}';
     _items.insert(0, newItem);
-    _listKey.currentState?.insertItem(0, duration: Duration(milliseconds: 300));
+    _listKey.currentState?.insertItem(0, duration: const Duration(milliseconds: 300));
     _counter++;
   }
 
@@ -41,7 +41,7 @@ class _AnimatedListExampleState extends State<AnimatedListExample> {
     _listKey.currentState?.removeItem(
       index,
           (context, animation) => _buildItem(removedItem, animation),
-      duration: Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 300),
     );
   }
 
@@ -56,7 +56,7 @@ class _AnimatedListExampleState extends State<AnimatedListExample> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Animated List Example'),
+        title: const Text('Animated List Example'),
       ),
       body: AnimatedList(
         reverse: false,
@@ -68,7 +68,7 @@ class _AnimatedListExampleState extends State<AnimatedListExample> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _addItem,
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }

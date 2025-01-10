@@ -9,7 +9,7 @@ class AppTheme {
       //colors
       // primaryColor: Colors.white,
       // scaffoldBackgroundColor: Colors.white,
-      colorScheme: ColorScheme(
+      colorScheme: const ColorScheme(
           brightness: Brightness.light,
           primary: Colors.blue, //scaffold color
           onPrimary: Colors.white,
@@ -21,7 +21,7 @@ class AppTheme {
           onSurface: Colors.blue,
           ),
       //appbar theme
-      appBarTheme: AppBarTheme(
+      appBarTheme: const AppBarTheme(
           backgroundColor: Colors.blue,
           foregroundColor: Colors.white,
       ),

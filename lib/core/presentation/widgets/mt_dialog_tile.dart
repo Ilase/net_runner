@@ -11,6 +11,7 @@ class MtOpenDialogButton extends StatelessWidget {
     required this.buttonTitle,
     this.eventMethod,
     this.child,
+    this.buttonTitle,
     this.dialogueTitle,
   });
   VoidCallback? eventMethod;
@@ -25,7 +26,12 @@ class MtOpenDialogButton extends StatelessWidget {
       onPressed: () {
         _showCustomDialog(context);
       },
-      child: contentBox(context)
+      child: Text(
+        buttonTitle ?? 'Untitled*',
+        style: GoogleFonts.comfortaa(
+          color: Colors.white
+        ),
+      ),
     );
   }
 
@@ -38,6 +44,7 @@ class MtOpenDialogButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15.0),
           ),
+
           elevation: 0, // Тень
           backgroundColor: Colors.white,
           child: contentBox(context),
@@ -50,7 +57,7 @@ class MtOpenDialogButton extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container( //title of dialog window
+        Container(
           width: double.infinity,
           padding: const EdgeInsets.all(16.0),
           decoration: const BoxDecoration(
@@ -58,7 +65,7 @@ class MtOpenDialogButton extends StatelessWidget {
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(15), topRight: Radius.circular(15))),
           child: AutoSizeText(
-            dialogueTitle ?? 'Untitled',
+            dialogueTitle ?? 'Untitled*',
             minFontSize: 36,
             maxFontSize: 48,
             style: GoogleFonts.comfortaa(color: Colors.white),
@@ -68,12 +75,10 @@ class MtOpenDialogButton extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            //spacing: 10,
             children: [
               if (child != null) child!, //!!!!! this one
-             // const SizedBox(height: 24),
-              Container(
-                //color: Colors.red,
+              const SizedBox(height: 24),
+              Align(
                 alignment: Alignment.bottomRight,
                 child:Row(
                   mainAxisAlignment: MainAxisAlignment.end,
