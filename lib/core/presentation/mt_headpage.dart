@@ -68,7 +68,7 @@ class _MtHeadpageState extends State<MtHeadpage> {
                   trailing: null,
                   leading: null,
                   useIndicator: true,
-                  indicatorColor: null,
+                  indicatorColor: Colors.black,
                   backgroundColor: null,
                   selectedIconTheme: const IconThemeData(
                     opacity: 1,
