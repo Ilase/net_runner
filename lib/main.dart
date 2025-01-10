@@ -8,6 +8,7 @@ import 'package:net_runner/core/presentation/mt_headpage.dart';
 import 'package:net_runner/features/splash_screen/mt_splash_screen.dart';
 import 'package:platform_detector/widgets/platform_type_widget.dart';
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
+import 'package:net_runner/features/sign_in_page/presentation/mt_sign_in.dart';
 
 // String _platform_ = "Unknown";
 
@@ -54,12 +55,14 @@ class StartPoint extends StatelessWidget {
           oninitializationComplete: () async {
             navigatorKey.currentState
                 ?.pushReplacement(createRoute(PlatformDetectByType(
-              web: MtHeadpage(
-                platform: platform,
-              ),
-              desktop: MtHeadpage(
-                platform: platform,
-              ),
+              web: MtSignIn(),
+              // MtHeadpage(
+              //   platform: platform,
+              // ),
+              desktop: MtSignIn(),
+              // MtHeadpage(
+              //   platform: platform,
+              // ),
               mobile: null,
             )));
             //Navigator.pushReplacement(context, createRoute(MtHeadpage()));

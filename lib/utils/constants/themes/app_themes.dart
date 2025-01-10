@@ -17,8 +17,8 @@ class AppTheme {
           onSecondary: Colors.black,
           error: Colors.red,
           onError: Colors.white,
-          surface: Colors.white, //color for cards and other buttons(filter, scanning)
-          onSurface: Colors.blue, //color for icons
+          surface: Colors.white,
+          onSurface: Colors.blue,
           ),
       //appbar theme
       appBarTheme: AppBarTheme(
@@ -27,6 +27,7 @@ class AppTheme {
       ),
       //text styles
       textTheme: AppTextStyle.lightTextTheme,
+      elevatedButtonTheme: AppButtonStyle.modalWindowButtonTheme
      // popupMenuTheme: AppButtonStyle.actionsButtonsTheme,
     );
   }

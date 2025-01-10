@@ -6,13 +6,13 @@ class AppButtonStyle {
   /// cancel, apply and other
   static ElevatedButtonThemeData modalWindowButtonTheme = ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      backgroundColor: Color(0xEAE8E8),
-      foregroundColor: Colors.black,
+      //backgroundColor: Color(0xEAE8E8),
+      //foregroundColor: Colors.black,
       disabledBackgroundColor: Colors.grey,
       elevation: 5,
-      textStyle: AppTheme.lightTheme.textTheme.bodySmall,
+      textStyle: GoogleFonts.comfortaa(fontSize: 14, color: Colors.blue),
       padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-      fixedSize: Size(90, 20),
+      fixedSize: Size(130, 20),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10)
       )

@@ -23,6 +23,7 @@ class _MtHeadpageState extends State<MtHeadpage> {
     return Scaffold(
         // Main Navigator
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: AutoSizeText(
             AppLocalizations.of(context)!.appBarAppTitle,
             minFontSize: 36,

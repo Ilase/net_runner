@@ -80,11 +80,6 @@ class MtOpenDialogButton extends StatelessWidget {
                   spacing: 15,
                   children: [
                   ElevatedButton(
-                    style: ButtonStyle(
-                        fixedSize: WidgetStateProperty.all(
-                            Size(140, 30)
-                        )
-                    ),
                     onPressed: eventMethod,
                     child:  Text(
                       buttonTitle,
@@ -92,11 +87,6 @@ class MtOpenDialogButton extends StatelessWidget {
                     ),
                   ),
                   ElevatedButton(
-                  style: ButtonStyle(
-                      fixedSize: WidgetStateProperty.all(
-                          Size(140, 30)
-                      )
-                  ),
                   onPressed: () {
                     Navigator.of(context).pop();
                     },

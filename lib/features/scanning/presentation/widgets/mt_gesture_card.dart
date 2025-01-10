@@ -57,7 +57,6 @@ class _MtGestureCardState extends State<MtGestureCard> {
                       Expanded(
                       flex: 3,
                       child:
-                          /// TODO: ТЕКСТ ЗАГЛУШКИ ПОКА!!!!
                       Text(
                           'Аудит в режиме "Пентест"',
                           style: AppTheme.lightTheme.textTheme.bodySmall,//name type of scanning
