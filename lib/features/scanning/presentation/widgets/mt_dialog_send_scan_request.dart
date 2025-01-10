@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:net_runner/core/domain/web_socket/web_socket_bloc.dart';
 import 'package:net_runner/core/presentation/widgets/mt_dialog_tile.dart';
 import 'dart:convert';
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
@@ -16,6 +18,38 @@ class _MtDialogSendScanRequestState extends State<MtDialogSendScanRequest> {
   final TextEditingController _targetsController = TextEditingController();
   final TextEditingController _portsController = TextEditingController();
   final TextEditingController _speedController = TextEditingController();
+
+  void WSsendScanRequest() async {
+    final String targets = _targetsController.text;
+    final String ports = _portsController.text;
+    final String speed = _speedController.text;
+    if (targets.isEmpty || ports.isEmpty || speed.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(
+          'Пожалуйста, заполните все поля',
+          //style: AppTheme.lightTheme.textTheme.titleLarge,
+        )),
+      );
+      return;
+    }
+    final DateTime now = DateTime.now();
+    final String formattedDateTime =
+        "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
+    Map<String, dynamic> jsonMessage = {
+      "uid": 10101,
+      "request_time": formattedDateTime,
+      "hosts": [targets],
+      "ports": [ports],
+      "speed": speed
+    };
+    String jsonString = jsonEncode(jsonMessage);
+    context.read<WebSocketBloc>().add(WebSocketSendMessage(jsonString));
+    _targetsController.clear();
+    _portsController.clear();
+    _speedController.clear();
+
+  }
+
   void sendScanRequest() async {
     final String targets = _targetsController.text;
     final String ports = _portsController.text;
@@ -51,16 +85,16 @@ class _MtDialogSendScanRequestState extends State<MtDialogSendScanRequest> {
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Запрос успешно отправлен!')),
+          const SnackBar(content: Text('Запрос успешно отправлен!*')),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Ошибка: ${response.body}')),
+          SnackBar(content: Text('Ошибка: ${response.body}*')),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Не удалось отправить запрос: $e')),
+        SnackBar(content: Text('Не удалось отправить запрос: $e*')),
       );
     }
   }
@@ -68,8 +102,8 @@ class _MtDialogSendScanRequestState extends State<MtDialogSendScanRequest> {
   @override
   Widget build(BuildContext context) {
     return MtOpenDialogButton(
-      dialogueTitle: 'Новое сканирование',
-      buttonTitle: 'Сканировать',
+      dialogueTitle: 'Новое сканирование*',
+      buttonTitle: 'Сканировать*',
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -77,28 +111,28 @@ class _MtDialogSendScanRequestState extends State<MtDialogSendScanRequest> {
             TextField(
               controller: _targetsController,
               decoration: const InputDecoration(
-                  border: OutlineInputBorder(), labelText: 'Цели сканирования'),
+                  border: OutlineInputBorder(), labelText: 'Цели сканирования*'),
               readOnly: false,
             ),
             TextField(
               controller: _portsController,
               decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: 'Порты(через запятую)'),
+                  labelText: 'Порты(через запятую)*'),
               readOnly: false,
             ),
             TextField(
               controller: _speedController,
               decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: 'Скорость сканирования (1-5)'),
+                  labelText: 'Скорость сканирования (1-5)*'),
               readOnly: false,
             ),
             OutlinedButton(
               style: const ButtonStyle(),
               onPressed: sendScanRequest,
               child:  Text(
-                'Запустить сканирование',
+                'Запустить сканирование*',
                 style: AppTheme.lightTheme.textTheme.labelSmall,
               ),
             )

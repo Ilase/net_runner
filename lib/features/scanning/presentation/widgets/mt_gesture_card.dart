@@ -16,7 +16,7 @@ class _MtGestureCardState extends State<MtGestureCard> {
     return GestureDetector(
       child:
         Container(
-          margin: EdgeInsets.only(bottom: 10),
+          margin: const EdgeInsets.only(bottom: 10),
           height: 70,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
@@ -24,7 +24,7 @@ class _MtGestureCardState extends State<MtGestureCard> {
               BoxShadow(
                 blurRadius: 3,
                 color: AppTheme.lightTheme.colorScheme.secondary,
-                offset: Offset(3, 6)
+                offset: const Offset(3, 6)
               )
             ]
         ),
@@ -33,11 +33,11 @@ class _MtGestureCardState extends State<MtGestureCard> {
             Expanded(
               flex: 2,
               child: Container(
-                padding: EdgeInsets.fromLTRB(10, 3, 0, 3),
+                padding: const EdgeInsets.fromLTRB(10, 3, 0, 3),
                 alignment: Alignment.centerLeft,
                   decoration: BoxDecoration(
                       color: AppTheme.lightTheme.colorScheme.onSurface,
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(15))
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(15))
                   ),
                 child: Text(widget.title,
                 style: AppTheme.lightTheme.textTheme.headlineSmall),
@@ -46,10 +46,10 @@ class _MtGestureCardState extends State<MtGestureCard> {
             Expanded(
                 flex: 3,
                 child: Container(
-                    padding: EdgeInsets.fromLTRB(10, 3, 0, 3),
+                    padding: const EdgeInsets.fromLTRB(10, 3, 0, 3),
                     decoration: BoxDecoration(
                         color: AppTheme.lightTheme.colorScheme.surface,
-                        borderRadius: BorderRadius.vertical(bottom: Radius.circular(15))
+                        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(15))
                     ),
                   child: Row(
                     children:

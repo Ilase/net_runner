@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:net_runner/features/hosts/presentation/mt_hosts_pg.dart';
 import 'package:net_runner/features/scanning/presentation/mt_scanning_pg.dart';
 import 'package:net_runner/locale/netrunner_localizations.dart';
 import 'package:net_runner/core/presentation/widgets/mt_dropmenu.dart';
@@ -20,6 +21,7 @@ class _MtHeadpageState extends State<MtHeadpage> {
   final PageController _pageController = PageController();
   @override
   Widget build(BuildContext context) {
+    bool isLanguageSwitch = false;
     return Scaffold(
         // Main Navigator
         appBar: AppBar(
@@ -30,6 +32,15 @@ class _MtHeadpageState extends State<MtHeadpage> {
             overflow: TextOverflow.ellipsis,
           ),
           actions: [
+            Switch(
+              value: isLanguageSwitch,
+              onChanged: (value){
+                setState(() {
+                  isLanguageSwitch = value;
+                });
+              },
+            ),
+            const SizedBox(width: 10,),
             MtDropmenu(
               title: AppLocalizations.of(context)!.appBarActionsButtonTitle,
             ),
@@ -165,7 +176,7 @@ class _MtHeadpageState extends State<MtHeadpage> {
                   //MainPage
                   Container(),
                   //hosts
-                  Container(),
+                  MtHostsPg(),
                   //scans
                   MtScanningPg(),
                   //otcetiki

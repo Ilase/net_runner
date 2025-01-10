@@ -25,7 +25,7 @@ class MtOpenDialogButton extends StatelessWidget {
         _showCustomDialog(context);
       },
       child: Text(
-        buttonTitle ?? 'Untitled',
+        buttonTitle ?? 'Untitled*',
         style: GoogleFonts.comfortaa(
           color: Colors.white
         ),
@@ -63,7 +63,7 @@ class MtOpenDialogButton extends StatelessWidget {
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(15), topRight: Radius.circular(15))),
           child: AutoSizeText(
-            dialogueTitle ?? 'Untitled',
+            dialogueTitle ?? 'Untitled*',
             minFontSize: 36,
             maxFontSize: 48,
             style: GoogleFonts.comfortaa(color: Colors.white),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
+import 'package:net_runner/core/domain/web_socket/web_socket_bloc.dart';
 import 'package:net_runner/features/scanning/presentation/widgets/mt_dialog_send_scan_request.dart';
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
 import 'package:net_runner/features/scanning/presentation/widgets/mt_gesture_card.dart';
@@ -18,7 +19,7 @@ class _MtScanningPgState extends State<MtScanningPg> {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
         ),
         child: Column(
           children: [
@@ -30,14 +31,14 @@ class _MtScanningPgState extends State<MtScanningPg> {
                   style: AppTheme.lightTheme.textTheme.titleMedium
                 ),
                 const MtDialogSendScanRequest(),
-                IconButton(onPressed: () => context.read<PostRequestBloc>().add(FetchPostRequestEvent()), icon: Icon(Icons.refresh))
+                IconButton(onPressed: () => context.read<PostRequestBloc>().add(FetchPostRequestEvent()), icon: const Icon(Icons.refresh))
               ],
             ),
               Expanded(
-                  child: BlocListener<PostRequestBloc, PostRequestState>(
+                  child: BlocListener<WebSocketBloc, WebSocketState>(
                 listener: (context, state){
                   if(state is PostRequestLoadFailureState){
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.error)));
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.toString())));
                   }
                 },
                 child: BlocBuilder<PostRequestBloc, PostRequestState>(
@@ -51,7 +52,7 @@ class _MtScanningPgState extends State<MtScanningPg> {
                           ),
                         );
                       } else if (state is PostRequestLoadInProgressState) {
-                          return Center(child: CircularProgressIndicator());
+                          return const Center(child: CircularProgressIndicator());
                       } else if(state is PostRequestLoadSuccessState){
                         return ListView.builder(
                           reverse: true,
@@ -71,9 +72,9 @@ class _MtScanningPgState extends State<MtScanningPg> {
                           }
                         );
                       } else if (state is PostRequestLoadFailureState){
-                        return Center(child: Text('Failure lasd '));
+                        return const Center(child: Text('Failure lasd '));
                       } else {
-                        return Center(child: Text('Unksnad'));
+                        return const Center(child: Text('Unksnad'));
                       }
                   }
                 ),
