@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 
-class MtShowDialog{
+class MtShowDialog {
   final Widget child;
   String? dialogueTitle;
 
   MtShowDialog({
+    this.dialogueTitle,
     required this.child,
   });
 
@@ -55,7 +56,7 @@ class MtShowDialog{
     );
   }
 
-  void _showCustomDialogue(BuildContext context){
+  void showCustomDialogue(BuildContext context){
     showDialog(context: context, builder: (BuildContext context){
       return Dialog(
         shape: RoundedRectangleBorder(

@@ -48,7 +48,7 @@ class _AnimatedListExampleState extends State<AnimatedListExample> {
   Widget _buildItem(String item, Animation<double> animation) {
     return SizeTransition(
       sizeFactor: animation,
-      child: MtGestureCard(itemName: item)
+      child: Placeholder()
     );
   }
 

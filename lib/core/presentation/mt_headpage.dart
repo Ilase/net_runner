@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:net_runner/core/data/menu_item_data.dart';
+import 'package:net_runner/core/presentation/widgets/mt_dropmenu.dart';
 import 'package:net_runner/features/graph/mt_graph_pg.dart';
 import 'package:net_runner/features/hosts/presentation/mt_hosts_pg.dart';
 import 'package:net_runner/features/scanning/presentation/mt_scanning_pg.dart';
 import 'package:net_runner/locale/netrunner_localizations.dart';
 import 'package:net_runner/core/presentation/widgets/mt_dropmenu.dart' as dropmenu;
 import 'package:net_runner/features/statistic_headpage/presentation/mt_homepage_pg.dart';
+import 'package:net_runner/locale/netrunner_localizations_ru.dart';
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
 import 'package:net_runner/utils/constants/themes/text_styles.dart';
 
@@ -35,39 +38,15 @@ class _MtHeadpageState extends State<MtHeadpage> {
             overflow: TextOverflow.ellipsis,
           ),
           actions: [
-            Switch(
-              value: isLanguageSwitch,
-              onChanged: (value){
-                setState(() {
-                  isLanguageSwitch = value;
-                });
-              },
-            ),
             const SizedBox(width: 10,),
             dropmenu.MtDropMenu(
+              actionsTitle: 'asd',
               title: AppLocalizations.of(context)!.appBarActionsButtonTitle,
               popupMenuItems: [
-                dropmenu.buildPopupMenuItem(
-                  Icons.electrical_services,
-                  'Scanning server*',
-                  'Scanning server*',
-            )
+                MenuItemData(title:  'Title1*',child:  DropMenuItemWidget(menuItemData: MenuItemData(title: 'Figma1', child: Placeholder()),)),
               ],
             ),
-            const SizedBox(
-              width: 10,
-            ),
-            dropmenu.MtDropMenu(
-              title: AppLocalizations.of(context)!.appBarInfoButtonTitle,
-              popupMenuItems: [
-                dropmenu.buildPopupMenuItem(
-                  Icons.help,
-                  'Help*',
-                  'Help*',
 
-                )
-              ],
-            ),
           ],
         ),
         bottomNavigationBar: const Padding(
@@ -194,7 +173,9 @@ class _MtHeadpageState extends State<MtHeadpage> {
                 scrollDirection: Axis.vertical,
                 children: [
                   //MainPage
-                  Container(),
+                  Container(child: Center(
+                    child: Text('Main page'),
+                  ),),
                   //hosts
                   MtHostsPg(),
                   //scans
@@ -209,10 +190,7 @@ class _MtHeadpageState extends State<MtHeadpage> {
                   Container(
                     child: Center(
                         child: Text(
-                          'Graph',
-                          style: TextStyle(
-                            color: Colors.black,
-                          ),
+                          'Graph*',
                         )
                     )
                   ),
@@ -228,5 +206,8 @@ class _MtHeadpageState extends State<MtHeadpage> {
     ),
       )
         );
+  }
+  String returnTitle(){
+    return 'Observer';
   }
 }
