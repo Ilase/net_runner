@@ -55,16 +55,11 @@ class StartPoint extends StatelessWidget {
             navigatorKey.currentState
                 ?.pushReplacement(createRoute(PlatformDetectByType(
               web: MtSignIn(),
-              // MtHeadpage(
-              //   platform: platform,
-              // ),
               desktop: MtSignIn(),
-              // MtHeadpage(
-              //   platform: platform,
-              // ),
-              mobile: null,
+              mobile: Placeholder(),
             )));
             //Navigator.pushReplacement(context, createRoute(MtHeadpage()));
+            // ),
           },
         ),
       ),

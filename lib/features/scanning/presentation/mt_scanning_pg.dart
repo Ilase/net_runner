@@ -19,77 +19,76 @@ class _MtScanningPgState extends State<MtScanningPg> {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        decoration: const BoxDecoration(
-        ),
+        decoration: const BoxDecoration(),
         child: Column(
           children: [
             SizedBox(
               height: 55,
               child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                  'Сканирования',
-                  //style: AppTheme.lightTheme.textTheme.titleMedium
-                ),
-                const MtDialogSendScanRequest(), //Кнопка Сканировать
-                ]
-                ),
-                const MtDialogSendScanRequest(),
-                IconButton(onPressed: () => context.read<PostRequestBloc>().add(FetchPostRequestEvent()), icon: const Icon(Icons.refresh))
-              ],
-            ),
-            ),
-              Expanded(
-                  child: BlocListener<WebSocketBloc, WebSocketState>(
-                listener: (context, state){
-                  if(state is PostRequestLoadFailureState){
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.toString())));
-                  }
-                },
-                child: BlocBuilder<PostRequestBloc, PostRequestState>(
-                    builder: (content, state){
-                      if(state is PostRequestInitialState){
-                        return Center(
-                          child: ElevatedButton(
-                            onPressed: () => context.read<PostRequestBloc>().add(FetchPostRequestEvent()),
-                            child: Text('Fetch!',
-                            style: AppTheme.lightTheme.textTheme.bodySmall),
-                          ),
-                        );
-                      } else if (state is PostRequestLoadInProgressState) {
-                          return const Center(child: CircularProgressIndicator());
-                      } else if(state is PostRequestLoadSuccessState){
-                        return
-                          ListView.builder(
-                          padding: EdgeInsets.only(right: 15),
-                          reverse: true,
-                          itemCount: state.postData.length,
-                          itemBuilder: (context, index){
-                            final item = state.postData.keys.elementAt(index);
-                            final status = state.postData[item];
-                            return MtGestureCard(
-                                title: 'Сканирование: ${item.toString()}',
-                                status: status["taskStatus"]
-                            );
-                            //   ListTile(
-                            //   title: Text('Сканирование: ${item.toString()}', style: AppTheme.lightTheme.textTheme.titleMedium),
-                            //   subtitle: Text('Статус: ${status["taskStatus"]} | Процент выполнения: ${status["taskProcent"]}', style: GoogleFonts.comfortaa() ),
-                            //   trailing: Text(''),
-                            // );
-                          }
-                        );
-                      } else if (state is PostRequestLoadFailureState){
-                        return const Center(child: Text('Failure lasd '));
-                      } else {
-                        return const Center(child: Text('Unksnad'));
-                      }
-                  }
-                ),
-              )
+                  Row(children: [
+                    Text(
+                      'Сканирования',
+                      //style: AppTheme.lightTheme.textTheme.titleMedium
+                    ),
+                    //Кнопка Сканировать
+                  ]),
+                  const MtDialogSendScanRequest(),
+                  IconButton(
+                      onPressed: () => context
+                          .read<PostRequestBloc>()
+                          .add(FetchPostRequestEvent()),
+                      icon: const Icon(Icons.refresh))
+                ],
               ),
+            ),
+            Expanded(
+                child: BlocListener<WebSocketBloc, WebSocketState>(
+              listener: (context, state) {
+                if (state is PostRequestLoadFailureState) {
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(SnackBar(content: Text(state.toString())));
+                }
+              },
+              child: BlocBuilder<PostRequestBloc, PostRequestState>(
+                  builder: (content, state) {
+                if (state is PostRequestInitialState) {
+                  return Center(
+                    child: ElevatedButton(
+                      onPressed: () => context
+                          .read<PostRequestBloc>()
+                          .add(FetchPostRequestEvent()),
+                      child: Text('Fetch!',
+                          style: AppTheme.lightTheme.textTheme.bodySmall),
+                    ),
+                  );
+                } else if (state is PostRequestLoadInProgressState) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state is PostRequestLoadSuccessState) {
+                  return ListView.builder(
+                      padding: EdgeInsets.only(right: 15),
+                      reverse: true,
+                      itemCount: state.postData.length,
+                      itemBuilder: (context, index) {
+                        final item = state.postData.keys.elementAt(index);
+                        final status = state.postData[item];
+                        return MtGestureCard(
+                            title: 'Сканирование: ${item.toString()}',
+                            status: status["taskStatus"]);
+                        //   ListTile(
+                        //   title: Text('Сканирование: ${item.toString()}', style: AppTheme.lightTheme.textTheme.titleMedium),
+                        //   subtitle: Text('Статус: ${status["taskStatus"]} | Процент выполнения: ${status["taskProcent"]}', style: GoogleFonts.comfortaa() ),
+                        //   trailing: Text(''),
+                        // );
+                      });
+                } else if (state is PostRequestLoadFailureState) {
+                  return const Center(child: Text('Loading failure*'));
+                } else {
+                  return const Center(child: Text('Unknown*'));
+                }
+              }),
+            )),
           ],
         ),
       ),
