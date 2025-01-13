@@ -20,4 +20,25 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get closeButton => 'Закрыть';
+
+  @override
+  String get scanningServerButton => 'Сканировать сервер';
+
+  @override
+  String get helpButton => 'Помощь';
+
+  @override
+  String get mainRailDestination => 'Main menu';
+
+  @override
+  String get hostsRailDestination => 'Hosts';
+
+  @override
+  String get scanningRailDestination => 'Сканирование';
+
+  @override
+  String get reportsRailDestination => 'Отчеты';
+
+  @override
+  String get networkRailDestination => 'Сеть';
 }

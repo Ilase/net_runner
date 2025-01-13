@@ -20,4 +20,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get closeButton => 'Close';
+
+  @override
+  String get scanningServerButton => 'Scanning server';
+
+  @override
+  String get helpButton => 'Help';
+
+  @override
+  String get mainRailDestination => 'Main menu';
+
+  @override
+  String get hostsRailDestination => 'Hosts';
+
+  @override
+  String get scanningRailDestination => 'Scanning';
+
+  @override
+  String get reportsRailDestination => 'Reports';
+
+  @override
+  String get networkRailDestination => 'Network';
 }

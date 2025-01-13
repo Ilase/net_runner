@@ -3,10 +3,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:net_runner/core/data/data_loader.dart';
+import 'package:net_runner/locale/netrunner_localizations.dart';
 //import 'package:net_runner/main.dart';
 
 class SplashLoadingScreen extends StatefulWidget {
   final VoidCallback oninitializationComplete;
+
   final TaskLoader loader;
 
   const SplashLoadingScreen(
@@ -78,7 +80,7 @@ class _SplashLoadingScreenState extends State<SplashLoadingScreen> {
                   Directionality(
                     textDirection: TextDirection.ltr,
                     child: Text(
-                      'Loading*',
+                      AppLocalizations.of(context)!.splashScreenLoading,
                       style: GoogleFonts.comfortaa(
                         color: Colors.blue,
                         fontSize: 24,

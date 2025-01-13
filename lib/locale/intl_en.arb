@@ -14,7 +14,26 @@
     "@splashScreenLoading": {},
 
     "closeButton": "Close",
-    "@closeButton": {}
+    "@closeButton": {},
 
+    "scanningServerButton": "Scanning server",
+    "@scanningServerButton": {},
 
+    "helpButton": "Help",
+    "@helpButton": {},
+
+    "mainRailDestination": "Main menu",
+    "@mainRailDestination": {},
+
+    "hostsRailDestination": "Hosts",
+    "@hostsRailDestination": {},
+
+    "scanningRailDestination": "Scanning",
+    "@hostsRailDestination": {},
+
+    "reportsRailDestination": "Reports",
+    "@reportsRailDestination": {},
+
+    "networkRailDestination": "Network",
+    "@networkRailDestination": {}
 }

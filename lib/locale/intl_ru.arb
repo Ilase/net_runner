@@ -14,5 +14,26 @@
     "@splashScreenLoading": {},
     
     "closeButton": "Закрыть",
-    "@closeButton": {}
+    "@closeButton": {},
+
+    "scanningServerButton": "Сканировать сервер",
+    "@scanningServerButton": {},
+
+    "helpButton": "Помощь",
+    "@helpButton": {},
+
+    "mainButton": "Главная",
+    "@helpButton": {},
+
+    "hostsButton": "Хосты",
+    "@hostsButton": {},
+
+    "scanningRailDestination": "Сканирование",
+    "@hostsRailDestination": {},
+
+    "reportsRailDestination": "Отчеты",
+    "@reportsRailDestination": {},
+
+    "networkRailDestination": "Сеть",
+    "@networkRailDestination": {}
 }

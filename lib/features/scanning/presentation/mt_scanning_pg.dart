@@ -6,6 +6,7 @@ import 'package:net_runner/core/domain/web_socket/web_socket_bloc.dart';
 import 'package:net_runner/features/scanning/presentation/widgets/mt_dialog_send_scan_request.dart';
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
 import 'package:net_runner/features/scanning/presentation/widgets/mt_gesture_card.dart';
+import 'package:net_runner/locale/netrunner_localizations.dart';
 
 class MtScanningPg extends StatefulWidget {
   const MtScanningPg({super.key});
@@ -31,7 +32,7 @@ class _MtScanningPgState extends State<MtScanningPg> {
                 Row(
                 children: [
                   Text(
-                  'Сканирования',
+                  AppLocalizations.of(context)!.scanningRailDestination,
                   //style: AppTheme.lightTheme.textTheme.titleMedium
                 ),
                 const MtDialogSendScanRequest(), //Кнопка Сканировать

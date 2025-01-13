@@ -49,8 +49,8 @@ class _MtHeadpageState extends State<MtHeadpage> {
               popupMenuItems: [
                 dropmenu.buildPopupMenuItem(
                   Icons.electrical_services,
-                  'Scanning server*',
-                  'Scanning server*',
+                  AppLocalizations.of(context)!.scanningServerButton,
+                  AppLocalizations.of(context)!.scanningServerButton,
 
             )
               ],
@@ -63,9 +63,8 @@ class _MtHeadpageState extends State<MtHeadpage> {
               popupMenuItems: [
                 dropmenu.buildPopupMenuItem(
                   Icons.help,
-                  'Help*',
-                  'Help*',
-
+                  AppLocalizations.of(context)!.helpButton,
+                  AppLocalizations.of(context)!.helpButton,
                 )
               ],
             ),
@@ -117,7 +116,7 @@ class _MtHeadpageState extends State<MtHeadpage> {
                         color: AppTheme.lightTheme.colorScheme.onSurface,
                       ),
                       label: Text(
-                        'Главная*',
+                        AppLocalizations.of(context)!.mainRailDestination,
                         style: AppTheme.lightTheme.textTheme.labelSmall,
                       ),
                     ),
@@ -133,7 +132,7 @@ class _MtHeadpageState extends State<MtHeadpage> {
                         color: AppTheme.lightTheme.colorScheme.onSurface,
                       ),
                       label: Text(
-                        'Хосты*',
+                        AppLocalizations.of(context)!.hostsRailDestination,
                         style: AppTheme.lightTheme.textTheme.labelSmall,
                       ),
                     ),
@@ -149,7 +148,7 @@ class _MtHeadpageState extends State<MtHeadpage> {
                         color: AppTheme.lightTheme.colorScheme.onSurface,
                       ),
                       label: Text(
-                        'Сканирование*',
+                        AppLocalizations.of(context)!.scanningRailDestination,
                         style: AppTheme.lightTheme.textTheme.labelSmall,
                       ),
                     ),
@@ -165,7 +164,7 @@ class _MtHeadpageState extends State<MtHeadpage> {
                         color: AppTheme.lightTheme.colorScheme.onSurface,
                       ),
                       label: Text(
-                        'Отчёты*',
+                        AppLocalizations.of(context)!.reportsRailDestination,
                         style: AppTheme.lightTheme.textTheme.labelSmall,
                       ),
                     ),
@@ -181,7 +180,7 @@ class _MtHeadpageState extends State<MtHeadpage> {
                           color: AppTheme.lightTheme.colorScheme.onSurface,
                         ),
                         label: Text(
-                          'Сеть*',
+                          AppLocalizations.of(context)!.networkRailDestination,
                           style: AppTheme.lightTheme.textTheme.labelSmall,
                         ))
                   ],
@@ -202,20 +201,19 @@ class _MtHeadpageState extends State<MtHeadpage> {
                   MtScanningPg(),
                   //otcetiki
                   Container(
-                    child: const Center(
-                      child: Text('Otchetiki*'),
+                    child: Center(
+                      child: Text(AppLocalizations.of(context)!.reportsRailDestination),
                     ),
                   ),
                   //network
                   Container(
                     child: Center(
                         child: Text(
-                          'Graph',
-                          style: TextStyle(
-                            color: Colors.black,
+                          AppLocalizations.of(context)!.networkRailDestination
+                          // style: TextStyle(
+                          //   color: Colors.black,
                           ),
                         )
-                    )
                   ),
                   // Container(
                   //   child: const Center(

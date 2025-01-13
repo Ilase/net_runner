@@ -124,6 +124,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Close'**
   String get closeButton;
+
+  /// No description provided for @scanningServerButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Scanning server'**
+  String get scanningServerButton;
+
+  /// No description provided for @helpButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Help'**
+  String get helpButton;
+
+  /// No description provided for @mainRailDestination.
+  ///
+  /// In en, this message translates to:
+  /// **'Main menu'**
+  String get mainRailDestination;
+
+  /// No description provided for @hostsRailDestination.
+  ///
+  /// In en, this message translates to:
+  /// **'Hosts'**
+  String get hostsRailDestination;
+
+  /// No description provided for @scanningRailDestination.
+  ///
+  /// In en, this message translates to:
+  /// **'Scanning'**
+  String get scanningRailDestination;
+
+  /// No description provided for @reportsRailDestination.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports'**
+  String get reportsRailDestination;
+
+  /// No description provided for @networkRailDestination.
+  ///
+  /// In en, this message translates to:
+  /// **'Network'**
+  String get networkRailDestination;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
