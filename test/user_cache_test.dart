@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:net_runner/core/data/user_repository.dart';
 import 'package:net_runner/core/domain/user_repository/user_repository_bloc.dart';
 
 List<UserRepository> userRepo = [
@@ -25,9 +26,11 @@ class MainApp extends StatelessWidget {
     return BlocProvider(
   create: (context) => UserRepositoryBloc(),
   child: MaterialApp(
+      initialRoute: '/',
       routes: {
-        '/auth': (context) => const LoginPage(),
-        '/home': (context) => HomePage()
+
+        LoginPage.route: (context) => const LoginPage(),
+        HomePage.route: (context) => const HomePage()
       },
       home: LoginPage(),
     ),
@@ -39,6 +42,7 @@ class MainApp extends StatelessWidget {
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+  static const  String route = '/auth';
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -87,6 +91,7 @@ class _LoginPageState extends State<LoginPage> {
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
+  static const String route = '/home';
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +99,7 @@ class HomePage extends StatelessWidget {
       body: Center(
         child: ElevatedButton(onPressed:
         (){
-          Navigator.of(context).pushNamed('/auth');
+          Navigator.of(context).popAndPushNamed('/auth');
         }, child: Text('Logout'))
       )
     );

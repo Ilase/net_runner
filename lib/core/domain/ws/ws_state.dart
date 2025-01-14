@@ -9,6 +9,6 @@ abstract class WsState extends Equatable{
 }
 
 class WsInitial extends WsState {}
-class WsConnect extends WsState {}
-class WsDisconnect extends WsState {}
+class WsConnected extends WsState {}
+class WsDisconnected extends WsState {}
 class WsMessage extends WsState {}
