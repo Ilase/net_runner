@@ -4,7 +4,6 @@ abstract class WebSocketState extends Equatable {
   const WebSocketState();
 
   @override
-  // TODO: implement props
   List<Object?> get props => [];
 }
 

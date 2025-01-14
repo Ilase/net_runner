@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:meta/meta.dart';
+import 'package:net_runner/core/data/user_repository.dart';
 
 part 'user_repository_event.dart';
 part 'user_repository_state.dart';
@@ -47,13 +48,3 @@ class UserRepositoryBloc extends Bloc<UserRepositoryEvent, UserRepositoryState> 
   // }
 }
 
-
-class UserRepository extends Equatable{
-  Map<String, dynamic> userData;
-  Map<String, dynamic> userPermissions;
-
-  UserRepository(this.userData, this.userPermissions);
-
-  @override
-  List<Object?> get props => [userData, userPermissions];
-}
