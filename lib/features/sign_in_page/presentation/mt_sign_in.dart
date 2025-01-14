@@ -1,111 +1,95 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/domain/web_socket/web_socket_bloc.dart';
-import 'package:net_runner/utils/constants/themes/app_themes.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:net_runner/locale/netrunner_localizations.dart';
-import 'package:net_runner/core/presentation/mt_headpage.dart';
+
+
 
 class MtSignIn extends StatelessWidget {
   // TextEditingController uidTextField;
   // TextEditingController tokenController;
   // late String uid, token;
   MtSignIn({super.key});
-
+  TextEditingController _socketController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<WebSocketBloc>(
-      create: (context) => WebSocketBloc(),
-      child: Scaffold(
-        appBar: AppBar(
-          centerTitle: false,
-          title: AutoSizeText(
-            AppLocalizations.of(context)!.appBarAppTitle,
-            minFontSize: 36,
-            maxFontSize: 48,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        body: Center(
-          child: Stack(
-            children: [
-              Container(),
-              // Positioned(
-              //   top: 220,
-              //   left: 400,
-              //   bottom: 220,
-              //   right: 400,
-              //child:
-              Center(
-                  child: Container(
-                    width: 300, // Фиксированная ширина
-                    height: 400, // Фиксированная высота
-                    decoration: BoxDecoration(
-                      color: AppTheme.lightTheme.colorScheme.surface,
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          blurRadius: 3,
-                          color: AppTheme.lightTheme.colorScheme.secondary,
-                          offset: Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(20),
-                      child: Column(
-                        children: [
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text("Войти"),
-                          ),
-                          SizedBox(height: 10),
-                          TextField(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'Электронная почта',
-                            ),
-                            readOnly: false,
-                          ),
-                          SizedBox(height: 15),
-                          TextField(
-                            obscureText: true,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'Пароль',
-                            ),
-                            readOnly: false,
-                          ),
-                          SizedBox(height: 15),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              'Забыли пароль? Восстановить',
-                              style: AppTheme.lightTheme.textTheme.labelSmall,
-                            ),
-                          ),
-                          SizedBox(height: 60),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => MtHeadpage(),
-                                ),
-                              );
-                            },
-                            child: Text('Войти'),
-                          ),
-                        ],
-                        //),
-                      ),
-                    ),
-                  )
-              ),
-            ],
-          ),
+    return BlocListener<WebSocketBloc, WebSocketState>(
+  listener: (context, state) {
+    if(state is WebSocketConnected){
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Connected")));
+    }
+  },
+  child: Scaffold(
+      appBar: AppBar(
+        centerTitle: false,
+        title: AutoSizeText(
+          AppLocalizations.of(context)!.appBarAppTitle,
+          minFontSize: 36,
+          maxFontSize: 48,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
-    );
+      body: Center(
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width / 5,
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: Column(
+                children: [
+
+                  Text("Вход"),
+                  TextField(
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Сокет',
+                    ),
+                    controller: _socketController,
+                  ),
+                  SizedBox(height: 10),
+                  TextField(
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Логин',
+                    ),
+                    readOnly: false,
+                  ),
+                  SizedBox(height: 15),
+                  TextField(
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Пароль',
+                    ),
+                    readOnly: false,
+                  ),
+                  SizedBox(height: 10,),
+
+
+                  ElevatedButton(
+                    onPressed: () {
+                      String socketText = _socketController.text;
+                      context.read<WebSocketBloc>().add(WebSocketConnect(socketText));
+                      if(context.read<WebSocketConnect>().props == 1){
+                        print(123);
+                      }
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => MtHeadpage(),
+                      //   ),
+                      // );
+                    },
+                    child: Text('Войти'),
+                  ),
+                ],
+                //),
+              ),
+            ),
+          )
+      ),
+    ),
+);
   }
 }
