@@ -9,8 +9,10 @@ class AppTextStyle {
       titleSmall: GoogleFonts.comfortaa(fontSize: 16, color: Colors.white),
       headlineMedium: GoogleFonts.comfortaa(fontSize: 18, color: Colors.white),
       headlineSmall: GoogleFonts.comfortaa(fontSize: 14, color: Colors.white),
-      labelSmall: GoogleFonts.comfortaa(fontSize: 12, color: Colors.blue),
-      bodyMedium: GoogleFonts.comfortaa(fontSize: 28, color: Colors.blue),
+      labelLarge: GoogleFonts.comfortaa(fontSize: 24, color: Colors.blue),
+      labelMedium: GoogleFonts.comfortaa(fontSize: 14, color: Colors.blue),
+      labelSmall: GoogleFonts.comfortaa(fontSize: 10, color: Colors.blue),
+      bodyMedium: GoogleFonts.comfortaa(fontSize: 16, color: Colors.blue),
       bodySmall: GoogleFonts.comfortaa(fontSize: 12, color: Colors.black),
       displaySmall: GoogleFonts.comfortaa(fontSize: 12, color: Colors.white)
   );
