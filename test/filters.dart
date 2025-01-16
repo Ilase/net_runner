@@ -1,42 +1,3 @@
-// import 'package:flutter/material.dart';
-// import 'package:net_runner/utils/constants/themes/app_themes.dart';
-//
-// void main() {
-//   runApp(MyApp());
-// }
-//
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'Filter',
-//       theme: ThemeData(
-//       ),
-//       home: Filters(),
-//     );
-//   }
-// }
-//
-// class Filters extends StatefulWidget {
-//   const Filters({super.key});
-//
-//   @override
-//   State<Filters> createState() => _FiltersState();
-// }
-//
-// class _FiltersState extends State<Filters> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: Center(
-//         child: Container(
-//
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
@@ -100,37 +61,35 @@ class _FilterScreenState extends State<FilterScreen> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        // Основной контент
-        Scaffold(
-          appBar: AppBar(
-            title: Text('Фильтры'),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Фильтры'),
+      ),
+      body: Stack(
+        children: [
+          // Основной контент
+          Center(
+            child: Text('Основной контент'),
           ),
-          body: Center(
-            child: ElevatedButton(
-              onPressed: _toggleDrawer,
-              child: Text('Применить фильтры'),
+
+          // Выдвижное меню
+          AnimatedBuilder(
+            animation: _offsetAnimation,
+            builder: (context, child) {
+              return Align(
+                alignment: Alignment.centerRight,
+                child: SlideTransition(
+                  position: _offsetAnimation,
+                  child: child,
+                ),
+              );
+            },
+            child: FilterWidget(
+              onClose: _toggleDrawer,
             ),
-          ),
-        ),
-        // Выдвижное меню
-        AnimatedBuilder(
-          animation: _offsetAnimation,
-          builder: (context, child) {
-            return Align(
-              alignment: Alignment.centerRight,
-              child: SlideTransition(
-                position: _offsetAnimation,
-                child: child,
-              ),
-            );
-          },
-          child: FilterWidget(
-            onClose: _toggleDrawer,
-          ),
-        ),
-      ],
+          )
+        ],
+      ),
     );
   }
 }
@@ -156,11 +115,6 @@ class _FilterWidgetState extends State<FilterWidget> {
     filter: {"#": RegExp(r'[0-9]')},
     type: MaskAutoCompletionType.lazy,
   );
-
-  final List<String> _intervalOptions = ['Сегодня', 'Неделя', 'Месяц', 'Год'];
-  final List<String> _nameOptions = ['Имя 1', 'Имя 2', 'Имя 3'];
-  final List<String> _reportTypeOptions = ['Тип 1', 'Тип 2', 'Тип 3'];
-  final List<String> _dataTypeOptions = ['Данные 1', 'Данные 2', 'Данные 3'];
 
   String? _selectedInterval;
   String? _selectedName;
@@ -194,52 +148,53 @@ class _FilterWidgetState extends State<FilterWidget> {
         width: 300, // Уменьшаем ширину контейнера
         padding: EdgeInsets.all(16.0),
         color: Colors.white,
-        child: Column(
-          //spacing: ,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Align(
-              alignment: Alignment.center,
-              child: Text(
-              'Фильтры',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            ),
-            SizedBox(height: 25),
-            _buildDropdownField(context, 'Интервал', _intervalOptions, _selectedInterval, (value) {
-              setState(() {
-                _selectedInterval = value;
-              });
-            }),
-            _buildDatePicker(context, 'Задание создано с', _startDateController, _startDate),
-            _buildDatePicker(context, 'По', _endDateController, _endDate),
-            SizedBox(height: 20),
-            _buildDropdownField(context, 'Имя', _nameOptions, _selectedName, (value) {
-              setState(() {
-                _selectedName = value;
-              });
-            }),
-            SizedBox(height: 20),
-            _buildDropdownField(context, 'Тип отчета', _reportTypeOptions, _selectedReportType, (value) {
-              setState(() {
-                _selectedReportType = value;
-              });
-            }),
-            SizedBox(height: 20),
-            _buildDropdownField(context, 'Тип данных', _dataTypeOptions, _selectedDataType, (value) {
-              setState(() {
-                _selectedDataType = value;
-              });
-            }),
-            SizedBox(height: 30),
-            Align(
-              alignment: Alignment.center,
-              child: ElevatedButton(
-              onPressed: widget.onClose,
-              child: Text('Применить фильтры'),
-            ),
-            )
-          ],
+        child: SingleChildScrollView( // Оборачиваем Column в SingleChildScrollView
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Align(
+                alignment: Alignment.center,
+                child: Text(
+                  'Фильтры',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+              ),
+              SizedBox(height: 25),
+              _buildDropdownField(context, 'Интервал', _intervalOptions, _selectedInterval, (value) {
+                setState(() {
+                  _selectedInterval = value;
+                });
+              }),
+              _buildDatePicker(context, 'Задание создано с', _startDateController, _startDate),
+              _buildDatePicker(context, 'По', _endDateController, _endDate),
+              SizedBox(height: 20),
+              _buildDropdownField(context, 'Имя', _nameOptions, _selectedName, (value) {
+                setState(() {
+                  _selectedName = value;
+                });
+              }),
+              SizedBox(height: 20),
+              _buildDropdownField(context, 'Тип отчета', _reportTypeOptions, _selectedReportType, (value) {
+                setState(() {
+                  _selectedReportType = value;
+                });
+              }),
+              SizedBox(height: 20),
+              _buildDropdownField(context, 'Тип данных', _dataTypeOptions, _selectedDataType, (value) {
+                setState(() {
+                  _selectedDataType = value;
+                });
+              }),
+              SizedBox(height: 30),
+              Align(
+                alignment: Alignment.center,
+                child: ElevatedButton(
+                  onPressed: widget.onClose,
+                  child: Text('Применить фильтры'),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
