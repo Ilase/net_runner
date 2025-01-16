@@ -65,10 +65,14 @@ class _FilterState extends State<Filter> {
               },
             ),
             DatePicker(
+              context: context,
               controller: _startDateController,
+              label: "Задание создано с",
               initialDate: _startDate,
             ),
             DatePicker(
+              context: context,
+              label: "По",
               controller: _endDateController,
               initialDate: _endDate,
             ),
