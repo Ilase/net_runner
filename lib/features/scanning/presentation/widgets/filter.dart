@@ -30,7 +30,7 @@ class _FilterState extends State<Filter> {
   String? _selectedReportType;
   String? _selectedDataType;
 
-  final List<String> _intervalOptions = ['Option 1', 'Option 2', 'Option 3'];
+  final List<String> _intervalOptions = ['Option 1', 'Option 2', 'Option 3']; //заглушки
   final List<String> _nameOptions = ['Name 1', 'Name 2', 'Name 3'];
   final List<String> _reportTypeOptions = ['Report 1', 'Report 2', 'Report 3'];
   final List<String> _dataTypeOptions = ['Data 1', 'Data 2', 'Data 3'];
@@ -65,13 +65,11 @@ class _FilterState extends State<Filter> {
               },
             ),
             DatePicker(
-              context: context,
               controller: _startDateController,
               label: "Задание создано с",
               initialDate: _startDate,
             ),
             DatePicker(
-              context: context,
               label: "По",
               controller: _endDateController,
               initialDate: _endDate,

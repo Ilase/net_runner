@@ -7,7 +7,6 @@ class DatePicker extends StatefulWidget {
   final TextEditingController controller;
   final DateTime? initialDate;
   final String label;
-  BuildContext context;
   DatePicker({required this.controller, required this.label, this.initialDate});
 
   @override
