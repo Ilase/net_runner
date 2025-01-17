@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:meta/meta.dart';
+import 'package:net_runner/core/data/user_data.dart';
 import 'package:net_runner/core/data/user_repository.dart';
 
 part 'user_repository_event.dart';
@@ -12,11 +13,8 @@ part 'user_repository_state.dart';
 
 class UserRepositoryBloc extends Bloc<UserRepositoryEvent, UserRepositoryState> {
   final cache = DefaultCacheManager();
-  List<UserRepository> users = [
-    UserRepository({
-      "login" : "login",
-      "passkey" : "pass"
-    }, {})
+  List<User> users = [
+    User(userName: "root", passkeyHash: "root")
   ];
 
   UserRepositoryBloc() : super(UserRepositoryInitial()) {
@@ -28,7 +26,7 @@ class UserRepositoryBloc extends Bloc<UserRepositoryEvent, UserRepositoryState> 
 
   Future<void> _login(URLoginUserEvent event, Emitter emit) async {
     for(var i in users){
-      if(i.userData["login"].hashCode == event.jsonUserData["login"].hashCode){
+      if(i.userName == event.jsonUserData["login"] && i.passkeyHash == event.jsonUserData["password"]){
         emit(UserRepositoryLoginSuccessState());
       } else {
         emit(UserRepositoryLoginFailedState());

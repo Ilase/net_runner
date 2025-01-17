@@ -14,6 +14,7 @@ class WsBloc extends Bloc<WsEvent, WsState> {
   late final WebSocketChannel channel;
   StreamSubscription? _subscription;
   WsBloc({
+    required this.socket,
     required this.headers,
   }) : super(WsInitial()) {
     on<WsConnectEvent>(_wsConnectEvent);

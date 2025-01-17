@@ -15,6 +15,7 @@ import 'package:net_runner/utils/constants/themes/text_styles.dart';
 
 // ignore: must_be_immutable
 class MtHeadpage extends StatefulWidget {
+  static const String route = '/home';
   MtHeadpage({super.key, this.platform});
   String? platform;
   @override

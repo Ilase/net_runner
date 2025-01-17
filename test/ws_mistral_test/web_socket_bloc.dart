@@ -9,22 +9,18 @@ part 'web_socket_event.dart';
 part 'web_socket_state.dart';
 
 class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
-  String url = "";
-  Map<String, dynamic> headers = {};
+  final String url;
+  final Map<String, dynamic> headers;
   WebSocketChannel? _channel;
 
-  WebSocketBloc() : super(WebSocketInitial()) {
+  WebSocketBloc(this.url, this.headers) : super(WebSocketInitial()) {
     on<WebSocketConnect>(_connect);
     on<WebSocketDisconnect>(_disconnect);
     on<WebSocketMessageReceived>(_receiveMessage);
     on<WebSocketSendMessage>(_sendMessage);
     on<WebSocketError>(_errorState);
-    on<WebSocketSendRequest>(_sendRequest);
   }
 
-  Future<void> _sendRequest(WebSocketSendRequest event, Emitter emit) async {
-
-  }
   Future<void> _connect(WebSocketConnect event, Emitter emit) async {
     try {
       emit(WebSocketConnecting());

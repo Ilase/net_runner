@@ -1,12 +1,14 @@
 
 import 'package:equatable/equatable.dart';
+import 'package:net_runner/core/data/user_data.dart';
 
 class UserRepository extends Equatable {
-  Map<String, dynamic> userData;
-  Map<String, dynamic> userPermissions;
+  List<User>? userData;
+  var cache;
+  //Map<String, dynamic> userPermissions;
 
-  UserRepository(this.userData, this.userPermissions);
+  UserRepository();
 
   @override
-  List<Object?> get props => [userData, userPermissions];
+  List<Object?> get props => [userData, cache];
 }

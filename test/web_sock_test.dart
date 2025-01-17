@@ -16,7 +16,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: BlocProvider(
-        create: (context) => WebSocketBloc(),
+        create: (context) => WebSocketBloc(
+            'ws://192.168.20.140:80/wsscan',
+            {
+              "uid" : "1378500800859113",
+              "token":"3045022100f9e2e5e01ac12458f7c1f7753d1584a3527fc1d17df0466baf61e3de4a61a2c5022009bfe43ac628ac4d0ff55c2098dee5332c64dfbf5b90f500665988f46e87abef"
+            }
+        ),
         child: WebSocketExample(),
       ),
     );
@@ -38,7 +44,7 @@ class _WebSocketExampleState extends State<WebSocketExample> {
     super.initState();
     context
         .read<WebSocketBloc>()
-        .add(const WebSocketConnect('ws://192.168.20.140:8080/wsscan'));
+        .add(WebSocketConnect());
   }
 
   @override
@@ -71,7 +77,7 @@ class _WebSocketExampleState extends State<WebSocketExample> {
       ),
       body: BlocListener<WebSocketBloc, WebSocketState>(
         listener: (context, state) {
-          if (state is WebSocketMessageState) {
+          if (state is WebSocketMessage) {
             setState(() {
               messages.add(state.message);
             });

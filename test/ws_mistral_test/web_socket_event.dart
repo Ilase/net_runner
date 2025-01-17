@@ -6,10 +6,7 @@ abstract class WebSocketEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class WebSocketConnect extends WebSocketEvent {
-  @override
-  List<Object> get props => [];
-}
+class WebSocketConnect extends WebSocketEvent {}
 
 class WebSocketDisconnect extends WebSocketEvent {}
 
@@ -37,14 +34,4 @@ class WebSocketError extends WebSocketEvent {
   const WebSocketError(this.error);
   @override
   List<Object> get props => [error];
-}
-
-class WebSocketEnterFields extends WebSocketEvent {
-  final String uri;
-  final Map<String, dynamic> headers;
-
-  const WebSocketEnterFields(this.uri, this.headers);
-
-  @override
-  List<Object> get props => [];
 }

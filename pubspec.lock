@@ -189,6 +189,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.2.1"
+  hive:
+    dependency: "direct main"
+    description:
+      name: hive
+      sha256: "8dcf6db979d7933da8217edcec84e9df1bdb4e4edc7fc77dbd5aa74356d6d941"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.3"
+  hive_flutter:
+    dependency: "direct main"
+    description:
+      name: hive_flutter
+      sha256: dca1da446b1d808a51689fb5d0c6c9510c0a2ba01e22805d492c73b68e33eecc
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   html:
     dependency: transitive
     description:
@@ -714,6 +730,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.5.0"
+  xml2json:
+    dependency: "direct main"
+    description:
+      name: xml2json
+      sha256: "9ff65c144a48f7f73d2bd6d919700c7697beced3b51216b982f78c68bc0da142"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.2.6"
 sdks:
   dart: ">=3.5.4 <4.0.0"
   flutter: ">=3.24.0"

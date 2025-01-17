@@ -1,16 +1,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:net_runner/core/data/user_data.dart';
 import 'package:net_runner/core/data/user_repository.dart';
 import 'package:net_runner/core/domain/user_repository/user_repository_bloc.dart';
 
-List<UserRepository> userRepo = [
-  UserRepository({
-    "login" : "login",
-    "passkey" : "pass"
-  }, {
-
-  })
+List<User> userRepo = [
+  User(userName: "root", passkeyHash: "root")
 ];
 
 void main() async {

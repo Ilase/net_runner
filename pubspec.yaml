@@ -33,6 +33,9 @@ dependencies:
   flutter_bloc: ^8.1.6
   shared_preferences: ^2.3.5
   socket_io_client: ^3.0.2
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  xml2json: ^6.2.6
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -43,4 +46,6 @@ flutter:
   uses-material-design: true
   assets:
     - assets/data.xml
+    - assets/322567775.xml
+    - assets/
 

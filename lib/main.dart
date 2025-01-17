@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
+import 'package:net_runner/core/data/xml/xml.dart';
 import 'package:net_runner/core/domain/cache_operator/cache_operator_bloc.dart';
 import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
 import 'package:net_runner/core/domain/web_socket/web_socket_bloc.dart';
 import 'package:net_runner/locale/netrunner_localizations.dart';
-import 'package:net_runner/core/data/data_loader.dart';
+import 'package:net_runner/core/data/task_loader.dart';
 import 'package:net_runner/core/presentation/mt_headpage.dart';
 import 'package:net_runner/features/splash_screen/mt_splash_screen.dart';
 import 'package:net_runner/utils/routes/routes.dart';
@@ -15,6 +17,7 @@ import 'package:net_runner/features/sign_in_page/presentation/mt_sign_in.dart';
 
 // String _platform_ = "Unknown";
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:xml/xml.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,11 +38,10 @@ class StartPoint extends StatelessWidget {
   //
   @override
   Widget build(BuildContext context) {
+
     return MultiBlocProvider(
       providers: [
-        BlocProvider<PostRequestBloc>(create: (context) => PostRequestBloc()),
-        BlocProvider<WebSocketBloc>(create: (context) => WebSocketBloc()),
-        BlocProvider<CacheOperatorBloc>(create: (context) => CacheOperatorBloc(sharedPreferences: sharedPreferences))
+        BlocProvider<WebSocketBloc>(create: (context) => WebSocketBloc())
       ],
       child: MaterialApp(
         theme: AppTheme.lightTheme,
@@ -48,7 +50,9 @@ class StartPoint extends StatelessWidget {
         supportedLocales: AppLocalizations.supportedLocales,
         //!locales
         navigatorKey: navigatorKey,
-        home: SplashLoadingScreen(
+        home:
+
+        SplashLoadingScreen(
           //load tasks in queue or
           loader: TaskLoader(tasks: []),
           oninitializationComplete: () async {
@@ -58,10 +62,12 @@ class StartPoint extends StatelessWidget {
               desktop: MtSignIn(),
               mobile: Placeholder(),
             )));
-            //Navigator.pushReplacement(context, createRoute(MtHeadpage()));
-            // ),
           },
         ),
+        routes: {
+          MtSignIn.route : (context) => MtSignIn(),
+          MtHeadpage.route: (context) => MtHeadpage()
+        },
       ),
     );
   }
