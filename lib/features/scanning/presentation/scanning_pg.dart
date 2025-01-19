@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
 import 'package:net_runner/core/domain/web_socket/web_socket_bloc.dart';
-import 'package:net_runner/features/scanning/presentation/widgets/mt_dialog_send_scan_request.dart';
+import 'package:net_runner/features/scanning/presentation/widgets/dialog_send_scan_request.dart';
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
-import 'package:net_runner/features/scanning/presentation/widgets/mt_gesture_card.dart';
+import 'package:net_runner/features/scanning/presentation/widgets/gesture_card.dart';
 
 class MtScanningPg extends StatefulWidget {
   const MtScanningPg({super.key});

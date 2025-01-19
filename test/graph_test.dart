@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:net_runner/features/graph/mt_graph_pg.dart';
+import 'package:net_runner/features/graph/graph_pg.dart';
 
 void main() {
   runApp(MyApp());

@@ -7,11 +7,11 @@ import 'package:net_runner/core/domain/web_socket/web_socket_bloc.dart';
 import 'package:net_runner/locale/netrunner_localizations.dart';
 import 'package:net_runner/core/data/data_loader.dart';
 import 'package:net_runner/core/presentation/mt_headpage.dart';
-import 'package:net_runner/features/splash_screen/mt_splash_screen.dart';
+import 'package:net_runner/features/splash_screen/splash_screen.dart';
 import 'package:net_runner/utils/routes/routes.dart';
 import 'package:platform_detector/widgets/platform_type_widget.dart';
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
-import 'package:net_runner/features/sign_in_page/presentation/mt_sign_in.dart';
+import 'package:net_runner/features/sign_in_page/presentation/sign_in_page.dart';
 
 // String _platform_ = "Unknown";
 import 'package:shared_preferences/shared_preferences.dart';
