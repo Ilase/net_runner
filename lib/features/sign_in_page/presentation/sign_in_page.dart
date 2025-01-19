@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:net_runner/locale/netrunner_localizations.dart';
-import 'package:net_runner/core/presentation/mt_headpage.dart';
+import 'package:net_runner/core/presentation/head_page.dart';
 
 class MtSignIn extends StatelessWidget {
   const MtSignIn({super.key});
@@ -83,7 +83,7 @@ class MtSignIn extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => MtHeadpage(),
+                              builder: (context) => HeadPage(),
                             ),
                           );
                         },

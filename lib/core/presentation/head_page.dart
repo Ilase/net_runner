@@ -1,27 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:net_runner/core/data/menu_item_data.dart';
-import 'package:net_runner/core/presentation/widgets/mt_dropmenu.dart';
-import 'package:net_runner/features/graph/graph_pg.dart';
+import 'package:net_runner/core/presentation/widgets/drop_menu.dart';
 import 'package:net_runner/features/hosts/presentation/hosts_pg.dart';
 import 'package:net_runner/features/scanning/presentation/scanning_pg.dart';
 import 'package:net_runner/locale/netrunner_localizations.dart';
-import 'package:net_runner/core/presentation/widgets/mt_dropmenu.dart' as dropmenu;
-import 'package:net_runner/features/statistic_headpage/presentation/homepage_pg.dart';
-import 'package:net_runner/locale/netrunner_localizations_ru.dart';
+import 'package:net_runner/core/presentation/widgets/drop_menu.dart' as dropmenu;
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
-import 'package:net_runner/utils/constants/themes/text_styles.dart';
 
 // ignore: must_be_immutable
-class MtHeadpage extends StatefulWidget {
-  MtHeadpage({super.key, this.platform});
+class HeadPage extends StatefulWidget {
+  HeadPage({super.key, this.platform});
   String? platform;
   @override
-  State<MtHeadpage> createState() => _MtHeadpageState();
+  State<HeadPage> createState() => _HeadPageState();
 }
 
-class _MtHeadpageState extends State<MtHeadpage> {
+class _HeadPageState extends State<HeadPage> {
   int _selectedIndex = 0;
   final PageController _pageController = PageController();
   @override
@@ -43,7 +38,7 @@ class _MtHeadpageState extends State<MtHeadpage> {
               actionsTitle: 'asd',
               title: AppLocalizations.of(context)!.appBarActionsButtonTitle,
               popupMenuItems: [
-                MenuItemData(title:  'Title1*',child:  DropMenuItemWidget(menuItemData: MenuItemData(title: 'Figma1', child: Placeholder()),)),
+                MenuItemData(title:  'Title1*',child:  DropMenuItemWidget(menuItemData: MenuItemData(title: 'Figma1', child: const Placeholder()),)),
               ],
             ),
 
@@ -67,7 +62,7 @@ class _MtHeadpageState extends State<MtHeadpage> {
                   trailing: null,
                   leading: null,
                   useIndicator: true,
-                  indicatorColor: Color.fromRGBO(255, 255, 255, 0.5),
+                  indicatorColor: const Color.fromRGBO(255, 255, 255, 0.5),
                   backgroundColor: null,
                   selectedIconTheme: const IconThemeData(
                     opacity: 1,
@@ -173,13 +168,13 @@ class _MtHeadpageState extends State<MtHeadpage> {
                 scrollDirection: Axis.vertical,
                 children: [
                   //MainPage
-                  Container(child: Center(
+                  Container(child: const Center(
                     child: Text('Main page'),
                   ),),
                   //hosts
-                  MtHostsPg(),
+                  const MtHostsPg(),
                   //scans
-                  MtScanningPg(),
+                  const MtScanningPg(),
                   //otcetiki
                   Container(
                     child: const Center(
@@ -188,7 +183,7 @@ class _MtHeadpageState extends State<MtHeadpage> {
                   ),
                   //network
                   Container(
-                    child: Center(
+                    child: const Center(
                         child: Text(
                           'Graph*',
                         )

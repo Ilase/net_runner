@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:net_runner/core/data/menu_item_data.dart';
 import 'package:net_runner/core/data/pair.dart';
-import 'package:net_runner/core/presentation/widgets/mt_dialog_tile.dart';
+import 'package:net_runner/core/presentation/widgets/dialog_tile.dart';
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
-import 'package:net_runner/core/presentation/mt_headpage.dart' as headpage;
+import 'package:net_runner/core/presentation/head_page.dart' as headpage;
 
 // ignore: must_be_immutable
 class MtDropMenu extends StatelessWidget {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/domain/web_socket/web_socket_bloc.dart';
-import 'package:net_runner/core/presentation/widgets/mt_dialog_tile.dart';
+import 'package:net_runner/core/presentation/widgets/dialog_tile.dart';
 import 'dart:convert';
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
 import 'package:http/http.dart' as http;
