@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:net_runner/utils/constants/themes/text_styles.dart';
 
-class MtHostsPg extends StatefulWidget {
-  const MtHostsPg({super.key});
+class HostsPg extends StatefulWidget {
+  const HostsPg({super.key});
 
   @override
-  State<MtHostsPg> createState() => _MtHostsPgState();
+  State<HostsPg> createState() => _HostsPgState();
 }
 
-class _MtHostsPgState extends State<MtHostsPg> {
+class _HostsPgState extends State<HostsPg> {
   @override
   Widget build(BuildContext context) {
     return const Center(

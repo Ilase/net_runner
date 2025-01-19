@@ -5,7 +5,8 @@ import 'package:net_runner/core/presentation/widgets/drop_menu.dart';
 import 'package:net_runner/features/hosts/presentation/hosts_pg.dart';
 import 'package:net_runner/features/scanning/presentation/scanning_pg.dart';
 import 'package:net_runner/locale/netrunner_localizations.dart';
-import 'package:net_runner/core/presentation/widgets/drop_menu.dart' as dropmenu;
+import 'package:net_runner/core/presentation/widgets/drop_menu.dart'
+    as dropmenu;
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
 
 // ignore: must_be_immutable
@@ -33,32 +34,35 @@ class _HeadPageState extends State<HeadPage> {
             overflow: TextOverflow.ellipsis,
           ),
           actions: [
-            const SizedBox(width: 10,),
+            const SizedBox(
+              width: 10,
+            ),
             dropmenu.MtDropMenu(
               actionsTitle: 'asd',
               title: AppLocalizations.of(context)!.appBarActionsButtonTitle,
               popupMenuItems: [
-                MenuItemData(title:  'Title1*',child:  DropMenuItemWidget(menuItemData: MenuItemData(title: 'Figma1', child: const Placeholder()),)),
+                MenuItemData(
+                    title: 'Title1*',
+                    child: DropMenuItemWidget(
+                      menuItemData: MenuItemData(
+                          title: 'Figma1', child: const Placeholder()),
+                    )),
               ],
             ),
-
           ],
         ),
         bottomNavigationBar: const Padding(
           padding: EdgeInsets.all(8),
           child: null,
         ),
-        body:
-      Padding(
-        padding: const EdgeInsets.all(4.0),
-         child:
-          Center(
+        body: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Center(
               child: Row(
             children: [
               NavigationRail(
                   indicatorShape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15)
-                  ),
+                      borderRadius: BorderRadius.circular(15)),
                   trailing: null,
                   leading: null,
                   useIndicator: true,
@@ -78,22 +82,22 @@ class _HeadPageState extends State<HeadPage> {
                     });
                   },
                   destinations: <NavigationRailDestination>[
-                    NavigationRailDestination(
-                      icon: Icon(
-                        Icons.home,
-                        size: 45,
-                        color: AppTheme.lightTheme.colorScheme.onSurface,
-                      ),
-                      selectedIcon: Icon(
-                        Icons.home_outlined,
-                        size: 45,
-                        color: AppTheme.lightTheme.colorScheme.onSurface,
-                      ),
-                      label: Text(
-                        'Главная*',
-                        style: AppTheme.lightTheme.textTheme.labelSmall,
-                      ),
-                    ),
+                    // NavigationRailDestination(
+                    //   icon: Icon(
+                    //     Icons.home,
+                    //     size: 45,
+                    //     color: AppTheme.lightTheme.colorScheme.onSurface,
+                    //   ),
+                    //   selectedIcon: Icon(
+                    //     Icons.home_outlined,
+                    //     size: 45,
+                    //     color: AppTheme.lightTheme.colorScheme.onSurface,
+                    //   ),
+                    //   label: Text(
+                    //     'Главная*',
+                    //     style: AppTheme.lightTheme.textTheme.labelSmall,
+                    //   ),
+                    // ),
                     NavigationRailDestination(
                       icon: Icon(
                         Icons.group,
@@ -126,40 +130,39 @@ class _HeadPageState extends State<HeadPage> {
                         style: AppTheme.lightTheme.textTheme.labelSmall,
                       ),
                     ),
-                    NavigationRailDestination(
-                      icon: Icon(
-                        Icons.document_scanner,
-                        size: 45,
-                        color: AppTheme.lightTheme.colorScheme.onSurface,
-                      ),
-                      selectedIcon: Icon(
-                        Icons.document_scanner_outlined,
-                        size: 45,
-                        color: AppTheme.lightTheme.colorScheme.onSurface,
-                      ),
-                      label: Text(
-                        'Отчёты*',
-                        style: AppTheme.lightTheme.textTheme.labelSmall,
-                      ),
-                    ),
-                    NavigationRailDestination(
-                        icon: Icon(
-                          Icons.share_rounded,
-                          size: 45,
-                          color: AppTheme.lightTheme.colorScheme.onSurface,
-                        ),
-                        selectedIcon: Icon(
-                          Icons.share_outlined,
-                          size: 45,
-                          color: AppTheme.lightTheme.colorScheme.onSurface,
-                        ),
-                        label: Text(
-                          'Сеть*',
-                          style: AppTheme.lightTheme.textTheme.labelSmall,
-                        ))
+                    // NavigationRailDestination(
+                    //   icon: Icon(
+                    //     Icons.document_scanner,
+                    //     size: 45,
+                    //     color: AppTheme.lightTheme.colorScheme.onSurface,
+                    //   ),
+                    //   selectedIcon: Icon(
+                    //     Icons.document_scanner_outlined,
+                    //     size: 45,
+                    //     color: AppTheme.lightTheme.colorScheme.onSurface,
+                    //   ),
+                    //   label: Text(
+                    //     'Отчёты*',
+                    //     style: AppTheme.lightTheme.textTheme.labelSmall,
+                    //   ),
+                    // ),
+                  //   NavigationRailDestination(
+                  //       icon: Icon(
+                  //         Icons.share_rounded,
+                  //         size: 45,
+                  //         color: AppTheme.lightTheme.colorScheme.onSurface,
+                  //       ),
+                  //       selectedIcon: Icon(
+                  //         Icons.share_outlined,
+                  //         size: 45,
+                  //         color: AppTheme.lightTheme.colorScheme.onSurface,
+                  //       ),
+                  //       label: Text(
+                  //         'Сеть*',
+                  //         style: AppTheme.lightTheme.textTheme.labelSmall,
+                  //       ))
                   ],
-                  selectedIndex: _selectedIndex
-              ),
+                  selectedIndex: _selectedIndex),
               Expanded(
                   child: PageView(
                 physics: const NeverScrollableScrollPhysics(),
@@ -168,27 +171,27 @@ class _HeadPageState extends State<HeadPage> {
                 scrollDirection: Axis.vertical,
                 children: [
                   //MainPage
-                  Container(child: const Center(
-                    child: Text('Main page'),
-                  ),),
-                  //hosts
-                  const MtHostsPg(),
-                  //scans
-                  const MtScanningPg(),
+                  // Container(
+                  //   child: const Center(
+                  //     child: Text('Main page'),
+                  //   ),
+                  // ),
+                  // //hosts
+                  HostsPg(),
+                  // //scans
+                  ScanningPg(),
                   //otcetiki
-                  Container(
-                    child: const Center(
-                      child: Text('Otchetiki*'),
-                    ),
-                  ),
-                  //network
-                  Container(
-                    child: const Center(
-                        child: Text(
-                          'Graph*',
-                        )
-                    )
-                  ),
+                  // Container(
+                  //   child: const Center(
+                  //     child: Text('Otchetiki*'),
+                  //   ),
+                  // ),
+                  // //network
+                  // Container(
+                  //     child: const Center(
+                  //         child: Text(
+                  //   'Graph*',
+                  // ))),
                   // Container(
                   //   child: const Center(
                   //     child: Text('Graphical network?*'),
@@ -197,12 +200,9 @@ class _HeadPageState extends State<HeadPage> {
                 ],
               )),
             ],
-          )
-    ),
-      )
-        );
+          )),
+        ));
   }
-  String returnTitle(){
-    return 'Observer';
-  }
+
+
 }

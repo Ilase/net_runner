@@ -7,14 +7,14 @@ import 'package:net_runner/features/scanning/presentation/widgets/dialog_send_sc
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
 import 'package:net_runner/features/scanning/presentation/widgets/gesture_card.dart';
 
-class MtScanningPg extends StatefulWidget {
-  const MtScanningPg({super.key});
+class ScanningPg extends StatefulWidget {
+  const ScanningPg({super.key});
 
   @override
-  State<MtScanningPg> createState() => _MtScanningPgState();
+  State<ScanningPg> createState() => _ScanningPgState();
 }
 
-class _MtScanningPgState extends State<MtScanningPg> {
+class _ScanningPgState extends State<ScanningPg> {
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -31,9 +31,10 @@ class _MtScanningPgState extends State<MtScanningPg> {
                 Row(
                 children: [
                   Text(
-                  'Сканирования',
+                  'Сканирования*',
                   //style: AppTheme.lightTheme.textTheme.titleMedium
                 ),
+                const SizedBox(width: 5,),
                 const MtDialogSendScanRequest(), //Кнопка Сканировать
                 ]
                 ),
