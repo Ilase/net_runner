@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -57,9 +59,9 @@ class _ScanningPgState extends State<ScanningPg> {
                       .showSnackBar(SnackBar(content: Text(state.toString())));
                 }
               },
-              child: BlocBuilder<PostRequestBloc, PostRequestState>(
+              child: BlocBuilder<WebSocketBloc, WebSocketState>(
                   builder: (content, state) {
-                if (state is PostRequestInitialState) {
+                if (state is WebSocketException) {
                   return Center(
                     child: Text(
                       'Can\'t get data from server, try to refresh connection',
