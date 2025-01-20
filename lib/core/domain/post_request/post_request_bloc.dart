@@ -29,7 +29,7 @@ class PostRequestBloc extends Bloc<PostRequestEvent, PostRequestState> {
           final infoData = jsonDecode(responce.body);
           emit(PostRequestLoadSuccessState(infoData));
         } else {
-          emit(const PostRequestLoadFailureState('Failed to load data'));
+          emit(const PostRequestLoadFailureState('Failed to load data*'));
         }
       } catch (e) {
         emit(PostRequestLoadFailureState(e.toString()));

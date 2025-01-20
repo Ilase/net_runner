@@ -11,11 +11,25 @@ class HostsPg extends StatefulWidget {
 class _HostsPgState extends State<HostsPg> {
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'Hosts*',
-        style: TextStyle(
-          color: Colors.black,
+    return Center(
+      child: Container(
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Hosts*',
+                ),
+                OutlinedButton(
+                    onPressed: (){
+                      
+                    }, 
+                    child: Text('Add host*'),
+                )
+              ],
+            ),
+          ],
         ),
       ),
     );
