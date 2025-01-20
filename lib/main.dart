@@ -1,80 +1,124 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'dart:convert';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:logger/logger.dart';
-import 'package:net_runner/core/domain/cache_operator/cache_operator_bloc.dart';
-import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
-import 'package:net_runner/core/domain/web_socket/web_socket_bloc.dart';
-import 'package:net_runner/features/scanning/presentation/scan_view_page.dart';
-import 'package:net_runner/locale/netrunner_localizations.dart';
-import 'package:net_runner/core/data/data_loader.dart';
-import 'package:net_runner/core/presentation/head_page.dart';
-import 'package:net_runner/features/splash_screen/splash_screen.dart';
-import 'package:net_runner/utils/routes/routes.dart';
-import 'package:platform_detector/widgets/platform_type_widget.dart';
-import 'package:net_runner/utils/constants/themes/app_themes.dart';
 
-// String _platform_ = "Unknown";
-import 'package:shared_preferences/shared_preferences.dart';
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-  runApp(StartPoint(sharedPreferences: sharedPreferences,));
+void main() {
+  runApp(MyApp());
 }
 
-class StartPoint extends StatelessWidget {
-  //
-  StartPoint({super.key, required this.sharedPreferences});
-  final SharedPreferences sharedPreferences;
-  static var logger = Logger(printer: PrettyPrinter());
-  static String platform = "Unknown";
-  static final GlobalKey<NavigatorState> navigatorKey =
-      GlobalKey<NavigatorState>();
-
-  late Map<String, dynamic> jsonData;
-  Future<void> _loadJsonString() async {
-    this.jsonData = jsonDecode(
-        await rootBundle.loadString('assets/report.json')
-    ) as Map<String, dynamic>;
-  }
-  //
-  //
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    _loadJsonString();
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<PostRequestBloc>(create: (context) => PostRequestBloc()),
-        BlocProvider<WebSocketBloc>(create: (context) => WebSocketBloc()),
-        BlocProvider<CacheOperatorBloc>(create: (context) => CacheOperatorBloc(sharedPreferences: sharedPreferences))
-      ],
-      child: MaterialApp(
-        theme: AppTheme.lightTheme,
-        //locales
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        //!locales
-        navigatorKey: navigatorKey,
-        home: SplashLoadingScreen(
-          //load tasks in queue or
-          loader: TaskLoader(tasks: []),
-          oninitializationComplete: () async {
-            navigatorKey.currentState
-                ?.pushReplacement(createRoute(PlatformDetectByType(
-              // web: ScanViewPage(jsonData: this.jsonData,),
-              // desktop: ScanViewPage(jsonData: this.jsonData,),
-              web: HeadPage(),
-              desktop: HeadPage(),
-              //mobile: null,
-            )));
-
-          },
-        ),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'NETRUNNER Report',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
       ),
+      home: ReportScreen(),
     );
   }
 }
 
+class ReportScreen extends StatefulWidget {
+  @override
+  _ReportScreenState createState() => _ReportScreenState();
+}
+
+class _ReportScreenState extends State<ReportScreen> {
+  Map<String, dynamic>? generalInfo;
+  List<dynamic>? details;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadJsonData();
+  }
+
+  Future<void> _loadJsonData() async {
+    String jsonString = await rootBundle.loadString('assets/report.json');
+    final jsonResponse = json.decode(jsonString);
+    setState(() {
+      generalInfo = jsonResponse['general_info'];
+      details = jsonResponse['details'];
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('NETRUNNER Report'),
+      ),
+      body: generalInfo == null || details == null
+          ? Center(child: CircularProgressIndicator())
+          : Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ListView(
+          children: [
+            Text(
+              'Информация о сканировании',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 8),
+            Text('Начало: ${generalInfo!['start']}'),
+            Text('Завершение: ${generalInfo!['end']}'),
+            Text('Версия NMap: ${generalInfo!['version']}'),
+            Text('Время сканирования: ${generalInfo!['elapsed']} секунд'),
+            Text('Активные хосты: ${generalInfo!['up']}'),
+            Text('Неактивные хосты: ${generalInfo!['down']}'),
+            Text('Всего хостов: ${generalInfo!['total']}'),
+            SizedBox(height: 16),
+            Text(
+              'Детальная информация',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 8),
+            ExpansionTile(
+              title: Text(
+                'IP адреса с CVE',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              children: _buildDetailsList(
+                  details!.where((detail) => detail['cve'] != 'N/A').toList()),
+            ),
+            ExpansionTile(
+              title: Text(
+                'IP адреса с CVE равным N/A',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              children: _buildDetailsList(
+                  details!.where((detail) => detail['cve'] == 'N/A').toList()),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildDetailsList(List<dynamic> filteredDetails) {
+    if (filteredDetails.isEmpty) {
+      return [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text('Нет данных'),
+        )
+      ];
+    }
+
+    return filteredDetails.map((detail) {
+      return ListTile(
+        title: Text('IP: ${detail['ip']}'),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Port: ${detail['port']}'),
+            Text('CVE: ${detail['cve']}'),
+            if (detail.containsKey('description'))
+              Text('Description: ${detail['description']}'),
+          ],
+        ),
+      );
+    }).toList();
+  }
+}
