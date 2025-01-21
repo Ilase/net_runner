@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -40,11 +42,12 @@ class _ScanningPgState extends State<ScanningPg> {
                     ],
                   ),
                   const MtDialogSendScanRequest(),
-                  IconButton(
-                      onPressed: () => context
-                          .read<PostRequestBloc>()
-                          .add(FetchPostRequestEvent()),
-                      icon: const Icon(Icons.refresh))
+                  // IconButton(
+                  //   onPressed: () => context.read<PostRequestBloc>().add(
+                  //       PostRequestGetEvent(
+                  //           uri: "http://192.168.20.140:3001/api/v1/nmap")),
+                  //   icon: const Icon(Icons.refresh),
+                  // ),
                 ],
               ),
             ),
@@ -56,9 +59,9 @@ class _ScanningPgState extends State<ScanningPg> {
                       .showSnackBar(SnackBar(content: Text(state.toString())));
                 }
               },
-              child: BlocBuilder<PostRequestBloc, PostRequestState>(
+              child: BlocBuilder<WebSocketBloc, WebSocketState>(
                   builder: (content, state) {
-                if (state is PostRequestInitialState) {
+                if (state is WebSocketException) {
                   return Center(
                     child: Text(
                       'Can\'t get data from server, try to refresh connection',
@@ -67,23 +70,24 @@ class _ScanningPgState extends State<ScanningPg> {
                 } else if (state is PostRequestLoadInProgressState) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is PostRequestLoadSuccessState) {
-                  return ListView.builder(
-                    padding: EdgeInsets.only(right: 15),
-                    reverse: true,
-                    itemCount: state.postData.length,
-                    itemBuilder: (context, index) {
-                      final item = state.postData.keys.elementAt(index);
-                      final status = state.postData[item];
-                      return MtGestureCard(
-                          title: 'Сканирование: ${item.toString()}',
-                          status: status["taskStatus"]);
-                      //   ListTile(
-                      //   title: Text('Сканирование: ${item.toString()}', style: AppTheme.lightTheme.textTheme.titleMedium),
-                      //   subtitle: Text('Статус: ${status["taskStatus"]} | Процент выполнения: ${status["taskProcent"]}', style: GoogleFonts.comfortaa() ),
-                      //   trailing: Text(''),
-                      // );
-                    },
-                  );
+                  // return ListView.builder(
+                  //   padding: EdgeInsets.only(right: 15),
+                  //   reverse: true,
+                  //   itemCount: state.postData.length,
+                  //   itemBuilder: (context, index) {
+                  //     final item = state.postData.keys.elementAt(index);
+                  //     final status = state.postData[item];
+                  //     return MtGestureCard(
+                  //         title: 'Сканирование: ${item.toString()}',
+                  //         status: status["taskStatus"]);
+                  //     //   ListTile(
+                  //     //   title: Text('Сканирование: ${item.toString()}', style: AppTheme.lightTheme.textTheme.titleMedium),
+                  //     //   subtitle: Text('Статус: ${status["taskStatus"]} | Процент выполнения: ${status["taskProcent"]}', style: GoogleFonts.comfortaa() ),
+                  //     //   trailing: Text(''),
+                  //     // );
+                  //   },
+                  // );
+                  return CircularProgressIndicator();
                 } else if (state is PostRequestLoadFailureState) {
                   return Center(child: Text('Loading failure. *'));
                 } else {

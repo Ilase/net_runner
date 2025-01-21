@@ -11,7 +11,7 @@ class PostRequestInitialState extends PostRequestState {}
 class PostRequestLoadInProgressState extends PostRequestState {}
 
 class PostRequestLoadSuccessState extends PostRequestState {
-  final Map<String, dynamic> postData;
+  final List<dynamic> postData;
   const PostRequestLoadSuccessState(this.postData);
   @override
   List<Object> get props => [postData];
