@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart';
 import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
 import 'package:net_runner/features/scanning/presentation/widgets/gesture_card.dart';
 import 'package:net_runner/utils/constants/themes/text_styles.dart';
@@ -32,7 +33,7 @@ class _HostsPgState extends State<HostsPg> {
                 ),
                 IconButton(
                   onPressed: (){
-                    context.read<PostRequestBloc>().add(PostRequestGetEvent(uri: "http://192.168.20.140:3001/api/v1/host"));
+                    context.read<PostRequestBloc>().add(PostRequestGetEvent(endpoint: '/host'/*"http://192.168.20.140:3001/api/v1/host"*/)); // TODO: remake dynamic
                   },
                   icon: Icon(Icons.refresh),
                 )
@@ -55,9 +56,8 @@ class _HostsPgState extends State<HostsPg> {
                           return ListTile(
                             leading: Text(item["ID"].toString()),
                             title: Text(item["ip"]),
-                            subtitle: Text("text"),
-
-                            //subtitle: Text(item["Groups"][0]["name"]),
+                            subtitle: Text(item["name"] ?? "Unnamed"),
+                            trailing: Text  ("Trail"),
                           );
                         },
                       );

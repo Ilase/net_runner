@@ -10,14 +10,21 @@ abstract class PostRequestEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+class ClearUriPostRequestEvent extends PostRequestEvent {}
 class FetchPostRequestEvent extends PostRequestEvent {}
 
-class PostRequestGetEvent extends PostRequestEvent {
+class UpdateUriPostRequestEvent extends PostRequestEvent {
   final String uri;
-  const PostRequestGetEvent({required this.uri});
+  const UpdateUriPostRequestEvent({required this.uri});
+}
+
+class PostRequestGetEvent extends PostRequestEvent {
+  final String endpoint;
+  const PostRequestGetEvent({required this.endpoint});
 }
 class PostRequestSendEvent extends PostRequestEvent {
-  final String uri;
+  final String endpoint;
   final Map<String, dynamic> body;
-  const PostRequestSendEvent({required this.uri, required this.body});
+  const PostRequestSendEvent({required this.endpoint, required this.body});
 }
+class PostRequestFetchElements extends PostRequestEvent {}

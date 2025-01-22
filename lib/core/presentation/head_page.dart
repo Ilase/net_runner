@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/data/menu_item_data.dart';
+import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
 import 'package:net_runner/core/domain/web_socket/web_socket_bloc.dart';
 import 'package:net_runner/core/presentation/widgets/drop_menu.dart';
 import 'package:net_runner/features/hosts/presentation/hosts_pg.dart';
@@ -55,6 +56,7 @@ class _HeadPageState extends State<HeadPage> {
             IconButton(
               onPressed: (){
                 context.read<WebSocketBloc>().add(WebSocketDisconnect());
+                context.read<PostRequestBloc>().add(ClearUriPostRequestEvent());
                 Navigator.of(context).pushNamed('/init');
               },
               icon: Icon(Icons.electrical_services_rounded),

@@ -9,6 +9,7 @@ abstract class PostRequestState extends Equatable {
 
 class PostRequestInitialState extends PostRequestState {}
 class PostRequestLoadInProgressState extends PostRequestState {}
+class PostRequestNullState extends PostRequestState{}
 
 class PostRequestLoadSuccessState extends PostRequestState {
   final List<dynamic> postData;

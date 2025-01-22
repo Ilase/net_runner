@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:net_runner/core/domain/web_data_repo/web_data_repo_bloc.dart';
 
 import 'dart:convert';
 
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: BlocProvider(
-        create: (context) => WebSocketBloc(),
+        create: (context) => WebSocketBloc(ElementBloc()),
         child: WebSocketExample(),
       ),
     );

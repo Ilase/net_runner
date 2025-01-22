@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/data/data_loader.dart';
+import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
+import 'package:net_runner/core/domain/task_controller/task_controller_bloc.dart';
 import 'package:net_runner/core/domain/web_socket/web_socket_bloc.dart';
 import 'package:net_runner/core/presentation/head_page.dart';
 import 'package:net_runner/core/presentation/widgets/router.dart';
@@ -69,9 +71,16 @@ class _InitWsConnectionPageState extends State<InitWsConnectionPage> {
                   ElevatedButton(
                       onPressed: () {
                         if(!_uriAddress.text.isEmpty){
-                          context.read<WebSocketBloc>().add(
-                              WebSocketConnect(
-                                  'ws://${_uriAddress.text}/api/v1/ws'));
+
+
+                          context.read<WebSocketBloc>().add(WebSocketConnect('ws://${_uriAddress.text}/api/v1/ws'));
+                          //context.read<PostRequestBloc>().add(event)
+                          context.read<PostRequestBloc>().add(UpdateUriPostRequestEvent(uri: _uriAddress.text));
+                          //context.read<TaskControllerBloc>().taskVault?.dataList;
+                          // context.read<TaskControllerBloc>().add(TaskControllerLoadTasksInVault(
+                          //     data: null,
+                          // ));
+                          print(PostRequestBloc.uri);
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please fill all fields*')));
                         }

@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:net_runner/core/domain/http_bloc/http_bloc.dart';
 import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
+import 'package:net_runner/core/domain/web_data_repo/web_data_repo_bloc.dart';
 import 'package:net_runner/core/domain/web_socket/web_socket_bloc.dart';
 import 'package:net_runner/features/scanning/presentation/widgets/dialog_send_scan_request.dart';
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
@@ -44,6 +46,8 @@ class _ScanningPgState extends State<ScanningPg> {
                   IconButton(
                     onPressed: () {
                       //context.read<WebSocketBloc>().add(WebSocketConnect('ws://192.168.20.140:3001/api/v1/ws'));
+                      context.read<PostRequestBloc>().add(PostRequestFetchElements());
+
                     },
                     icon: Icon(Icons.refresh),
                   )
@@ -59,64 +63,29 @@ class _ScanningPgState extends State<ScanningPg> {
             Expanded(
                 child: BlocListener<WebSocketBloc, WebSocketState>(
               listener: (context, state) {
-                if (state is PostRequestLoadFailureState) {
+                if (state is WebSocketMessageState) {
                   ScaffoldMessenger.of(context)
                       .showSnackBar(SnackBar(content: Text(state.toString())));
                 }
               },
-              child: BlocBuilder<WebSocketBloc, WebSocketState>(
+              child: BlocBuilder<ElementBloc, ElementState>(
                   builder: (content, state) {
+                    print(state.elements.length);
 
-                    if(state is WebSocketMessageReceived){
-                      return Center(child: Text('data'),);
-                    } else if (state is WebSocketConnected) {
-                      return Text(state.taskList.toString());
-                        // return ListView.builder(
-                        //   itemCount: state.taskList.length,
-                        //   reverse: true,
-                        //   itemBuilder: (context, index){
-                        //     final item = state.taskList.elementAt(index);
-                        //    
-                        //     // return MtGestureCard(
-                        //     //     title: item["number_task"],
-                        //     //     status: item["status"],
-                        //     // );
-                        //   }
-                        // );
-                    } else {
-                      return CircularProgressIndicator();
-                    }
-                // if (state is WebSocketException) {
-                //   return Center(
-                //     child: Text(
-                //       'Can\'t get data from server, try to refresh connection',
-                //     ),
-                //   );
+                    return ListView.builder(
+                      reverse: true,
+                      itemCount: state.elements.length,
+                      itemBuilder: (context, index){
+                        final elem = state.elements[index];
+                        return ListTile(
+                          leading: Text(elem["ID"].toString()),
+                          subtitle: Text(elem["number_task"]),
+                          title: Text(elem["CreatedAt"]),
+                          trailing: Text(elem["status"]),
+                        );
 
-                // } else if (state is PostRequestLoadSuccessState) {
-                //   // return ListView.builder(
-                //   //   padding: EdgeInsets.only(right: 15),
-                //   //   reverse: true,
-                //   //   itemCount: state.postData.length,
-                //   //   itemBuilder: (context, index) {
-                //   //     final item = state.postData.keys.elementAt(index);
-                //   //     final status = state.postData[item];
-                //   //     return MtGestureCard(
-                //   //         title: 'Сканирование: ${item.toString()}',
-                //   //         status: status["taskStatus"]);
-                //   //     //   ListTile(
-                //   //     //   title: Text('Сканирование: ${item.toString()}', style: AppTheme.lightTheme.textTheme.titleMedium),
-                //   //     //   subtitle: Text('Статус: ${status["taskStatus"]} | Процент выполнения: ${status["taskProcent"]}', style: GoogleFonts.comfortaa() ),
-                //   //     //   trailing: Text(''),
-                //   //     // );
-                //   //   },
-                //   // );
-                //   return CircularProgressIndicator();
-                // } else if (state is PostRequestLoadFailureState) {
-                //   return Center(child: Text('Loading failure. *'));
-                // } else {
-                //   return const Center(child: Text('Undefined state *'));
-                // }
+                      }
+                    );
               }),
             )),
           ],
