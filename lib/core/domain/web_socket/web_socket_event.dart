@@ -14,6 +14,7 @@ class WebSocketConnect extends WebSocketEvent {
   @override
   List<Object> get props => [url];
 }
+
 class WebSocketDisconnect extends WebSocketEvent{}
 
 class WebSocketSendMessage extends WebSocketEvent{
@@ -25,7 +26,7 @@ class WebSocketSendMessage extends WebSocketEvent{
 }
 
 class WebSocketMessageReceived extends WebSocketEvent{
-  final String message;
+  final List<Map<String, dynamic>> message;
 
   const WebSocketMessageReceived(this.message);
 

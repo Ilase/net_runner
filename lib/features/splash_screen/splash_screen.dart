@@ -6,12 +6,12 @@ import 'package:net_runner/core/data/data_loader.dart';
 //import 'package:net_runner/main.dart';
 
 class SplashLoadingScreen extends StatefulWidget {
-  final VoidCallback oninitializationComplete;
+  final VoidCallback onInitializationComplete;
   final TaskLoader loader;
 
   const SplashLoadingScreen(
       {super.key,
-      required this.oninitializationComplete,
+      required this.onInitializationComplete,
       required this.loader});
 
   @override
@@ -20,6 +20,7 @@ class SplashLoadingScreen extends StatefulWidget {
 
 class _SplashLoadingScreenState extends State<SplashLoadingScreen> {
   bool _hasError = false;
+  String? errorMessage;
   @override
   void initState() {
     super.initState();
@@ -30,15 +31,15 @@ class _SplashLoadingScreenState extends State<SplashLoadingScreen> {
     try {
       ///@Ilase !!! important thisng
       await widget.loader.runInParallel();
-      await Future.delayed(const Duration(seconds: 5), () {
-        widget.oninitializationComplete();
-        //Navigator.pushReplacement(context, _createRoute(MtHeadpage()));
+      await Future.delayed(const Duration(seconds: 0), () {
+        widget.onInitializationComplete();
       });
     } catch (e) {
       setState(() {
+        errorMessage = e.toString();
         _hasError = true;
       });
-      print(e.toString());
+      //print(e.toString());
     }
   }
 

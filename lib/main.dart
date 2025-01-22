@@ -7,6 +7,7 @@ import 'package:logger/logger.dart';
 import 'package:net_runner/core/domain/cache_operator/cache_operator_bloc.dart';
 import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
 import 'package:net_runner/core/domain/web_socket/web_socket_bloc.dart';
+import 'package:net_runner/features/init_ws_connection_page/init_ws_connection_page.dart';
 import 'package:net_runner/features/scanning/presentation/scan_view_page.dart';
 import 'package:net_runner/locale/netrunner_localizations.dart';
 import 'package:net_runner/core/data/data_loader.dart';
@@ -52,6 +53,7 @@ class StartPoint extends StatelessWidget {
         BlocProvider<CacheOperatorBloc>(create: (context) => CacheOperatorBloc(sharedPreferences: sharedPreferences))
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
         //locales
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -61,18 +63,22 @@ class StartPoint extends StatelessWidget {
         home: SplashLoadingScreen(
           //load tasks in queue or
           loader: TaskLoader(tasks: []),
-          oninitializationComplete: () async {
+          onInitializationComplete: () async {
             navigatorKey.currentState
                 ?.pushReplacement(createRoute(PlatformDetectByType(
               // web: ScanViewPage(jsonData: this.jsonData,),
               // desktop: ScanViewPage(jsonData: this.jsonData,),
               web: HeadPage(),
-              desktop: HeadPage(),
+              desktop: InitWsConnectionPage(),
               //mobile: null,
             )));
 
           },
         ),
+        routes: {
+          InitWsConnectionPage.route : (context) => InitWsConnectionPage(),
+          HeadPage.route : (context) => HeadPage(),
+        },
       ),
     );
   }

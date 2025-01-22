@@ -7,7 +7,24 @@ part 'cache_operator_state.dart';
 class CacheOperatorBloc extends Bloc<CacheOperatorEvent, CacheOperatorState> {
   final SharedPreferences sharedPreferences;
 
-  CacheOperatorBloc({required this.sharedPreferences}) : super(CacheOperatorInitial());
+  CacheOperatorBloc({required this.sharedPreferences}) : super(CacheOperatorInitial()){
+
+    on<SaveDataCacheOperatorEvent>(_saveData);
+    on<LoadDataCacheOperatorEvent>(_loadData);
+  }
+
+  Future<void> _saveData(SaveDataCacheOperatorEvent event, Emitter emit) async {
+
+  }
+  Future<void> _loadData(LoadDataCacheOperatorEvent event, Emitter emit) async {
+
+  }
+
+
+
+
+
+
   @override
   Stream<CacheOperatorState> mapEventToState(CacheOperatorEvent event) async*{
     if(event is SaveDataCacheOperatorEvent){

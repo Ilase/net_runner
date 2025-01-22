@@ -27,8 +27,11 @@ class AppTheme {
       ),
       //text styles
       textTheme: AppTextStyle.lightTextTheme,
-      elevatedButtonTheme: AppButtonStyle.modalWindowButtonTheme
+      elevatedButtonTheme: AppButtonStyle.modalWindowButtonTheme,
      // popupMenuTheme: AppButtonStyle.actionsButtonsTheme,
+      inputDecorationTheme: InputDecorationTheme(
+        border: OutlineInputBorder(),
+      )
 
     );
   }

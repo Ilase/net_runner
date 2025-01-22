@@ -41,7 +41,12 @@ class _ScanningPgState extends State<ScanningPg> {
                       const MtDialogSendScanRequest(), //Кнопка Сканировать
                     ],
                   ),
-                  const MtDialogSendScanRequest(),
+                  IconButton(
+                    onPressed: () {
+                      //context.read<WebSocketBloc>().add(WebSocketConnect('ws://192.168.20.140:3001/api/v1/ws'));
+                    },
+                    icon: Icon(Icons.refresh),
+                  )
                   // IconButton(
                   //   onPressed: () => context.read<PostRequestBloc>().add(
                   //       PostRequestGetEvent(
@@ -61,38 +66,57 @@ class _ScanningPgState extends State<ScanningPg> {
               },
               child: BlocBuilder<WebSocketBloc, WebSocketState>(
                   builder: (content, state) {
-                if (state is WebSocketException) {
-                  return Center(
-                    child: Text(
-                      'Can\'t get data from server, try to refresh connection',
-                    ),
-                  );
-                } else if (state is PostRequestLoadInProgressState) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (state is PostRequestLoadSuccessState) {
-                  // return ListView.builder(
-                  //   padding: EdgeInsets.only(right: 15),
-                  //   reverse: true,
-                  //   itemCount: state.postData.length,
-                  //   itemBuilder: (context, index) {
-                  //     final item = state.postData.keys.elementAt(index);
-                  //     final status = state.postData[item];
-                  //     return MtGestureCard(
-                  //         title: 'Сканирование: ${item.toString()}',
-                  //         status: status["taskStatus"]);
-                  //     //   ListTile(
-                  //     //   title: Text('Сканирование: ${item.toString()}', style: AppTheme.lightTheme.textTheme.titleMedium),
-                  //     //   subtitle: Text('Статус: ${status["taskStatus"]} | Процент выполнения: ${status["taskProcent"]}', style: GoogleFonts.comfortaa() ),
-                  //     //   trailing: Text(''),
-                  //     // );
-                  //   },
-                  // );
-                  return CircularProgressIndicator();
-                } else if (state is PostRequestLoadFailureState) {
-                  return Center(child: Text('Loading failure. *'));
-                } else {
-                  return const Center(child: Text('Undefined state *'));
-                }
+
+                    if(state is WebSocketMessageReceived){
+                      return Center(child: Text('data'),);
+                    } else if (state is WebSocketConnected) {
+                      return Text(state.taskList.toString());
+                        // return ListView.builder(
+                        //   itemCount: state.taskList.length,
+                        //   reverse: true,
+                        //   itemBuilder: (context, index){
+                        //     final item = state.taskList.elementAt(index);
+                        //    
+                        //     // return MtGestureCard(
+                        //     //     title: item["number_task"],
+                        //     //     status: item["status"],
+                        //     // );
+                        //   }
+                        // );
+                    } else {
+                      return CircularProgressIndicator();
+                    }
+                // if (state is WebSocketException) {
+                //   return Center(
+                //     child: Text(
+                //       'Can\'t get data from server, try to refresh connection',
+                //     ),
+                //   );
+
+                // } else if (state is PostRequestLoadSuccessState) {
+                //   // return ListView.builder(
+                //   //   padding: EdgeInsets.only(right: 15),
+                //   //   reverse: true,
+                //   //   itemCount: state.postData.length,
+                //   //   itemBuilder: (context, index) {
+                //   //     final item = state.postData.keys.elementAt(index);
+                //   //     final status = state.postData[item];
+                //   //     return MtGestureCard(
+                //   //         title: 'Сканирование: ${item.toString()}',
+                //   //         status: status["taskStatus"]);
+                //   //     //   ListTile(
+                //   //     //   title: Text('Сканирование: ${item.toString()}', style: AppTheme.lightTheme.textTheme.titleMedium),
+                //   //     //   subtitle: Text('Статус: ${status["taskStatus"]} | Процент выполнения: ${status["taskProcent"]}', style: GoogleFonts.comfortaa() ),
+                //   //     //   trailing: Text(''),
+                //   //     // );
+                //   //   },
+                //   // );
+                //   return CircularProgressIndicator();
+                // } else if (state is PostRequestLoadFailureState) {
+                //   return Center(child: Text('Loading failure. *'));
+                // } else {
+                //   return const Center(child: Text('Undefined state *'));
+                // }
               }),
             )),
           ],
