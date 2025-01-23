@@ -1,19 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:net_runner/features/scanning/presentation/scan_view_page.dart';
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
 
-class MtGestureCard extends StatefulWidget {
+class ScanGestureCard extends StatefulWidget {
+  final item;
   String title;
   String status;
-  MtGestureCard({super.key, required this.title, required this.status});
+  String completeTime;
+  String scanType;
+  num percent;
+  ScanGestureCard({
+    super.key,
+    required this.item,
+    required this.title,
+    required this.status,
+    required this.completeTime,
+    required this.scanType,
+    required this.percent
+  });
 
   @override
-  State<MtGestureCard> createState() => _MtGestureCardState();
+  State<ScanGestureCard> createState() => _ScanGestureCardState();
 }
 
-class _MtGestureCardState extends State<MtGestureCard> {
+class _ScanGestureCardState extends State<ScanGestureCard> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onTap: () {
+        Navigator.push(context,MaterialPageRoute(builder: (context) =>ScanViewPage(taskName: widget.title)));
+      },
       child:
         Container(
           margin: const EdgeInsets.only(bottom: 10),
@@ -58,7 +74,7 @@ class _MtGestureCardState extends State<MtGestureCard> {
                       flex: 3,
                       child:
                       Text(
-                          'Аудит в режиме "Пентест"',
+                          'Scan type: ${widget.scanType}*',
                           style: AppTheme.lightTheme.textTheme.bodySmall,//name type of scanning
                       )
                       ),
@@ -66,15 +82,30 @@ class _MtGestureCardState extends State<MtGestureCard> {
                           flex: 3,
                           child:
                           Text(
-                            'Завершен: 26.12.2024 18:05:42',
+                            'Updated at: ${widget.completeTime}*',
                             style: AppTheme.lightTheme.textTheme.bodySmall,//name type of scanning
                           )
                       ),
                       Expanded(
+                          child: TweenAnimationBuilder(
+                            curve: Curves.bounceIn,
+                            duration: Duration(microseconds: 1000),
+                            tween: Tween<double>(
+                              begin: 0,
+                              end: widget.percent.toDouble()
+                            ),
+                            builder: (context, value, _) => LinearProgressIndicator(
+                              semanticsLabel: 'Progress',
+                              value: value,
+                            ),
+                          )
+                      ),
+                      SizedBox(width: 5,),
+                      Expanded(
                           flex: 2,
                           child:
                           Text(
-                            '42 элемента',
+                            '${widget.percent.toDouble()}%',
                             style: AppTheme.lightTheme.textTheme.bodySmall,//name type of scanning
                           )
                       ),

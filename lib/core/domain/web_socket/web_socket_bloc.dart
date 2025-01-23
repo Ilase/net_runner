@@ -42,23 +42,38 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
       channel = IOWebSocketChannel.connect(
         event.url,
       );
-      _subscription = channel.stream.listen((message) {
+      print(event.url);
+      _subscription = channel.stream.listen((message) async {
+        if(message.isEmpty){
+          print("Message empty");
+        } else {
+          print('Message not empty');
+        }
         print(event.url);
         print('Message received: $message');
-        if(emit.isDone) return;
+
+        //if(emit.isDone) return;
+
         try{
           final Map<String,dynamic> decodedMessage = jsonDecode(message);
-          emit(WebSocketMessageState(decodedMessage));
-          print(decodedMessage);
+          //print("decoded mes" + decodedMessage.toString());
+
+          if (!emit.isDone) {
+            emit(WebSocketMessageState(decodedMessage));
+          }
           elementBloc.add(AddOrUpdateElement(decodedMessage));
-        }catch(e){
-          print('Ошибка обработки сообщения: $e');
+
+        } catch(e){
+          print('Ошибка обработки сообщения: $e*');
         }
+
+
+
 
 
       });
 
-      emit(WebSocketConnected(/*taskList: this.taskController.dataList*/));
+      emit(WebSocketConnected());
     } catch(e){
       print(e);
       emit(WebSocketError(e.toString()));

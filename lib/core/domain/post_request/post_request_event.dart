@@ -18,6 +18,11 @@ class UpdateUriPostRequestEvent extends PostRequestEvent {
   const UpdateUriPostRequestEvent({required this.uri});
 }
 
+class PostRequestGetSingleTaskEvent extends PostRequestEvent {
+  final String endpoint;
+  const PostRequestGetSingleTaskEvent({required this.endpoint});
+}
+
 class PostRequestGetEvent extends PostRequestEvent {
   final String endpoint;
   const PostRequestGetEvent({required this.endpoint});

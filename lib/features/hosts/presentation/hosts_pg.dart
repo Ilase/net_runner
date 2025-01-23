@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart';
 import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
-import 'package:net_runner/features/scanning/presentation/widgets/gesture_card.dart';
+import 'package:net_runner/features/scanning/presentation/widgets/scan_gesture_card.dart';
 import 'package:net_runner/utils/constants/themes/text_styles.dart';
 
 class HostsPg extends StatefulWidget {

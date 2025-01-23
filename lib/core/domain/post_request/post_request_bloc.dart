@@ -19,6 +19,28 @@ class PostRequestBloc extends Bloc<PostRequestEvent, PostRequestState> {
     on<UpdateUriPostRequestEvent>(_updateUri);
     on<PostRequestFetchElements>(_getTasks);
     on<ClearUriPostRequestEvent>(_clearUri);
+    on<PostRequestGetSingleTaskEvent>(_getSingleTask);
+  }
+
+  Future<void> _getSingleTask(PostRequestGetSingleTaskEvent event, Emitter emit) async {
+    try{
+      if (uri == "") {
+        emit(PostRequestLoadFailureState("Uri is empty*"));
+        return;
+      }
+      print(uri);
+      print(uri! + '/task'+ event.endpoint);
+      final response = await http.get(
+        Uri.parse(uri! + event.endpoint),
+      );
+
+      final decodedResponce = jsonDecode(response.body);
+      print(decodedResponce.toString());
+      emit(PostRequestLoadSingleSuccessState(decodedResponce));
+    }catch(e){
+      print(e.toString());
+      emit(PostRequestLoadFailureState(e.toString()));
+    }
   }
 
   Future<void> _getTasks(PostRequestFetchElements event, Emitter emit) async {
@@ -67,7 +89,7 @@ class PostRequestBloc extends Bloc<PostRequestEvent, PostRequestState> {
     emit(PostRequestLoadInProgressState());
     try{
       final responce = await http.get(
-        Uri.parse(event.endpoint),
+        Uri.parse(uri! + event.endpoint),
       );
 
       if(responce.statusCode == 200){

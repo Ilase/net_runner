@@ -9,7 +9,7 @@ import 'package:net_runner/core/domain/web_data_repo/web_data_repo_bloc.dart';
 import 'package:net_runner/core/domain/web_socket/web_socket_bloc.dart';
 import 'package:net_runner/features/scanning/presentation/widgets/dialog_send_scan_request.dart';
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
-import 'package:net_runner/features/scanning/presentation/widgets/gesture_card.dart';
+import 'package:net_runner/features/scanning/presentation/widgets/scan_gesture_card.dart';
 
 class ScanningPg extends StatefulWidget {
   const ScanningPg({super.key});
@@ -49,7 +49,7 @@ class _ScanningPgState extends State<ScanningPg> {
                       context.read<PostRequestBloc>().add(PostRequestFetchElements());
 
                     },
-                    icon: Icon(Icons.refresh),
+                    icon: const Icon(Icons.refresh),
                   )
                   // IconButton(
                   //   onPressed: () => context.read<PostRequestBloc>().add(
@@ -77,12 +77,21 @@ class _ScanningPgState extends State<ScanningPg> {
                       itemCount: state.elements.length,
                       itemBuilder: (context, index){
                         final elem = state.elements[index];
-                        return ListTile(
-                          leading: Text(elem["ID"].toString()),
-                          subtitle: Text(elem["number_task"]),
-                          title: Text(elem["CreatedAt"]),
-                          trailing: Text(elem["status"]),
+                        return ScanGestureCard(
+                          item: elem,
+                          title: elem["number_task"],
+                          status: elem["status"],
+                          scanType: elem["type"],
+                          completeTime:  elem["UpdatedAt"],
+                          percent: elem["percent"],
                         );
+                        // return ListTile(
+                        //   leading: Text(elem["ID"].toString()),
+                        //   subtitle: Text(elem["number_task"]),
+                        //   title: Text(elem["CreatedAt"]),
+                        //   trailing: Text('data'),
+                        //
+                        // );
 
                       }
                     );
