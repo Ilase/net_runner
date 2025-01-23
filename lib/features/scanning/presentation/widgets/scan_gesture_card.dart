@@ -28,7 +28,8 @@ class _ScanGestureCardState extends State<ScanGestureCard> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context,MaterialPageRoute(builder: (context) =>ScanViewPage(taskName: widget.title)));
+        if (widget.status != "pending") //TODO: rewrite
+        Navigator.push(context,MaterialPageRoute(builder: (context) =>ScanViewPage(taskName: widget.title, taskType: widget.scanType,)));
       },
       child:
         Container(

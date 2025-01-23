@@ -75,13 +75,16 @@ class PostRequestBloc extends Bloc<PostRequestEvent, PostRequestState> {
   }
 
   Future<void> _sendRequest(PostRequestSendEvent event, Emitter emit) async {
+    print(event.body);
     try{
       final responce = await http.post(
         Uri.parse(uri! + event.endpoint),
-        body: event.body
+        body: jsonEncode(event.body)
       );
-      emit(PostRequestLoadSuccessState((jsonDecode(responce.body))));
+      print(responce.body.toString());
+      emit(PostRequestLoadSingleSuccessState(jsonDecode(responce.body)));
     } catch (e){
+      print("POST BLOC " + e.toString());
       emit(PostRequestLoadFailureState(e.toString()));
     }
   }

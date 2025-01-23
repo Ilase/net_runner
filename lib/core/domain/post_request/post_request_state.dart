@@ -19,6 +19,7 @@ class PostRequestLoadSingleSuccessState extends PostRequestState{
 }
 
 
+
 class PostRequestLoadSuccessState extends PostRequestState {
   final List<dynamic> postData;
   const PostRequestLoadSuccessState(this.postData);

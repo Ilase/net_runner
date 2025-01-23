@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
 import 'package:net_runner/core/domain/web_socket/web_socket_bloc.dart';
 import 'package:net_runner/core/presentation/widgets/dialog_tile.dart';
 import 'dart:convert';
@@ -15,10 +16,11 @@ class MtDialogSendScanRequest extends StatefulWidget {
 }
 
 class _MtDialogSendScanRequestState extends State<MtDialogSendScanRequest> {
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _targetsController = TextEditingController();
   final TextEditingController _portsController = TextEditingController();
   final TextEditingController _speedController = TextEditingController();
-
+  String _selectedType = 'pentest';
   void WSsendScanRequest() async {
     final String targets = _targetsController.text;
     final String ports = _portsController.text;
@@ -50,64 +52,60 @@ class _MtDialogSendScanRequestState extends State<MtDialogSendScanRequest> {
 
   }
 
-  void sendScanRequest() async {
-    final String targets = _targetsController.text;
-    final String ports = _portsController.text;
-    final String speed = _speedController.text;
-    if (targets.isEmpty || ports.isEmpty || speed.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(
-            'Пожалуйста, заполните все поля',
-            //style: AppTheme.lightTheme.textTheme.titleLarge,
-        )),
-      );
-      return;
-    }
-    final DateTime now = DateTime.now();
-    final String formattedDateTime =
-        "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
-
-    final Map<String, dynamic> requestData = {
-      "uid": 10101,
-      "request_time": formattedDateTime,
-      "hosts": targets.split(','),
-      "ports": ports,
-      "speed": speed,
-    };
-    final Uri url = Uri.parse("http://192.168.20.140:8080/scan");
-    print(requestData);
-    try {
-      final response = await http.post(
-        url,
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode(requestData),
-      );
-
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Запрос успешно отправлен!*')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Ошибка: ${response.body}*')),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Не удалось отправить запрос: $e*')),
-      );
-    }
+  @override
+  void dispose() {
+    _portsController.clear();
+    _nameController.clear();
+    _speedController.clear();
+    _targetsController.clear();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MtOpenDialogButton(
+    return BlocListener<PostRequestBloc, PostRequestState>(
+  listener: (context, state) {
+    if(state is PostRequestLoadFailureState ){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ' + state.error)));
+    }
+    if(state is PostRequestLoadSingleSuccessState){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ' + state.postData.toString())));
+    }
+  },
+  child: MtOpenDialogButton(
       dialogueTitle: 'Новое сканирование*',
       buttonTitle: 'Сканировать*',
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            TextField(
+              controller: _nameController,
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(), labelText: 'Имя сканирования*'),
+              readOnly: false,
+            ),
+            DropdownButtonFormField<String>(
+              value: _selectedType,
+              decoration: InputDecoration(labelText: 'Type'),
+              items: ['pentest', 'nmap'].map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedType = newValue!;
+                });
+              },
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please select a type';
+                }
+                return null;
+              },
+            ),
             TextField(
               controller: _targetsController,
               decoration: const InputDecoration(
@@ -130,7 +128,40 @@ class _MtDialogSendScanRequestState extends State<MtDialogSendScanRequest> {
             ),
             OutlinedButton(
               style: const ButtonStyle(),
-              onPressed: sendScanRequest,
+              onPressed: (){
+
+                final hosts = _targetsController.text.split(',').map((e) => e.trim()).toList();
+                final ports = _portsController.text.split(',').map((e) => e.trim()).toList();
+                print(hosts.toString());
+                print(ports.toString());
+                final speed = _speedController.text;
+
+                //final hosts = _targetsController.text.split(',').map((e) => e.trim()).toList();
+                if (hosts.isEmpty || ports.isEmpty || speed.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Пожалуйста, заполните все поля')),
+                  );
+                  return;
+                }
+                context.read<PostRequestBloc>().add(
+                    PostRequestSendEvent(
+                        endpoint: '/task',
+                        body: {
+                          "name": _nameController.text,
+                          "hosts": hosts,
+                          "type": _selectedType,
+                          "params": {
+                            "ports": _portsController.text,
+                            "script": 'default'
+                          }
+                        }
+                    )
+                );
+                _nameController.clear();
+                _targetsController.clear();
+                _portsController.clear();
+                _speedController.clear();
+              },
               child:  Text(
                 'Запустить сканирование*',
                 style: AppTheme.lightTheme.textTheme.labelSmall,
@@ -139,6 +170,7 @@ class _MtDialogSendScanRequestState extends State<MtDialogSendScanRequest> {
           ],
         ),
       ),
-    );
+    ),
+);
   }
 }
