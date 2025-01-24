@@ -81,10 +81,10 @@ class PostRequestBloc extends Bloc<PostRequestEvent, PostRequestState> {
         Uri.parse(uri! + event.endpoint),
         body: jsonEncode(event.body)
       );
-      print(responce.body.toString());
+      // print(responce.body.toString());
       emit(PostRequestLoadSingleSuccessState(jsonDecode(responce.body)));
     } catch (e){
-      print("POST BLOC " + e.toString());
+      // print("POST BLOC " + e.toString());
       emit(PostRequestLoadFailureState(e.toString()));
     }
   }

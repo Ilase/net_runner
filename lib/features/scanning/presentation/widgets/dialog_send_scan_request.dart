@@ -69,7 +69,7 @@ class _MtDialogSendScanRequestState extends State<MtDialogSendScanRequest> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ' + state.error)));
     }
     if(state is PostRequestLoadSingleSuccessState){
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ' + state.postData.toString())));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Loaded')));
     }
   },
   child: MtOpenDialogButton(
@@ -134,12 +134,7 @@ class _MtDialogSendScanRequestState extends State<MtDialogSendScanRequest> {
                 final ports = _portsController.text.split(',').map((e) => e.trim()).toList();
                 print(hosts.toString());
                 print(ports.toString());
-                final speed = _speedController.text;
-
-                //final hosts = _targetsController.text.split(',').map((e) => e.trim()).toList();
-                if (hosts.isEmpty || ports.isEmpty || speed.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Пожалуйста, заполните все поля')),
+                final speed = _speedController.text;     е все поля')),
                   );
                   return;
                 }
@@ -152,7 +147,8 @@ class _MtDialogSendScanRequestState extends State<MtDialogSendScanRequest> {
                           "type": _selectedType,
                           "params": {
                             "ports": _portsController.text,
-                            "script": 'default'
+                            "script": 'default',
+                            "speed": _speedController.text,
                           }
                         }
                     )
