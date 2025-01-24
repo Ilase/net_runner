@@ -134,10 +134,7 @@ class _MtDialogSendScanRequestState extends State<MtDialogSendScanRequest> {
                 final ports = _portsController.text.split(',').map((e) => e.trim()).toList();
                 print(hosts.toString());
                 print(ports.toString());
-                final speed = _speedController.text;     е все поля')),
-                  );
-                  return;
-                }
+                final speed = _speedController.text;
                 context.read<PostRequestBloc>().add(
                     PostRequestSendEvent(
                         endpoint: '/task',
