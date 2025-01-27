@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
+import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/cache_operator/cache_operator_bloc.dart';
 import 'package:net_runner/core/domain/http_bloc/http_bloc.dart';
 import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
 import 'package:net_runner/core/domain/web_data_repo/web_data_repo_bloc.dart';
 import 'package:net_runner/core/domain/web_socket/web_socket_bloc.dart';
-import 'package:net_runner/features/init_ws_connection_page/init_ws_connection_page.dart';
+import 'package:net_runner/features/init_ws_connection_page/init_ws_connection_page_native.dart';
 import 'package:net_runner/features/scanning/presentation/scan_view_page.dart';
 import 'package:net_runner/locale/netrunner_localizations.dart';
 import 'package:net_runner/core/data/data_loader.dart';
@@ -44,7 +45,7 @@ class StartPoint extends StatelessWidget {
   final WebSocketBloc webSocketBlocPtr;
   final PostRequestBloc postRequestBlocPtr;
 
-  StartPoint(
+  const StartPoint(
     {
       super.key, required this.elementBlocPtr,
       required this.postRequestBlocPtr,
@@ -52,23 +53,19 @@ class StartPoint extends StatelessWidget {
       required this.sharedPreferences,
     }
   );
-  final SharedPreferences sharedPreferences;
-  static var logger = Logger(printer: PrettyPrinter());
-  static String platform = "Unknown";
-  static final GlobalKey<NavigatorState> navigatorKey =
-      GlobalKey<NavigatorState>();
 
-  late Map<String, dynamic> jsonData;
-  Future<void> _loadJsonString() async {
-    this.jsonData = jsonDecode(
-        await rootBundle.loadString('assets/report.json')
-    ) as Map<String, dynamic>;
-  }
+  final SharedPreferences sharedPreferences;
+  static var logger = Logger(
+      printer: PrettyPrinter(),
+  );
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+
   //
   //
   @override
   Widget build(BuildContext context) {
-    _loadJsonString();
+    ntLogger.i('fake root');
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: postRequestBlocPtr), //<PostRequestBloc>(create: (context) => PostRequestBloc()),
@@ -90,10 +87,10 @@ class StartPoint extends StatelessWidget {
           loader: TaskLoader(tasks: []),
           onInitializationComplete: () async {
             navigatorKey.currentState
-                ?.pushReplacement(createRoute(PlatformDetectByType(
+                ?.pushReplacement(createRoute(const PlatformDetectByType(
               // web: ScanViewPage(jsonData: this.jsonData,),
               // desktop: ScanViewPage(jsonData: this.jsonData,),
-              web: HeadPage(),
+              web: InitWsConnectionPage(),
               desktop: InitWsConnectionPage(),
               //mobile: null,
             )));
@@ -101,7 +98,7 @@ class StartPoint extends StatelessWidget {
           },
         ),
         routes: {
-          InitWsConnectionPage.route : (context) => InitWsConnectionPage(),
+          InitWsConnectionPage.route : (context) => const InitWsConnectionPage(),
           HeadPage.route : (context) => HeadPage(),
         },
       ),

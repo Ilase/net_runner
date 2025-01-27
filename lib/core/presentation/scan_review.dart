@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ScanReviewPage extends StatefulWidget {
-  const ScanReviewPage({super.key, this.data});
-  final data;
+  const ScanReviewPage({super.key, });
   @override
   State<ScanReviewPage> createState() => _ScanReviewPageState();
 }

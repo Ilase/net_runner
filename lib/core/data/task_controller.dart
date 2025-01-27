@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:equatable/equatable.dart';
 import 'package:uuid/uuid.dart';
 
+// ignore: must_be_immutable
 class TaskController extends Equatable {
   List<Map<String,dynamic>> dataList = [];
   String id;

@@ -40,36 +40,36 @@ class MtSignIn extends StatelessWidget {
                     BoxShadow(
                       blurRadius: 3,
                       color: AppTheme.lightTheme.colorScheme.secondary,
-                      offset: Offset(0, 2),
+                      offset: const Offset(0, 2),
                     ),
                   ],
                 ),
                 child: Padding(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   child: Column(
                     children: [
-                      Align(
+                      const Align(
                         alignment: Alignment.centerLeft,
                         child: Text("Войти"),
                       ),
-                      SizedBox(height: 10),
-                      TextField(
-                        decoration: const InputDecoration(
+                      const SizedBox(height: 10),
+                      const TextField(
+                        decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Электронная почта',
                         ),
                         readOnly: false,
                       ),
-                      SizedBox(height: 15),
-                      TextField(
+                      const SizedBox(height: 15),
+                      const TextField(
                         obscureText: true,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Пароль',
                         ),
                         readOnly: false,
                       ),
-                      SizedBox(height: 15),
+                      const SizedBox(height: 15),
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
@@ -77,7 +77,7 @@ class MtSignIn extends StatelessWidget {
                           style: AppTheme.lightTheme.textTheme.labelSmall,
                         ),
                       ),
-                      SizedBox(height: 60),
+                      const SizedBox(height: 60),
                       ElevatedButton(
                         onPressed: () {
                           Navigator.push(
@@ -87,7 +87,7 @@ class MtSignIn extends StatelessWidget {
                             ),
                           );
                         },
-                        child: Text('Войти'),
+                        child: const Text('Войти'),
                       ),
                     ],
                   //),

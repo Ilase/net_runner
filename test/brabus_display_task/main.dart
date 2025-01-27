@@ -4,10 +4,12 @@ import 'api_service.dart';
 import 'task.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -15,12 +17,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: TaskListScreen(),
+      home: const TaskListScreen(),
     );
   }
 }
 
 class TaskListScreen extends StatefulWidget {
+  const TaskListScreen({super.key});
+
   @override
   _TaskListScreenState createState() => _TaskListScreenState();
 }
@@ -44,10 +48,10 @@ class _TaskListScreenState extends State<TaskListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tasks & Hosts'),
+        title: const Text('Tasks & Hosts'),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh),
             onPressed: _refreshTasks, // Reload tasks data
           ),
         ],
@@ -56,11 +60,11 @@ class _TaskListScreenState extends State<TaskListScreen> {
         future: _tasks,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No tasks available'));
+            return const Center(child: Text('No tasks available'));
           }
 
           final tasks = snapshot.data!;
@@ -82,7 +86,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
 class TaskDetailScreen extends StatefulWidget {
   final String taskId;
 
-  const TaskDetailScreen({Key? key, required this.taskId}) : super(key: key);
+  const TaskDetailScreen({super.key, required this.taskId});
 
   @override
   _TaskDetailScreenState createState() => _TaskDetailScreenState();
@@ -101,17 +105,17 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Task Details'),
+        title: const Text('Task Details'),
       ),
       body: FutureBuilder<Task>(
         future: _taskDetails,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}*'));
           } else if (!snapshot.hasData) {
-            return Center(child: Text('No task details available*'));
+            return const Center(child: Text('No task details available*'));
           }
 
           final task = snapshot.data!;
@@ -125,11 +129,11 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 Text('Type: ${task.type}'),
                 Text('Status: ${task.status}'),
                 Text('Progress: ${task.percent}%'),
-                SizedBox(height: 8),
-                Text('Parameters:'),
+                const SizedBox(height: 8),
+                const Text('Parameters:'),
                 ...task.params.entries.map((entry) => Text('${entry.key}: ${entry.value}')),
-                SizedBox(height: 8),
-                Text('Hosts:'),
+                const SizedBox(height: 8),
+                const Text('Hosts:'),
                 ...task.hosts.map((host) => Card(
                   margin: const EdgeInsets.symmetric(vertical: 4.0),
                   child: ListTile(

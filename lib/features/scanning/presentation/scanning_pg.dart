@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+ import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/http_bloc/http_bloc.dart';
 import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
 import 'package:net_runner/core/domain/web_data_repo/web_data_repo_bloc.dart';
@@ -31,16 +32,16 @@ class _ScanningPgState extends State<ScanningPg> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
+                  const Row(
                     children: [
                       Text(
                         'Сканирования*',
                         //style: AppTheme.lightTheme.textTheme.titleMedium
                       ),
-                      const SizedBox(
+                       SizedBox(
                         width: 5,
                       ),
-                      const MtDialogSendScanRequest(), //Кнопка Сканировать
+                       MtDialogSendScanRequest(), //Кнопка Сканировать
                     ],
                   ),
                   IconButton(
@@ -70,8 +71,7 @@ class _ScanningPgState extends State<ScanningPg> {
               },
               child: BlocBuilder<ElementBloc, ElementState>(
                   builder: (content, state) {
-                    print(state.elements.length);
-
+                    ntLogger.i(state.elements.length);
                     return ListView.builder(
                       reverse: true,
                       itemCount: state.elements.length,

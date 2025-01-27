@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
 import 'package:net_runner/core/domain/web_socket/web_socket_bloc.dart';
 import 'package:net_runner/core/presentation/widgets/dialog_tile.dart';
@@ -27,7 +28,7 @@ class _MtDialogSendScanRequestState extends State<MtDialogSendScanRequest> {
     final String speed = _speedController.text;
     if (targets.isEmpty || ports.isEmpty || speed.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(
+        const SnackBar(content: Text(
           'Пожалуйста, заполните все поля',
           //style: AppTheme.lightTheme.textTheme.titleLarge,
         )),
@@ -69,7 +70,7 @@ class _MtDialogSendScanRequestState extends State<MtDialogSendScanRequest> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ' + state.error)));
     }
     if(state is PostRequestLoadSingleSuccessState){
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Loaded')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Loaded')));
     }
   },
   child: MtOpenDialogButton(
@@ -87,7 +88,7 @@ class _MtDialogSendScanRequestState extends State<MtDialogSendScanRequest> {
             ),
             DropdownButtonFormField<String>(
               value: _selectedType,
-              decoration: InputDecoration(labelText: 'Type'),
+              decoration: const InputDecoration(labelText: 'Type'),
               items: ['pentest', 'nmap'].map((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
@@ -129,11 +130,10 @@ class _MtDialogSendScanRequestState extends State<MtDialogSendScanRequest> {
             OutlinedButton(
               style: const ButtonStyle(),
               onPressed: (){
-
-                final hosts = _targetsController.text.split(',').map((e) => e.trim()).toList();
-                final ports = _portsController.text.split(',').map((e) => e.trim()).toList();
-                print(hosts.toString());
-                print(ports.toString());
+                final hosts = _targetsController.text.split(',').map((e) => e.trim()).toList(); //TODO: to bloc
+                final ports = _portsController.text.split(',').map((e) => e.trim()).toList(); //TODO: to bloc
+                ntLogger.i(hosts.toString());
+                ntLogger.i(ports.toString()); //TODO: Logger
                 final speed = _speedController.text;
                 context.read<PostRequestBloc>().add(
                     PostRequestSendEvent(

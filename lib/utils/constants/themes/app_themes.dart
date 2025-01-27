@@ -29,7 +29,7 @@ class AppTheme {
       textTheme: AppTextStyle.lightTextTheme,
       elevatedButtonTheme: AppButtonStyle.modalWindowButtonTheme,
      // popupMenuTheme: AppButtonStyle.actionsButtonsTheme,
-      inputDecorationTheme: InputDecorationTheme(
+      inputDecorationTheme: const InputDecorationTheme(
         border: OutlineInputBorder(),
       )
 

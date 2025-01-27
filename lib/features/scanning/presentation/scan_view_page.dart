@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
 import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
 import 'package:net_runner/features/scanning/data/data_parce.dart';
@@ -17,9 +18,9 @@ class ScanViewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(taskName);
+    ntLogger.i(taskName);
     context.read<PostRequestBloc>().add(PostRequestGetSingleTaskEvent(
-          endpoint: '/${taskType}/${taskName}',
+          endpoint: '/$taskType/$taskName',
         ));
 
 
@@ -30,28 +31,24 @@ class ScanViewPage extends StatelessWidget {
           onPressed: () {
             Navigator.of(context).pop();
           },
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
         ),
       ),
       body: SingleChildScrollView(
         child: BlocBuilder<PostRequestBloc, PostRequestState>(
           builder: (context, state) {
-
-
             if (state is PostRequestLoadFailureState) {
               return Center(
                 child: Text('Error: ${state.error}*'),
               );
             } else if (state is PostRequestLoadInProgressState) {
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             } else if (state is PostRequestLoadSingleSuccessState) {
-              print("data " + state.postData.toString());
+
               final nmapResult = NmapResult.fromJson(state.postData);
-              // final List<dynamic> hostData;
-              //jsonData = state.postData ;
               return SingleChildScrollView(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Column(
                     children: [
                       Container(
@@ -61,7 +58,7 @@ class ScanViewPage extends StatelessWidget {
                           boxShadow: [
                             BoxShadow(
                               color: AppTheme.lightTheme.shadowColor,
-                              offset: Offset(0, 2),
+                              offset: const Offset(0, 2),
                               blurRadius: 3
                             )
                           ]
@@ -71,23 +68,23 @@ class ScanViewPage extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Elapsed: *' + nmapResult.generalInfo.elapsed + ' seconds'),
-                              Text('Start time: *' + nmapResult.generalInfo.start ),
-                              Text('End time: *' + nmapResult.generalInfo.end ),
-                              Text('Summary: *' + nmapResult.generalInfo.summary ),
-                              Text('Hosts down: *' + nmapResult.generalInfo.down.toString()),
-                              Text('Hosts up: *' + nmapResult.generalInfo.up.toString() ),
-                              Text('Total: *' + nmapResult.generalInfo.total.toString() ),
+                              Text('Elapsed: *${nmapResult.generalInfo.elapsed} seconds'),
+                              Text('Start time: *${nmapResult.generalInfo.start}' ),
+                              Text('End time: *${nmapResult.generalInfo.end}' ),
+                              Text('Summary: *${nmapResult.generalInfo.summary}' ),
+                              Text('Hosts down: *${nmapResult.generalInfo.down}'),
+                              Text('Hosts up: *${nmapResult.generalInfo.up}' ),
+                              Text('Total: *${nmapResult.generalInfo.total}' ),
                             ],
                           ),
                         ),
                       ),
                       // Text(nmapResult.hosts[0].ip),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
-                      Text('Review'),
-                      SizedBox(
+                      const Text('Review'),
+                      const SizedBox(
                         height: 10,
                       ),
                       // ListView.builder(
@@ -114,7 +111,7 @@ class ScanViewPage extends StatelessWidget {
                       // )
                       ListView.builder(
                         shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
+                        physics: const NeverScrollableScrollPhysics(),
                         itemCount: nmapResult.hosts.length,
                         itemBuilder: (context, index) {
                           final itemHost = nmapResult.hosts[index];
@@ -133,7 +130,7 @@ class ScanViewPage extends StatelessWidget {
                                 children: [
                                   Text('IP: ${itemHost.ip}'),
                                   Text('Status: ${itemHost.status}'),
-                                  Text('Ports:'),
+                                  const Text('Ports:'),
                                   ...itemHost.ports.map((port) => Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
@@ -158,7 +155,7 @@ class ScanViewPage extends StatelessWidget {
 
 
                                                         ),
-                              SizedBox(height: 30),]);
+                              const SizedBox(height: 30),]);
                         },
                       ),
 
@@ -167,7 +164,7 @@ class ScanViewPage extends StatelessWidget {
                 ),
               );
             } else
-              return Center(
+              return const Center(
                 child: Text("Unexpected error*"),
               );
           },

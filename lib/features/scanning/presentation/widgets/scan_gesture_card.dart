@@ -28,8 +28,10 @@ class _ScanGestureCardState extends State<ScanGestureCard> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (widget.status != "pending") //TODO: rewrite
-        Navigator.push(context,MaterialPageRoute(builder: (context) =>ScanViewPage(taskName: widget.title, taskType: widget.scanType,)));
+        if (widget.status != "pending") {
+          //TODO: rewrite
+          Navigator.push(context,MaterialPageRoute(builder: (context) =>ScanViewPage(taskName: widget.title, taskType: widget.scanType,)));
+        }
       },
       child:
         Container(
@@ -90,7 +92,7 @@ class _ScanGestureCardState extends State<ScanGestureCard> {
                       Expanded(
                           child: TweenAnimationBuilder(
                             curve: Curves.bounceIn,
-                            duration: Duration(microseconds: 1000),
+                            duration: const Duration(microseconds: 1000),
                             tween: Tween<double>(
                               begin: 0,
                               end: widget.percent.toDouble()
@@ -101,7 +103,7 @@ class _ScanGestureCardState extends State<ScanGestureCard> {
                             ),
                           )
                       ),
-                      SizedBox(width: 5,),
+                      const SizedBox(width: 5,),
                       Expanded(
                           flex: 2,
                           child:

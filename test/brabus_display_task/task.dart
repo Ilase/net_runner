@@ -81,7 +81,7 @@ class Host {
 class TaskWidget extends StatelessWidget {
   final Task task;
 
-  const TaskWidget({Key? key, required this.task}) : super(key: key);
+  const TaskWidget({super.key, required this.task});
 
   @override
   Widget build(BuildContext context) {

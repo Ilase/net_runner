@@ -12,7 +12,7 @@ class AppButtonStyle {
       elevation: 5,
       textStyle: GoogleFonts.comfortaa(fontSize: 14, color: Colors.blue),
       padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-      fixedSize: Size(130, 20),
+      fixedSize: const Size(130, 20),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10)
       )

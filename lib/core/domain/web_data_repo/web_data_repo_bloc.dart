@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:meta/meta.dart';
 
 part 'web_data_repo_event.dart';
 part 'web_data_repo_state.dart';
