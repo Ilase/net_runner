@@ -1,10 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:meta/meta.dart';
 import 'package:http/http.dart' as http;
 import 'package:net_runner/core/data/logger.dart';
 import 'dart:convert';
-
+// import 'package:web/web.dart' as web;
 import 'package:net_runner/core/domain/web_data_repo/web_data_repo_bloc.dart';
 
 part 'post_request_event.dart';
@@ -15,11 +14,12 @@ part 'post_request_state.dart';
 
 class PostRequestBloc extends Bloc<PostRequestEvent, PostRequestState> {
   final ElementBloc elementBloc;
+
   static String? uri;
 
   PostRequestBloc(this.elementBloc) : super(PostRequestInitialState()){
     //on<PostRequestEvent>(mapEventToState);
-    on<PostRequestGetEvent>(_getResponse);
+    on<PostRequestGetEvent>(_getResponseOls);
     on<PostRequestSendEvent>(_sendRequest);
     on<UpdateUriPostRequestEvent>(_updateUri);
     on<PostRequestFetchElements>(_getTasks);
@@ -33,6 +33,7 @@ class PostRequestBloc extends Bloc<PostRequestEvent, PostRequestState> {
         emit(PostRequestLoadFailureState("Uri is empty*"));
         return;
       }
+      // final response =
       ntLogger.i(uri);
       ntLogger.i(uri! + '/task'+ event.endpoint);
       final response = await http.get(
@@ -40,7 +41,12 @@ class PostRequestBloc extends Bloc<PostRequestEvent, PostRequestState> {
       );
 
       final decodedResponce = jsonDecode(response.body);
-      ntLogger.i(decodedResponce.toString());
+      if(response.statusCode == 200) {
+        ntLogger.i('Responce' + decodedResponce.toString());
+      } else {
+        ntLogger.i('Request failed');
+      }
+
       emit(PostRequestLoadSingleSuccessState(decodedResponce));
     }catch(e){
       ntLogger.e(e.toString());
@@ -65,7 +71,7 @@ class PostRequestBloc extends Bloc<PostRequestEvent, PostRequestState> {
   }
 
   Future<void> _updateUri(UpdateUriPostRequestEvent event, Emitter emit) async {
-      uri = 'http://' + event.uri + '/api/v1';
+      uri = 'http://${event.uri}/api/v1';
       ntLogger.i(uri);
   }
 
@@ -88,7 +94,7 @@ class PostRequestBloc extends Bloc<PostRequestEvent, PostRequestState> {
       emit(PostRequestLoadFailureState(e.toString()));
     }
   }
-  Future<void> _getResponse(PostRequestGetEvent event, Emitter emit) async {
+  Future<void> _getResponseOls(PostRequestGetEvent event, Emitter emit) async {
     emit(PostRequestLoadInProgressState());
     try{
       final response = await http.get(
@@ -106,9 +112,6 @@ class PostRequestBloc extends Bloc<PostRequestEvent, PostRequestState> {
     } catch (e){
       emit(PostRequestLoadFailureState('Failed to load data: ${e.toString()} *'));
     }
-
-
-
 
   }
 }

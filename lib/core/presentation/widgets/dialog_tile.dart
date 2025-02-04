@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 
-class MtShowDialog {
+class ShowDialogWindow {
   final Widget child;
   String? dialogueTitle;
 
-  MtShowDialog({
+  ShowDialogWindow({
     this.dialogueTitle,
     required this.child,
   });
@@ -62,17 +62,12 @@ class MtShowDialog {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15.0),
         ),
-
         elevation: 0, // Тень
         backgroundColor: Colors.white,
         child: contentBox(context),
       );
     });
-
-
-
   }
-
 }
 // ignore: must_be_immutable
 class MtOpenDialogButton extends StatelessWidget {
@@ -114,7 +109,6 @@ class MtOpenDialogButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15.0),
           ),
-
           elevation: 0, // Тень
           backgroundColor: Colors.white,
           child: contentBox(context),

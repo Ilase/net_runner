@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:http/http.dart';
-import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
-import 'package:net_runner/features/scanning/presentation/widgets/scan_gesture_card.dart';
-import 'package:net_runner/utils/constants/themes/text_styles.dart';
+import 'package:net_runner/core/domain/post_request_native/post_request_bloc.dart';
+import 'package:net_runner/features/add_hosts_dialog/presentation/add_hosts_dialogue.dart';
 
 class HostsPg extends StatefulWidget {
   const HostsPg({super.key});
@@ -22,18 +20,13 @@ class _HostsPgState extends State<HostsPg> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   'Hosts*',
                 ),
-                OutlinedButton(
-                    onPressed: (){
-
-                    },
-                    child: Text('Add host*'),
-                ),
+                AddHostsDialogue(),
                 IconButton(
                   onPressed: (){
-                    context.read<PostRequestBloc>().add(PostRequestGetEvent(endpoint: '/host'/*"http://192.168.20.140:3001/api/v1/host"*/)); // TODO: remake dynamic
+                    context.read<PostRequestBloc>().add(PostRequestGetEvent(endpoint: '/host')); // TODO: remake dynamic
                   },
                   icon: Icon(Icons.refresh),
                 )

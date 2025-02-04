@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/data/logger.dart';
-import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
+import 'package:net_runner/core/domain/post_request_native/post_request_bloc.dart';
 import 'package:net_runner/core/domain/web_socket/web_socket_bloc.dart';
 import 'package:net_runner/core/presentation/widgets/dialog_tile.dart';
 import 'dart:convert';
@@ -22,36 +22,7 @@ class _MtDialogSendScanRequestState extends State<MtDialogSendScanRequest> {
   final TextEditingController _portsController = TextEditingController();
   final TextEditingController _speedController = TextEditingController();
   String _selectedType = 'pentest';
-  void WSsendScanRequest() async {
-    final String targets = _targetsController.text;
-    final String ports = _portsController.text;
-    final String speed = _speedController.text;
-    if (targets.isEmpty || ports.isEmpty || speed.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(
-          'Пожалуйста, заполните все поля',
-          //style: AppTheme.lightTheme.textTheme.titleLarge,
-        )),
-      );
-      return;
-    }
-    final DateTime now = DateTime.now();
-    final String formattedDateTime =
-        "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
-    Map<String, dynamic> jsonMessage = {
-      "uid": 10101,
-      "request_time": formattedDateTime,
-      "hosts": [targets],
-      "ports": [ports],
-      "speed": speed
-    };
-    String jsonString = jsonEncode(jsonMessage);
-    context.read<WebSocketBloc>().add(WebSocketSendMessage(jsonString));
-    _targetsController.clear();
-    _portsController.clear();
-    _speedController.clear();
 
-  }
 
   @override
   void dispose() {
@@ -75,7 +46,7 @@ class _MtDialogSendScanRequestState extends State<MtDialogSendScanRequest> {
   },
   child: MtOpenDialogButton(
       dialogueTitle: 'Новое сканирование*',
-      buttonTitle: 'Сканировать*',
+      buttonTitle: 'Новое сканирование*',
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

@@ -21,7 +21,7 @@ class MtDropMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopupMenuButton<MenuItemData>(
       onSelected: (MenuItemData value) {
-        MtShowDialog(child: value.child, dialogueTitle: value.title)
+        ShowDialogWindow(child: value.child, dialogueTitle: value.title)
             .showCustomDialogue(context);
       },
       itemBuilder: (context) => popupMenuItems

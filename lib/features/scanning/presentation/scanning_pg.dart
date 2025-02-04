@@ -1,15 +1,10 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
- import 'package:net_runner/core/data/logger.dart';
-import 'package:net_runner/core/domain/http_bloc/http_bloc.dart';
-import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
+import 'package:net_runner/core/data/logger.dart';
+import 'package:net_runner/core/domain/post_request_native/post_request_bloc.dart';
 import 'package:net_runner/core/domain/web_data_repo/web_data_repo_bloc.dart';
 import 'package:net_runner/core/domain/web_socket/web_socket_bloc.dart';
 import 'package:net_runner/features/scanning/presentation/widgets/dialog_send_scan_request.dart';
-import 'package:net_runner/utils/constants/themes/app_themes.dart';
 import 'package:net_runner/features/scanning/presentation/widgets/scan_gesture_card.dart';
 
 class ScanningPg extends StatefulWidget {
@@ -85,14 +80,6 @@ class _ScanningPgState extends State<ScanningPg> {
                           completeTime:  elem["UpdatedAt"],
                           percent: elem["percent"],
                         );
-                        // return ListTile(
-                        //   leading: Text(elem["ID"].toString()),
-                        //   subtitle: Text(elem["number_task"]),
-                        //   title: Text(elem["CreatedAt"]),
-                        //   trailing: Text('data'),
-                        //
-                        // );
-
                       }
                     );
               }),

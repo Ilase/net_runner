@@ -33,6 +33,8 @@ dependencies:
   web_socket_channel: ^3.0.1
   flutter_bloc: ^8.1.6
   shared_preferences: ^2.3.5
+  web: ^1.1.0
+  dropdown_button2: ^2.3.9
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -42,7 +44,5 @@ dev_dependencies:
 flutter:
   generate: enable
   uses-material-design: true
-  assets:
-    - assets/data.xml
-    - assets/report.json
+  
 

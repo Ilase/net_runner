@@ -1,7 +1,7 @@
 part of 'post_request_bloc.dart';
 
-@immutable
-abstract class PostRequestState extends Equatable {
+
+class PostRequestState extends Equatable {
   const PostRequestState();
   @override
   List<Object> get props => [];
