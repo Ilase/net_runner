@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Graph Visualization'),
         ),
-        body: MtGraphPg(),
+        body: const MtGraphPg(),
       ),
     );
   }

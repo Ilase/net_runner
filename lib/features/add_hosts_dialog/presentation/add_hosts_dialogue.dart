@@ -16,7 +16,7 @@ class _AddHostsDialogueState extends State<AddHostsDialogue>
   Widget build(BuildContext context) {
     context
         .read<PostRequestBloc>()
-        .add(PostRequestGetSingleTaskEvent(endpoint: '/ping'));
+        .add(const PostRequestGetSingleTaskEvent(endpoint: '/ping'));
     return MtOpenDialogButton(
       dialogueTitle: 'Add hosts*',
       buttonTitle: 'Add hosts*',
@@ -24,7 +24,7 @@ class _AddHostsDialogueState extends State<AddHostsDialogue>
         padding: const EdgeInsets.all(8),
         child: Column(
           children: [
-            Container(
+            SizedBox(
               width: MediaQuery.of(context).size.width - 60,
               height: MediaQuery.of(context).size.height - 430,
               child: Row(
@@ -74,7 +74,7 @@ class _AddHostsDialogueState extends State<AddHostsDialogue>
             Center(
               child: ElevatedButton(
                 onPressed: () {},
-                child: Text('Confirm'),
+                child: const Text('Confirm'),
               ),
             ),
           ],

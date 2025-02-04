@@ -35,7 +35,7 @@ class ShowDialogWindow {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              if (child != null) child!, //!!!!! this one
+              child, //!!!!! this one
               const SizedBox(height: 24),
               Align(
                 alignment: Alignment.bottomRight,

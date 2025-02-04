@@ -148,7 +148,7 @@ class ScanViewPage extends StatelessWidget {
                                           )),
 
                                       ],
-                                    )).toList(),
+                                    )),
 
                                   ],
                                 ),

@@ -59,7 +59,7 @@ class _HeadPageState extends State<HeadPage> {
                 context.read<PostRequestBloc>().add(ClearUriPostRequestEvent());
                 Navigator.of(context).pushNamed('/init');
               },
-              icon: Icon(Icons.electrical_services_rounded),
+              icon: const Icon(Icons.electrical_services_rounded),
             )
           ],
         ),
@@ -181,7 +181,7 @@ class _HeadPageState extends State<HeadPage> {
                 allowImplicitScrolling: false,
                 controller: _pageController,
                 scrollDirection: Axis.vertical,
-                children: [
+                children: const [
                   //MainPage
                   // Container(
                   //   child: const Center(

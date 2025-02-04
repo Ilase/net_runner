@@ -19,7 +19,7 @@ import 'package:net_runner/utils/constants/themes/app_themes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
-  ntLogger.i('Is web: ' + platform.toString());
+  ntLogger.i('Is web: $platform');
   final ElementBloc elementBloc = ElementBloc();
   final WebSocketBloc webSocketBloc = WebSocketBloc(elementBloc);
   final PostRequestBloc postRequestBloc = PostRequestBloc(elementBloc);//HttpBloc(elementBloc);

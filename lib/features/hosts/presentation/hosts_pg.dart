@@ -23,12 +23,12 @@ class _HostsPgState extends State<HostsPg> {
                 const Text(
                   'Hosts*',
                 ),
-                AddHostsDialogue(),
+                const AddHostsDialogue(),
                 IconButton(
                   onPressed: (){
-                    context.read<PostRequestBloc>().add(PostRequestGetEvent(endpoint: '/host')); // TODO: remake dynamic
+                    context.read<PostRequestBloc>().add(const PostRequestGetEvent(endpoint: '/host')); // TODO: remake dynamic
                   },
-                  icon: Icon(Icons.refresh),
+                  icon: const Icon(Icons.refresh),
                 )
               ],
             ),
@@ -50,16 +50,16 @@ class _HostsPgState extends State<HostsPg> {
                             leading: Text(item["ID"].toString()),
                             title: Text(item["ip"]),
                             subtitle: Text(item["name"] ?? "Unnamed"),
-                            trailing: Text  ("Trail"),
+                            trailing: const Text  ("Trail"),
                           );
                         },
                       );
                     }
                     if(state is PostRequestLoadInProgressState){
-                      return Center(child: CircularProgressIndicator());
+                      return const Center(child: CircularProgressIndicator());
                     }
                     else {
-                      return Center(child: Text('Unexpected error. Try to reload list*'));
+                      return const Center(child: Text('Unexpected error. Try to reload list*'));
                     }
                   },
                 ),

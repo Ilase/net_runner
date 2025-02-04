@@ -18,19 +18,21 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       home: BlocProvider(
         create: (context) => WebSocketBloc(ElementBloc()),
-        child: WebSocketExample(),
+        child: const WebSocketExample(),
       ),
     );
   }
 }
 
 class WebSocketExample extends StatefulWidget {
+  const WebSocketExample({super.key});
+
   @override
   _WebSocketExampleState createState() => _WebSocketExampleState();
 }
 
 class _WebSocketExampleState extends State<WebSocketExample> {
-  TextEditingController _controller = TextEditingController();
+  final TextEditingController _controller = TextEditingController();
   List<String> messages = [];
   bool _isFormVisible = false;
 

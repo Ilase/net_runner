@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:net_runner/core/data/logger.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -13,12 +16,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -31,7 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Context Menu Example'),
+        title: const Text('Context Menu Example'),
       ),
       body: Stack(
         children: [
@@ -48,17 +53,17 @@ class _MyHomePageState extends State<MyHomePage> {
             child: ListView(
               children: <Widget>[
                 ListTile(
-                  title: Text('Item 1'),
+                  title: const Text('Item 1'),
                   onTap: () {
                     // Обработка обычного нажатия
-                    print('Item 1 tapped');
+                    ntLogger.i('Item 1 tapped');
                   },
                 ),
                 ListTile(
-                  title: Text('Item 2'),
+                  title: const Text('Item 2'),
                   onTap: () {
                     // Обработка обычного нажатия
-                    print('Item 2 tapped');
+                    ntLogger.i('Item 2 tapped');
                   },
                 ),
               ],
@@ -70,23 +75,23 @@ class _MyHomePageState extends State<MyHomePage> {
               top: _tapPosition!.dy,
               child: DropdownButtonHideUnderline(
                 child: DropdownButton2(
-                  customButton: Icon(Icons.more_vert),
-                  items: [
+                  customButton: const Icon(Icons.more_vert),
+                  items: const [
                     DropdownMenuItem(
-                      child: Text('Option 1'),
                       value: 'Option 1',
+                      child: Text('Option 1'),
                     ),
                     DropdownMenuItem(
-                      child: Text('Option 2'),
                       value: 'Option 2',
+                      child: Text('Option 2'),
                     ),
                   ],
                   onChanged: (value) {
-                    // Обработка выбора опции
+
                     setState(() {
                       _isMenuVisible = false;
                     });
-                    print('Selected: $value');
+                    ntLogger.i('Selected: $value');
                   },
                 ),
               ),

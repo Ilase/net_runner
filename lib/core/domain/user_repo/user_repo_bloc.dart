@@ -10,9 +10,7 @@ class UserRepoBloc extends Bloc<UserRepoEvent, UserRepoState> {
 
   final cacheManager = DefaultCacheManager();
   WebSocketBloc? webSocketBloc;
-  UserRepoBloc() : super(UserRepoInitial()) {
-
-  }
+  UserRepoBloc() : super(UserRepoInitial());
 
 
 }

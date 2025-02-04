@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:net_runner/features/scanning/presentation/widgets/scan_gesture_card.dart';
 
 void main() {
   runApp(const MyApp());

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 
 class MtGraphPg extends StatefulWidget {
+  const MtGraphPg({super.key});
+
   @override
   _MtGraphPgState createState() => _MtGraphPgState();
 }
@@ -16,9 +18,9 @@ class _MtGraphPgState extends State<MtGraphPg> with SingleTickerProviderStateMix
   void initState() {
     super.initState();
     nodes = [
-      Node(position: Offset(100, 100), label: 'A'),
-      Node(position: Offset(200, 200), label: 'B'),
-      Node(position: Offset(300, 100), label: 'C'),
+      Node(position: const Offset(100, 100), label: 'A'),
+      Node(position: const Offset(200, 200), label: 'B'),
+      Node(position: const Offset(300, 100), label: 'C'),
     ];
     edges = [
       Edge(from: nodes[0], to: nodes[1]),
@@ -27,7 +29,7 @@ class _MtGraphPgState extends State<MtGraphPg> with SingleTickerProviderStateMix
 
     controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 16),
+      duration: const Duration(milliseconds: 16),
     )..addListener(() {
       setState(() {
         applyForces(nodes, edges);

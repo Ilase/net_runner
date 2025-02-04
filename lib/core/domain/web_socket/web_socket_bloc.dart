@@ -5,7 +5,6 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/web_data_repo/web_data_repo_bloc.dart';
-import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 part 'web_socket_event.dart';

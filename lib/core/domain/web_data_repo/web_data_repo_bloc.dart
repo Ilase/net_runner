@@ -13,7 +13,7 @@ class ElementBloc extends Bloc<ElementEvent, ElementState> {
   void _onAddOrUpdateElement(AddOrUpdateElement event, Emitter<ElementState> emit) {
     final updatedElements = List<Map<String, dynamic>>.from(state.elements);
     final index = updatedElements.indexWhere((e) => e['ID'] == event.element['ID']);
-    print('getted elements ' + event.element.toString());
+    print('getted elements ${event.element}');
     if (index != -1) {
       updatedElements[index] = event.element;
       print('Element updated: ${event.element}*');

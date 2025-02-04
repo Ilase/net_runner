@@ -8,8 +8,8 @@ class TaskController extends Equatable {
   List<Map<String,dynamic>> dataList = [];
   String id;
 
-  TaskController() : id = Uuid().v4();
-  TaskController.resave(List<Map<String,dynamic>> tasks) : id = Uuid().v4(), dataList = tasks;
+  TaskController() : id = const Uuid().v4();
+  TaskController.resave(List<Map<String,dynamic>> tasks) : id = const Uuid().v4(), dataList = tasks;
   
   void updateList(String handledData){
     Map<String,dynamic> newItem = jsonDecode(handledData);
@@ -22,10 +22,6 @@ class TaskController extends Equatable {
   }
   void resave(List<Map<String,dynamic>> tasks){
     dataList = tasks;
-  }
-  @override
-  String toString() {
-    return super.toString();
   }
 
   @override

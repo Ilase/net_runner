@@ -35,7 +35,7 @@ class _InitWsConnectionPageState extends State<InitWsConnectionPage> {
               Navigator.of(context).pushNamed('/head');
             }
           },
-          child: Container(
+          child: SizedBox(
             width: 500,
             height: 500,
             child: Center(

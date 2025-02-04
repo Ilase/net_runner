@@ -11,7 +11,7 @@ class MtAddButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
         onPressed: onPressed,
-        icon: Icon(
+        icon: const Icon(
             Icons.add_circle_outline,
             size: 30)
     );

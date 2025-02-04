@@ -30,19 +30,19 @@ class PostRequestBloc extends Bloc<PostRequestEvent, PostRequestState> {
   Future<void> _getSingleTask(PostRequestGetSingleTaskEvent event, Emitter emit) async {
     try{
       if (uri == "") {
-        emit(PostRequestLoadFailureState("Uri is empty*"));
+        emit(const PostRequestLoadFailureState("Uri is empty*"));
         return;
       }
       // final response =
       ntLogger.i(uri);
-      ntLogger.i(uri! + '/task'+ event.endpoint);
+      ntLogger.i('${uri!}/task${event.endpoint}');
       final response = await http.get(
         Uri.parse(uri! + event.endpoint),
       );
 
       final decodedResponce = jsonDecode(response.body);
       if(response.statusCode == 200) {
-        ntLogger.i('Responce' + decodedResponce.toString());
+        ntLogger.i('Responce$decodedResponce');
       } else {
         ntLogger.i('Request failed');
       }
@@ -56,11 +56,11 @@ class PostRequestBloc extends Bloc<PostRequestEvent, PostRequestState> {
 
   Future<void> _getTasks(PostRequestFetchElements event, Emitter emit) async {
     if(uri == ""){
-      emit(PostRequestLoadFailureState("Uri is empty*"));
+      emit(const PostRequestLoadFailureState("Uri is empty*"));
       return;
     }
     final response = await http.get(
-      Uri.parse(uri! + '/task'),
+      Uri.parse('${uri!}/task'),
     );
     final decodedResponce = jsonDecode(response.body);
     //print(decodedResponce);
