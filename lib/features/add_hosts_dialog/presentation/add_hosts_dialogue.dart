@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:net_runner/core/domain/post_request_native/post_request_bloc.dart';
+import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
 import 'package:net_runner/core/presentation/widgets/dialog_tile.dart';
 
 class AddHostsDialogue extends StatefulWidget {

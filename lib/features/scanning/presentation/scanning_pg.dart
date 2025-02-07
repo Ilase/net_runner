@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/data/logger.dart';
-import 'package:net_runner/core/domain/post_request_native/post_request_bloc.dart';
+import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
 import 'package:net_runner/core/domain/web_data_repo/web_data_repo_bloc.dart';
 import 'package:net_runner/core/domain/web_socket/web_socket_bloc.dart';
 import 'package:net_runner/features/scanning/presentation/widgets/dialog_send_scan_request.dart';
@@ -27,16 +27,18 @@ class _ScanningPgState extends State<ScanningPg> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Row(
+                  Row(
                     children: [
-                      Text(
+                      const Text(
                         'Сканирования*',
                         //style: AppTheme.lightTheme.textTheme.titleMedium
                       ),
-                       SizedBox(
+                      const SizedBox(
                         width: 5,
                       ),
-                       MtDialogSendScanRequest(), //Кнопка Сканировать
+                      ElevatedButton(onPressed: (){
+                        Navigator.of(context).pushNamed('/create-scan');
+                      }, child: Text('New scan*'))
                     ],
                   ),
                   IconButton(

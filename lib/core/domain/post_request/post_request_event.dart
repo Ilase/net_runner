@@ -33,3 +33,8 @@ class PostRequestSendEvent extends PostRequestEvent {
   const PostRequestSendEvent({required this.endpoint, required this.body});
 }
 class PostRequestFetchElements extends PostRequestEvent {}
+
+class PostRequestDeleteHostEvent extends PostRequestEvent {
+  final int hostId;
+  const PostRequestDeleteHostEvent({required this.hostId});
+}

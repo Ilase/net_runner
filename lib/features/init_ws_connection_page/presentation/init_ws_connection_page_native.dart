@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/data/logger.dart';
-import 'package:net_runner/core/domain/post_request_native/post_request_bloc.dart';
+import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
 import 'package:net_runner/core/domain/web_socket/web_socket_bloc.dart';
 import 'package:net_runner/utils/constants/themes/text_styles.dart';
 

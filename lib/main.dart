@@ -3,10 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/data/platform.dart';
-import 'package:net_runner/core/domain/post_request_native/post_request_bloc.dart';
+import 'package:net_runner/core/domain/checkbox_controller/checkbox_controller_bloc.dart';
+import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
 import 'package:net_runner/core/domain/web_data_repo/web_data_repo_bloc.dart';
 import 'package:net_runner/core/domain/web_socket/web_socket_bloc.dart';
+import 'package:net_runner/features/hosts/presentation/add_host_page.dart';
 import 'package:net_runner/features/init_ws_connection_page/presentation/init_ws_connection_page_native.dart';
+import 'package:net_runner/features/scanning/presentation/create_scan_page.dart';
 import 'package:net_runner/locale/netrunner_localizations.dart';
 import 'package:net_runner/core/data/data_loader.dart';
 import 'package:net_runner/core/presentation/head_page.dart';
@@ -23,6 +26,7 @@ void main() async {
   final ElementBloc elementBloc = ElementBloc();
   final WebSocketBloc webSocketBloc = WebSocketBloc(elementBloc);
   final PostRequestBloc postRequestBloc = PostRequestBloc(elementBloc);//HttpBloc(elementBloc);
+  final CheckboxControllerBloc checkboxControllerBloc = CheckboxControllerBloc();
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   runApp(
@@ -31,6 +35,7 @@ void main() async {
       elementBlocPtr: elementBloc,
       postRequestBlocPtr: postRequestBloc,
       webSocketBlocPtr: webSocketBloc,
+      checkboxControllerBlocPtr: checkboxControllerBloc,
     )
   );
 }
@@ -40,13 +45,14 @@ class StartPoint extends StatelessWidget {
   final ElementBloc elementBlocPtr;
   final WebSocketBloc webSocketBlocPtr;
   final PostRequestBloc postRequestBlocPtr;
-
+  final CheckboxControllerBloc checkboxControllerBlocPtr;
   const StartPoint(
     {
       super.key, required this.elementBlocPtr,
       required this.postRequestBlocPtr,
       required this.webSocketBlocPtr ,
       required this.sharedPreferences,
+      required this.checkboxControllerBlocPtr,
     }
   );
 
@@ -61,6 +67,7 @@ class StartPoint extends StatelessWidget {
         BlocProvider.value(value: postRequestBlocPtr), //<PostRequestBloc>(create: (context) => PostRequestBloc()),
         BlocProvider.value(value: webSocketBlocPtr), //<WebSocketBloc>(create: (context) => WebSocketBloc()),
         BlocProvider.value(value: elementBlocPtr), //<CacheOperatorBloc>(create: (context) => CacheOperatorBloc(sharedPreferences: sharedPreferences)),
+        BlocProvider.value(value: checkboxControllerBlocPtr),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: true,
@@ -86,6 +93,8 @@ class StartPoint extends StatelessWidget {
         routes: {
           InitWsConnectionPage.route : (context) => const InitWsConnectionPage(),
           HeadPage.route : (context) => HeadPage(),
+          AddHostPage.route : (context) => const AddHostPage(),
+          CreateScanPage.route : (context) => const CreateScanPage()
         },
       ),
     );
