@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/data/logger.dart';
+import 'package:net_runner/core/domain/connection_init/connection_init_bloc.dart';
 import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
 import 'package:net_runner/core/domain/web_socket/web_socket_bloc.dart';
 import 'package:net_runner/utils/constants/themes/text_styles.dart';
@@ -24,16 +25,16 @@ class _InitWsConnectionPageState extends State<InitWsConnectionPage> {
     final double height = size.height;
     return Scaffold(
       body: Center(
-        child: BlocListener<WebSocketBloc, WebSocketState>(
+        child: BlocListener<ConnectionInitBloc, ConnectionInitState>(
           listener: (context, state) {
-            if(state is WebSocketError){
-              ntLogger.e(state.message);
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.toString())));
-            }
-            if(state is WebSocketConnected){
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Connected*')));
+            if(state is ConnectionInitOk){
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Connected!')));
               Navigator.of(context).pushNamed('/head');
             }
+            if(state is ConnectionInitError){
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${state.error}')));
+            }
+
           },
           child: SizedBox(
             width: 500,
@@ -69,12 +70,17 @@ class _InitWsConnectionPageState extends State<InitWsConnectionPage> {
                         onPressed: () async {
                           if(_uriAddress.text.isNotEmpty){
                             if(_uriAddress.text.isNotEmpty){
-                              context.read<WebSocketBloc>().add(
-                                  WebSocketConnect(
-                                      'ws://${_uriAddress.text}/api/v1/ws'));
-                              context.read<PostRequestBloc>().add(
-                                  UpdateUriPostRequestEvent(
-                                      uri: _uriAddress.text));
+                              context.read<ConnectionInitBloc>().add(ConnectionInitCheckEvent(uri: 'http://${_uriAddress.text}/api/v1'));
+                              await Future.delayed(const Duration(milliseconds: 500));
+                              if (context.read<ConnectionInitBloc>().state is ConnectionInitOk) {
+                                context.read<WebSocketBloc>().add(
+                                    WebSocketConnect(
+                                        'ws://${_uriAddress.text}/api/v1/ws'));
+                                context.read<PostRequestBloc>().add(
+                                    UpdateUriPostRequestEvent(
+                                        uri: _uriAddress.text));
+
+                              }
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(

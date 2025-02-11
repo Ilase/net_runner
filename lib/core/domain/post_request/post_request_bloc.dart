@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:http/http.dart' as http;
 import 'package:net_runner/core/data/logger.dart';
+import 'package:net_runner/core/domain/api_data_controller/api_data_controller_bloc.dart';
 import 'dart:convert';
 import 'package:net_runner/core/domain/web_data_repo/web_data_repo_bloc.dart';
 
@@ -10,10 +11,12 @@ part 'post_request_state.dart';
 
 class PostRequestBloc extends Bloc<PostRequestEvent, PostRequestState> {
   final ElementBloc elementBloc;
+  final ApiDataControllerBloc apiDataControllerBloc;
 
   static String? uri;
 
-  PostRequestBloc(this.elementBloc) : super(PostRequestInitialState()){
+  PostRequestBloc(this.elementBloc, this.apiDataControllerBloc)
+      : super(PostRequestInitialState()){
     on<PostRequestGetEvent>(_getResponseOls);
     on<PostRequestSendEvent>(_sendRequest);
     on<UpdateUriPostRequestEvent>(_updateUri);
@@ -21,12 +24,30 @@ class PostRequestBloc extends Bloc<PostRequestEvent, PostRequestState> {
     on<ClearUriPostRequestEvent>(_clearUri);
     on<PostRequestGetSingleTaskEvent>(_getSingleTask);
     on<PostRequestDeleteHostEvent>(_deleteHost);
+    //new events
+
+    // on<GetRequest>(_getRequest);
+    // on<PostRequest>(_postRequest);
+    // on<DeleteRequest>;
+
   }
 
+  //new
+
+
+
+
+
+
+
+
+
+  //old
   Future<void> _getSingleTask(PostRequestGetSingleTaskEvent event, Emitter emit) async {
     emit(PostRequestLoadInProgressState());
     try{
       if (uri == "") {
+        ntLogger.w(uri);
         emit(const PostRequestLoadFailureState("Uri is empty*"));
         return;
       }
