@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/data/logger.dart';
+import 'package:net_runner/core/domain/api_data_controller/api_data_controller_bloc.dart';
 import 'package:net_runner/core/domain/connection_init/connection_init_bloc.dart';
 import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
 import 'package:net_runner/core/domain/web_socket/web_socket_bloc.dart';
@@ -73,6 +74,7 @@ class _InitWsConnectionPageState extends State<InitWsConnectionPage> {
                               context.read<ConnectionInitBloc>().add(ConnectionInitCheckEvent(uri: 'http://${_uriAddress.text}/api/v1'));
                               await Future.delayed(const Duration(milliseconds: 500));
                               if (context.read<ConnectionInitBloc>().state is ConnectionInitOk) {
+                                context.read<ApiDataControllerBloc>().apiService.updateBaseUrl('http://${_uriAddress.text}/api/v1');
                                 context.read<WebSocketBloc>().add(
                                     WebSocketConnect(
                                         'ws://${_uriAddress.text}/api/v1/ws'));

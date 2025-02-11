@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  String? baseUrl;
+  final String baseUrl;
 
   ApiService({required this.baseUrl});
 
@@ -31,9 +31,5 @@ class ApiService {
     } else {
       throw Exception("Error: ${response.statusCode}");
     }
-  }
-
-  void updateBaseUrl(String baseUrl){
-    this.baseUrl = baseUrl;
   }
 }

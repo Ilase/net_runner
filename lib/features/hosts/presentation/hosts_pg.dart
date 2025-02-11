@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/data/logger.dart';
+import 'package:net_runner/core/domain/api/host_list/host_list_cubit.dart';
+import 'package:net_runner/core/domain/api_data_controller/api_data_controller_bloc.dart';
+import 'package:net_runner/core/domain/api_data_controller/api_request.dart';
 import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
 import 'package:net_runner/features/add_hosts_dialog/presentation/add_hosts_dialogue.dart';
 
@@ -30,7 +33,8 @@ class _HostsPgState extends State<HostsPg> {
                 }, child: Text('Add hosts'),),
                 IconButton(
                   onPressed: (){
-                    context.read<PostRequestBloc>().add(const PostRequestGetEvent(endpoint: '/host')); // TODO: remake dynamic
+                    context.read<ApiDataControllerBloc>().add(GetRequestEvent(endpoint: '/host'));
+                    // context.read<PostRequestBloc>().add(const PostRequestGetEvent(endpoint: '/host')); // TODO: remake dynamic
 
                   },
                   icon: const Icon(Icons.refresh),
@@ -44,15 +48,15 @@ class _HostsPgState extends State<HostsPg> {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${state.error}')));
                   }
                 },
-                child: BlocBuilder<PostRequestBloc, PostRequestState>(
+                child: BlocBuilder<HostListCubit, HostListState>(
                   builder: (context, state){
-                    if(state is PostRequestLoadSuccessState){
+                    if(state is FullState){
                       return ListView.builder(
-                        itemCount: state.postData.length,
+                        itemCount: state.hostList.length,
                         itemBuilder: (context, index){
-                          ntLogger.w(state.postData.length);
-                          final item = state.postData[index];
-                          if (state.postData.length != 1) {
+                          ntLogger.w(state.hostList.length);
+                          final item = state.hostList[index];
+                          if (state.hostList.length != 1) {
                             return ListTile(
                               leading: Text(item["ID"].toString()),
                               title: Text(item["ip"]),
@@ -82,11 +86,8 @@ class _HostsPgState extends State<HostsPg> {
                     //     ),
                     //   );
                     // }
-                    if(state is PostRequestLoadInProgressState){
-                      return const Center(child: CircularProgressIndicator());
-                    }
                     else {
-                      return const Center(child: Text('Unexpected error. Try to reload list*'));
+                      return const Center(child: CircularProgressIndicator(),);
                     }
                   },
                 ),
