@@ -12,7 +12,7 @@ class ScanViewPage extends StatelessWidget {
   String taskName;
   String taskType;
 
-  ScanViewPage({required this.taskName, required this.taskType});
+   ScanViewPage({required this.taskName, required this.taskType});
 
   @override
   Widget build(BuildContext context) {

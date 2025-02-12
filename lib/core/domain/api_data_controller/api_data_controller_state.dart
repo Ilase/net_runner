@@ -23,3 +23,16 @@ class CurrentState extends ApiDataControllerState {
   List<Object?> get props => [];
 }
 
+
+class PostRequestSuccessState extends ApiDataControllerState {
+  final Map<String,dynamic>? response;
+
+  PostRequestSuccessState({this.response});
+  @override
+  List<Object?> get props => [response];
+}
+
+class PingInProgress extends ApiDataControllerState {
+  @override
+  List<Object?> get props => [];
+}

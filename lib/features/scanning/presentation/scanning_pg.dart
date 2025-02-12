@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
 import 'package:net_runner/core/domain/web_data_repo/web_data_repo_bloc.dart';
@@ -68,22 +69,25 @@ class _ScanningPgState extends State<ScanningPg> {
               },
               child: BlocBuilder<ElementBloc, ElementState>(
                   builder: (content, state) {
-                    ntLogger.i(state.elements.length);
-                    return ListView.builder(
+                    if (state.elements.isNotEmpty){
+                  ntLogger.i(state.elements.length);
+                  return ListView.builder(
                       reverse: true,
                       itemCount: state.elements.length,
-                      itemBuilder: (context, index){
+                      itemBuilder: (context, index) {
                         final elem = state.elements[index];
                         return ScanGestureCard(
                           item: elem,
                           title: elem["number_task"],
                           status: elem["status"],
                           scanType: elem["type"],
-                          completeTime:  elem["UpdatedAt"],
+                          completeTime: elem["UpdatedAt"],
                           percent: elem["percent"],
                         );
-                      }
-                    );
+                      });
+                } else {
+                      return Center(child: LoadingAnimationWidget.fourRotatingDots(color: Colors.blue, size: 100),);
+                    }
               }),
             )),
           ],

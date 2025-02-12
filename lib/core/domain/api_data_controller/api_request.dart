@@ -4,8 +4,8 @@
 
 class Api {
 
-  final String _api = '/api';
-  final String _stringVersion = '/v1';
+  static String api = '/api';
+  static String stringVersion = '/v1';
   static const Map<String,String> apiRequest = {
     "ping" : '/ping',
     "get-task-list" : '/task',
@@ -18,8 +18,6 @@ class Api {
     "pentest" : 'pentest',
   };
 
-  String prefix(){
-    return _api + _stringVersion;
-  }
+  String get prefix => api + stringVersion;
 
 }

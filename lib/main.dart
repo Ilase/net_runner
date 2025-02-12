@@ -5,6 +5,7 @@ import 'package:net_runner/core/data/api_service/api_service.dart';
 import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/data/platform.dart';
 import 'package:net_runner/core/domain/api/host_list/host_list_cubit.dart';
+import 'package:net_runner/core/domain/api/ping_list/ping_list_cubit.dart';
 import 'package:net_runner/core/domain/api_data_controller/api_data_controller_bloc.dart';
 import 'package:net_runner/core/domain/checkbox_controller/checkbox_controller_bloc.dart';
 import 'package:net_runner/core/domain/connection_init/connection_init_bloc.dart';
@@ -25,13 +26,17 @@ import 'package:net_runner/utils/constants/themes/app_themes.dart';
 // String _platform_ = "Unknown";
 import 'package:shared_preferences/shared_preferences.dart';
 
+
+
+
 void main() async {
   ntLogger.i('Is web: $platform');
 
   ApiService apiService = ApiService(baseUrl: null);
   final HostListCubit hostListCubit = HostListCubit();
   final ElementBloc elementBloc = ElementBloc();
-  final ApiDataControllerBloc apiDataControllerBloc = ApiDataControllerBloc(apiService: apiService, hostListCubit: hostListCubit);
+  final PingListCubit pingListCubit = PingListCubit();
+  final ApiDataControllerBloc apiDataControllerBloc = ApiDataControllerBloc(apiService: apiService, hostListCubit: hostListCubit, pingListCubit: pingListCubit);
   //final WebSocketBloc webSocketBloc = WebSocketBloc(elementBloc);
   //final PostRequestBloc postRequestBloc = PostRequestBloc(elementBloc, apiDataControllerBloc);
   final CheckboxControllerBloc checkboxControllerBloc = CheckboxControllerBloc();
@@ -41,6 +46,7 @@ void main() async {
   runApp(
     MultiBlocProvider(
       providers: [
+        BlocProvider.value(value: pingListCubit),
         BlocProvider.value(value: elementBloc),
         BlocProvider.value(value: apiDataControllerBloc),
         BlocProvider.value(value: hostListCubit),

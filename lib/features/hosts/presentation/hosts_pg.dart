@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/api/host_list/host_list_cubit.dart';
 import 'package:net_runner/core/domain/api_data_controller/api_data_controller_bloc.dart';
@@ -28,7 +29,8 @@ class _HostsPgState extends State<HostsPg> {
                   'Hosts*',
                 ),
                 ElevatedButton(onPressed: (){
-                  context.read<PostRequestBloc>().add(PostRequestGetSingleTaskEvent(endpoint: '/ping')); //prefire
+                  context.read<ApiDataControllerBloc>().add(GetRequestEvent(endpoint: '/ping'));
+                  //context.read<PostRequestBloc>().add(PostRequestGetSingleTaskEvent(endpoint: '/ping')); //prefire
                   Navigator.of(context).pushNamed('/add-host');
                 }, child: Text('Add hosts'),),
                 IconButton(
@@ -78,16 +80,10 @@ class _HostsPgState extends State<HostsPg> {
 
                         },
                       );
-                    }
-                    // else if (state is PostRequestLoadSuccessState && state.postData.isEmpty) {
-                    //   return const Center(
-                    //     child: Text(
-                    //         'There is no hosts avaliable! Try to add it first :D'
-                    //     ),
-                    //   );
-                    // }
-                    else {
-                      return const Center(child: CircularProgressIndicator(),);
+                    } else if (state is EmptyState) {
+                      return Center(child: LoadingAnimationWidget.fourRotatingDots(color: Colors.blue, size: 100),);
+                    } else {
+                      return  Placeholder();
                     }
                   },
                 ),

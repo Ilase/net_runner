@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:net_runner/core/domain/api/ping_list/ping_list_cubit.dart';
+import 'package:net_runner/core/domain/api_data_controller/api_data_controller_bloc.dart';
 import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
 
 class AddHostPage extends StatefulWidget {
@@ -42,7 +44,8 @@ class _AddHostPageState extends State<AddHostPage> {
                             Text('Available hosts'),
                             IconButton(
                               onPressed: () {
-                                context.read<PostRequestBloc>().add(PostRequestGetSingleTaskEvent(endpoint: '/ping'));
+                                context.read<ApiDataControllerBloc>().add(GetRequestEvent(endpoint: '/ping'));
+                                //context.read<PostRequestBloc>().add(PostRequestGetSingleTaskEvent(endpoint: '/ping'));
                                 leftResponseList.clear();
                               },
                               icon: Icon(Icons.refresh),
@@ -51,11 +54,11 @@ class _AddHostPageState extends State<AddHostPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         ),
                         Expanded(
-                          child: BlocBuilder<PostRequestBloc, PostRequestState>(
+                          child: BlocBuilder<PingListCubit, PingListState>(
                             builder: (context, state) {
-                              if (state is PostRequestLoadSingleSuccessState) {
+                              if (state is FullState) {
                                 leftResponseList.clear();
-                                for (dynamic field in state.postData["activeHosts"]) {
+                                for (dynamic field in state.pingMap["activeHosts"]) {
                                   leftResponseList.add(field);
                                 }
                                 return ListView.builder(
@@ -136,7 +139,12 @@ class _AddHostPageState extends State<AddHostPage> {
             ),
             ElevatedButton(
               onPressed: () {
+
                 _sendHostNames();
+                setState(() {
+                  rightResponseList.clear();
+                });
+                Navigator.of(context).pop();
               },
               child: Text('Confirm'),
             )

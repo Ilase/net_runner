@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/data/logger.dart';
+import 'package:net_runner/core/domain/api/host_list/host_list_cubit.dart';
+import 'package:net_runner/core/domain/api_data_controller/api_data_controller_bloc.dart';
 import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
 
 class CreateScanPage extends StatefulWidget {
@@ -130,29 +132,30 @@ class _CreateScanPageState extends State<CreateScanPage> {
                         const Text('Scan targets'),
                         IconButton(
                           onPressed: () {
-                            context.read<PostRequestBloc>().add(const PostRequestGetEvent(endpoint: '/host'));
+                            // context.read<PostRequestBloc>().add(const PostRequestGetEvent(endpoint: '/host'));
+                            context.read<ApiDataControllerBloc>().add(GetRequestEvent(endpoint: '/host'));
                           },
                           icon: const Icon(Icons.refresh),
                         ),
                       ],
                     ),
                     Expanded(
-                      child: BlocConsumer<PostRequestBloc, PostRequestState>(
-                        listener: (listener, state) {
-                          if (state is PostRequestLoadFailureState) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(state.error)),
-                            );
-                          }
-                        },
+                      child: BlocBuilder<HostListCubit, HostListState>(
+                        // listener: (listener, state) {
+                        //   if (state is PostRequestLoadFailureState) {
+                        //     ScaffoldMessenger.of(context).showSnackBar(
+                        //       SnackBar(content: Text(state.error)),
+                        //     );
+                        //   }
+                        // },
                         builder: (context, state) {
-                          if (state is PostRequestLoadInProgressState) {
+                          if (state is EmptyState) {
                             return const Center(child: CircularProgressIndicator());
-                          } else if (state is PostRequestLoadSuccessState) {
+                          } else if (state is FullState) {
                             return ListView.builder(
-                              itemCount: state.postData.length,
+                              itemCount: state.hostList.length,
                               itemBuilder: (context, index) {
-                                final item = state.postData[index];
+                                final item = state.hostList[index];
                                 final ip = item['ip'];
                                 final isChecked = selectedIPs.contains(ip);
                                 return ListTile(

@@ -3,7 +3,7 @@ import 'package:net_runner/features/scanning/presentation/scan_view_page.dart';
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
 
 class ScanGestureCard extends StatefulWidget {
-  final item;
+  final Map<String, dynamic> item;
   String title;
   String status;
   String completeTime;
@@ -28,7 +28,7 @@ class _ScanGestureCardState extends State<ScanGestureCard> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (widget.status != "pending") {
+        if (widget.status == "completed") {
           //TODO: rewrite
           Navigator.push(context,MaterialPageRoute(builder: (context) =>ScanViewPage(taskName: widget.title, taskType: widget.scanType,)));
         }
