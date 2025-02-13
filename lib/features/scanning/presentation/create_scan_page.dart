@@ -102,10 +102,15 @@ class _CreateScanPageState extends State<CreateScanPage> {
                             "ports": _portsController.text,
                             "speed": currentSliderValue.toInt().toString()
 
-                          }
-                        },
-                      ),
+                          },
+                          },
+                        ),
                       );
+                      _portsController.clear();
+                      _scanTypeController.clear();
+                      _nameController.clear();
+
+                      Navigator.of(context).pop();
                     },
                     child: const Text('Confirm'),
                   ),
@@ -141,13 +146,6 @@ class _CreateScanPageState extends State<CreateScanPage> {
                     ),
                     Expanded(
                       child: BlocBuilder<HostListCubit, HostListState>(
-                        // listener: (listener, state) {
-                        //   if (state is PostRequestLoadFailureState) {
-                        //     ScaffoldMessenger.of(context).showSnackBar(
-                        //       SnackBar(content: Text(state.error)),
-                        //     );
-                        //   }
-                        // },
                         builder: (context, state) {
                           if (state is EmptyState) {
                             return const Center(child: CircularProgressIndicator());

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:net_runner/core/data/ip_input_formatter.dart';
 import 'package:net_runner/core/domain/api/ping_list/ping_list_cubit.dart';
 import 'package:net_runner/core/domain/api_data_controller/api_data_controller_bloc.dart';
 import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
@@ -13,6 +15,12 @@ class AddHostPage extends StatefulWidget {
 }
 
 class _AddHostPageState extends State<AddHostPage> {
+  final TextEditingController _customIpController = TextEditingController();
+  final _ipInputFormater = MaskTextInputFormatter(
+    mask: '###.###.###.###',
+    filter: { "#": RegExp(r'[0-9]') },
+    type: MaskAutoCompletionType.lazy,
+  );
   List<String> leftResponseList = [];
   List<String> rightResponseList = [];
   Map<String, TextEditingController> hostNameControllers = {};
@@ -53,6 +61,30 @@ class _AddHostPageState extends State<AddHostPage> {
                           ],
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         ),
+                        Container(
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: _customIpController,
+                                  inputFormatters: [
+                                    IPTextInputFormatter(),
+                                  ],
+                                  decoration: InputDecoration(
+                                    labelText: 'By manual',
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 10,),
+                              IconButton(onPressed: (){
+                                setState(() {
+                                  rightResponseList.add(_customIpController.text);
+                                  hostNameControllers[_customIpController.text] = TextEditingController();
+                                });
+                              }, icon: Icon(Icons.accessible))
+                            ],
+                          ),
+                        ),
                         Expanded(
                           child: BlocBuilder<PingListCubit, PingListState>(
                             builder: (context, state) {
@@ -88,6 +120,8 @@ class _AddHostPageState extends State<AddHostPage> {
                             },
                           ),
                         ),
+                        SizedBox(height: 10,),
+
                       ],
                     ),
                   ),
@@ -128,6 +162,7 @@ class _AddHostPageState extends State<AddHostPage> {
                             },
                           ),
                         ),
+
                       ],
                     ),
                   ),

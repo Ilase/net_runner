@@ -2,282 +2,195 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
-import 'package:net_runner/features/scanning/data/data_parce.dart';
+import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
 import 'package:net_runner/features/scanning/data/scan_responce.dart';
-import 'package:net_runner/utils/constants/themes/app_themes.dart';
+//import 'scan_result.dart'; // Make sure to import your ScanResult class
 
-class ScanViewPage extends StatelessWidget {
-  // final NmapScanResult scanResult;
-  static const String route = '/task-view';
-  String taskName;
-  String taskType;
-
-   ScanViewPage({required this.taskName, required this.taskType});
+class ScanResultWidget extends StatelessWidget {
+  //final ScanResult scanResult;
+  final String taskName;
+  final String taskType;
+  ScanResultWidget({/*required this.scanResult*/ required this.taskName, required this.taskType});
 
   @override
   Widget build(BuildContext context) {
-    context.read<PostRequestBloc>().add(PostRequestGetSingleTaskEvent(
-          endpoint: '/$taskType/$taskName',
-        ));
+    context.read<PostRequestBloc>().add(PostRequestGetSingleTaskEvent(endpoint: '/$taskType/$taskName'));
     return Scaffold(
       appBar: AppBar(
-        title: Text(taskName),
+        title: Text('Scan Result'),
       ),
       body: BlocConsumer<PostRequestBloc, PostRequestState>(
-        listener: (context, state) {
-          // TODO: implement listener
-        },
-        builder: (context, state) {
-          if (state is PostRequestLoadSingleSuccessState) {
-            NmapScanResult scanResult = NmapScanResult.fromJson(state.postData);
-            return SingleChildScrollView(
-                child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildGeneralInfo(scanResult.generalInfo),
-                        SizedBox(height: 16),
-                        for (var host in scanResult.hosts)
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('IP: ${host.ip}',
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold)),
-                              Text('Status: ${host.status}'),
-                              SizedBox(height: 8),
-                              Text('Ports:',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold)),
-                              for (var port in host.ports)
-                                ListTile(
-                                  title: Text(
-                                      'Port: ${port.port}, Protocol: ${port.protocol}, Service: ${port.service}, State: ${port.state}'),
-                                ),
-                              SizedBox(height: 8),
-                              if (host.vulnerabilities != null &&
-                                  host.vulnerabilities!.isNotEmpty)
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('Vulnerabilities:',
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold)),
-                                    for (var vuln in host.vulnerabilities!)
-                                      ListTile(
-                                        title: Text(
-                                            'ID: ${vuln.id}, CVSS: ${vuln.cvss}, Port: ${vuln.port}'),
-                                        subtitle: Text(
-                                            'CPE: ${vuln.cpe}, Description: ${vuln.description}'),
-                                      ),
-                                  ],
-                                )
-                              else
-                                Text('No vulnerabilities found.'),
-                              Divider(),
-                            ],
-                          ),
-                      ],
-                    )));
-          } else {
-            return Center(child: CircularProgressIndicator());
-          }
-        },
+  listener: (context, state) {
+    if(state is PostRequestLoadFailureState){
+      ScaffoldMessenger.of(context).showMaterialBanner(
+        MaterialBanner(
+          content: Text(state.error, style: TextStyle(color: Colors.redAccent),),
+          actions:
+          [
+            IconButton(onPressed: (){
+              ScaffoldMessenger.of(context).clearMaterialBanners();
+            },
+              icon: Icon(Icons.close),
+            ),
+          ],
+        ),
+      );
+    }
+  },
+  builder: (context, state) {
+    if(state is PostRequestLoadSingleSuccessState) {
+      // ntLogger.e(state.postData);
+      final ScanResult scanResult = ScanResult.fromJson(state.postData);
+      ntLogger.w(scanResult.general_info.task_name);
+      return SingleChildScrollView(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildGeneralInfo(scanResult.general_info),
+            _buildDiff(scanResult.diff),
+            _buildHosts(scanResult.hosts),
+          ],
+        ),
+      );
+    } else {
+      return Center(child: CircularProgressIndicator(),);
+    }
+  }
+),
+    );
+  }
+
+  Widget _buildGeneralInfo(GeneralInfo generalInfo) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 10,horizontal: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(width: 2, color: Colors.blue)
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('General Info', /*style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)*/),
+          Text('Task Name: ${generalInfo.task_name}'),
+          Text('Start: ${generalInfo.start}'),
+          Text('End: ${generalInfo.end}'),
+          Text('Version: ${generalInfo.version}'),
+          Text('Elapsed: ${generalInfo.elapsed} seconds'),
+          Text('Summary: ${generalInfo.summary}'),
+          Text('Up: ${generalInfo.up}'),
+          Text('Down: ${generalInfo.down}'),
+          Text('Total: ${generalInfo.total}'),
+          SizedBox(height: 16.0),
+        ],
       ),
     );
   }
 
-  Widget _buildGeneralInfo(info) {
+  Widget _buildHosts(Map<String, Host> hosts) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('General Info',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-        SizedBox(height: 8),
-        Text('Task Name: ${info.taskName}'),
-        Text('Version: ${info.version}'),
-        Text('Start Time: ${info.start}'),
-        Text('End Time: ${info.end}'),
-        Text('Elapsed: ${info.elapsed} seconds'),
-        Text('Summary: ${info.summary}'),
-        Text('Total Hosts: ${info.total} (Up: ${info.up}, Down: ${info.down})'),
-        Divider(),
+        Text('Hosts', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        ...hosts.entries.map((entry) {
+          Host host = entry.value;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('IP: ${host.ip}', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text('Status: ${host.status}'),
+              Text('Ports:'),
+              ...host.ports.map((port) => ListTile(
+                  title: Text("Port: ${port.port}")/*Text('- Port: ${port.port}, Protocol: ${port.protocol},*/,
+                  subtitle: Text("Service: ${port.service}"),
+                  trailing: Text("State: ${port.state}")),),
+              Text('Vulnerabilities:', style: TextStyle(fontWeight: FontWeight.bold),),
+              ...host.vulns.entries.map((vulnEntry) {
+                Vulnerability vuln = vulnEntry.value;
+                // return Text('CVE-ID: ${vuln.id}, CVSS: ${vuln.cvss}, Description: ${vuln.description}');
+                return Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      decoration: BoxDecoration(
+                        border: Border.all(width: 2, color: Colors.blue),
+                        borderRadius: BorderRadius.circular(15)
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(vuln.id, style: TextStyle(fontWeight: FontWeight.bold),),
+                          Text('CVSS : ${vuln.cvss} = ${vuln.cvss_vector}', style: TextStyle(fontWeight: FontWeight.normal),),
+                          Text(
+                            'CPE : ${vuln.cpe}', style: TextStyle(fontWeight: FontWeight.normal),
+                          ),
+                          Text('Port : ${vuln.port}'),
+                          Text('References : ${vuln.references}'), ///TODO: make link
+                          Text('Description : ${vuln.description}'),
+                          Text('Solutions : ${vuln.solutions}')
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    )
+                  ],
+                );
+              }),
+              SizedBox(height: 16.0),
+            ],
+          );
+        }).toList(),
       ],
     );
   }
-}
 
-class ScanViewPageOld extends StatelessWidget {
-  ScanViewPageOld({super.key, required this.taskName, required this.taskType});
-  String taskName;
-  String taskType;
-  static String route = "/task-view";
-
-  @override
-  Widget build(BuildContext context) {
-    ntLogger.i(taskName);
-    context.read<PostRequestBloc>().add(PostRequestGetSingleTaskEvent(
-          endpoint: '/$taskType/$taskName',
-        ));
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(taskName),
-        leading: IconButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          icon: const Icon(Icons.arrow_back),
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: SingleChildScrollView(
-          child: BlocBuilder<PostRequestBloc, PostRequestState>(
-            builder: (context, state) {
-              if (state is PostRequestLoadFailureState) {
-                return Center(
-                  child: Text('Error: ${state.error}*'),
-                );
-              } else if (state is PostRequestLoadInProgressState) {
-                return const CircularProgressIndicator();
-              } else if (state is PostRequestLoadSingleSuccessState) {
-                final nmapResult = NmapResult.fromJson(state.postData);
-                return SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
+  Widget _buildDiff(Map<String, Diff> diff) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Diff', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        ...diff.entries.map((entry) {
+          Diff diffEntry = entry.value;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('IP: ${entry.key}', style: TextStyle(fontWeight: FontWeight.bold)),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(15),
-                              boxShadow: [
-                                BoxShadow(
-                                    color: AppTheme.lightTheme.shadowColor,
-                                    offset: const Offset(0, 2),
-                                    blurRadius: 3)
-                              ]),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                    'Elapsed: *${nmapResult.generalInfo.elapsed} seconds'),
-                                Text(
-                                    'Start time: *${nmapResult.generalInfo.start}'),
-                                Text(
-                                    'End time: *${nmapResult.generalInfo.end}'),
-                                Text(
-                                    'Summary: *${nmapResult.generalInfo.summary}'),
-                                Text(
-                                    'Hosts down: *${nmapResult.generalInfo.down}'),
-                                Text('Hosts up: *${nmapResult.generalInfo.up}'),
-                                Text('Total: *${nmapResult.generalInfo.total}'),
-                              ],
-                            ),
-                          ),
-                        ),
-                        // Text(nmapResult.hosts[0].ip),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        const Text('Review'),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        // ListView.builder(
-                        //   physics: NeverScrollableScrollPhysics(),
-                        //   shrinkWrap: true,
-                        //   itemCount: nmapResult.hosts.length,
-                        //   itemBuilder: (builder, index){
-                        //     final itemHost = nmapResult.hosts[index];
-                        //
-                        //     final String itemPorts = itemHost.ports.map((port) => port.port.toString()).join(', ');
-                        //     return Container(
-                        //       decoration: BoxDecoration(
-                        //         border: Border.all(width: 1)
-                        //       ),
-                        //       child: Column(
-                        //         children: [
-                        //           Text(itemHost.ip),
-                        //
-                        //           Text(''),
-                        //         ],
-                        //       ),
-                        //     );
-                        //   },
-                        // )
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: nmapResult.hosts.length,
-                          itemBuilder: (context, index) {
-                            final itemHost = nmapResult.hosts[index];
-                            return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(15),
-                                        border: Border.all(width: 1)),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text('IP: ${itemHost.ip}'),
-                                        Text('Status: ${itemHost.status}'),
-                                        const Text('Ports:'),
-                                        ...itemHost.ports.map((port) => Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text('  Port: ${port.port}'),
-                                                Text(
-                                                    '  Protocol: ${port.protocol}'),
-                                                Text(
-                                                    '  Service: ${port.service}'),
-                                                Text('  State: ${port.state}'),
-                                                if (port.scripts != null)
-                                                  ...port.scripts!
-                                                      .map((script) => Column(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              Text(
-                                                                  '    Script ID: ${script.id}'),
-                                                              Text(
-                                                                  '    Script Output: ${script.output}'),
-                                                            ],
-                                                          )),
-                                              ],
-                                            )),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(height: 30),
-                                ]);
-                          },
-                        ),
+                        Text('Removed', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
+                        ...diffEntry.removed.entries.map((removedEntry) {
+                          Vulnerability vuln = removedEntry.value as Vulnerability;
+                          ntLogger.i(vuln.description);
+                          return Text('- ID: ${vuln.id}, Description: ${vuln.description}');
+                        }).toList(),
                       ],
                     ),
                   ),
-                );
-              } else
-                return const Center(
-                  child: Text("Unexpected error*"),
-                );
-            },
-          ),
-        ),
-      ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Added', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
+                        ...diffEntry.added.entries.map((addedEntry) {
+                          Vulnerability vuln = addedEntry.value as Vulnerability;
+                          return Text('- ID: ${vuln.id}, Description: ${vuln.description}');
+                        }).toList(),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 16.0),
+            ],
+          );
+        }).toList(),
+      ],
     );
   }
 }

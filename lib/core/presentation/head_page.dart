@@ -41,18 +41,23 @@ class _HeadPageState extends State<HeadPage> {
             const SizedBox(
               width: 10,
             ),
-            dropmenu.MtDropMenu(
-              actionsTitle: 'asd',
-              title: AppLocalizations.of(context)!.appBarActionsButtonTitle,
-              popupMenuItems: [
-                MenuItemData(
-                    title: 'Title1*',
-                    child: DropMenuItemWidget(
-                      menuItemData: MenuItemData(
-                          title: 'Figma1', child: const Placeholder()),
-                    )),
-              ],
-            ),
+            ElevatedButton(
+              onPressed: (){
+              ScaffoldMessenger.of(context).showMaterialBanner(
+                  MaterialBanner(
+                      content: Text('This is warning message', style: TextStyle(color: Colors.redAccent),),
+                      actions:
+                        [
+                          IconButton(onPressed: (){
+                            ScaffoldMessenger.of(context).clearMaterialBanners();
+                          },
+                          icon: Icon(Icons.close),
+                          ),
+                        ],
+                  ),
+              );
+
+            }, child: Text('Message test'),),
             IconButton(
               onPressed: (){
                 context.read<WebSocketBloc>().add(WebSocketDisconnect());
@@ -94,22 +99,6 @@ class _HeadPageState extends State<HeadPage> {
                     });
                   },
                   destinations: <NavigationRailDestination>[
-                    // NavigationRailDestination(
-                    //   icon: Icon(
-                    //     Icons.home,
-                    //     size: 45,
-                    //     color: AppTheme.lightTheme.colorScheme.onSurface,
-                    //   ),
-                    //   selectedIcon: Icon(
-                    //     Icons.home_outlined,
-                    //     size: 45,
-                    //     color: AppTheme.lightTheme.colorScheme.onSurface,
-                    //   ),
-                    //   label: Text(
-                    //     'Главная*',
-                    //     style: AppTheme.lightTheme.textTheme.labelSmall,
-                    //   ),
-                    // ),
                     NavigationRailDestination(
                       icon: Icon(
                         Icons.group,
@@ -142,37 +131,7 @@ class _HeadPageState extends State<HeadPage> {
                         style: AppTheme.lightTheme.textTheme.labelSmall,
                       ),
                     ),
-                    // NavigationRailDestination(
-                    //   icon: Icon(
-                    //     Icons.document_scanner,
-                    //     size: 45,
-                    //     color: AppTheme.lightTheme.colorScheme.onSurface,
-                    //   ),
-                    //   selectedIcon: Icon(
-                    //     Icons.document_scanner_outlined,
-                    //     size: 45,
-                    //     color: AppTheme.lightTheme.colorScheme.onSurface,
-                    //   ),
-                    //   label: Text(
-                    //     'Отчёты*',
-                    //     style: AppTheme.lightTheme.textTheme.labelSmall,
-                    //   ),
-                    // ),
-                  //   NavigationRailDestination(
-                  //       icon: Icon(
-                  //         Icons.share_rounded,
-                  //         size: 45,
-                  //         color: AppTheme.lightTheme.colorScheme.onSurface,
-                  //       ),
-                  //       selectedIcon: Icon(
-                  //         Icons.share_outlined,
-                  //         size: 45,
-                  //         color: AppTheme.lightTheme.colorScheme.onSurface,
-                  //       ),
-                  //       label: Text(
-                  //         'Сеть*',
-                  //         style: AppTheme.lightTheme.textTheme.labelSmall,
-                  //       ))
+
                   ],
                   selectedIndex: _selectedIndex),
               Expanded(
@@ -182,33 +141,8 @@ class _HeadPageState extends State<HeadPage> {
                 controller: _pageController,
                 scrollDirection: Axis.vertical,
                 children: const [
-                  //MainPage
-                  // Container(
-                  //   child: const Center(
-                  //     child: Text('Main page'),
-                  //   ),
-                  // ),
-                  // //hosts
                   HostsPg(),
-                  // //scans
                   ScanningPg(),
-                  //otcetiki
-                  // Container(
-                  //   child: const Center(
-                  //     child: Text('Otchetiki*'),
-                  //   ),
-                  // ),
-                  // //network
-                  // Container(
-                  //     child: const Center(
-                  //         child: Text(
-                  //   'Graph*',
-                  // ))),
-                  // Container(
-                  //   child: const Center(
-                  //     child: Text('Graphical network?*'),
-                  //   ),
-                  // ),
                 ],
               )),
             ],

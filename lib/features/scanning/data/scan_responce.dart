@@ -1,86 +1,95 @@
-class NmapScanResult {
-  final GeneralInfo generalInfo;
-  final List<Host> hosts;
+import 'package:json_annotation/json_annotation.dart';
 
-  NmapScanResult({
-    required this.generalInfo,
+part 'scan_responce.g.dart';
+
+@JsonSerializable()
+class ScanResult {
+  GeneralInfo general_info;
+  Map<String, Host> hosts;
+  Map<String, Diff> diff;
+
+  ScanResult({
+    required this.general_info,
     required this.hosts,
+    required this.diff,
   });
 
-  factory NmapScanResult.fromJson(Map<String, dynamic> json) {
-    return NmapScanResult(
-      generalInfo: GeneralInfo.fromJson(json['general_info']),
-      hosts: (json['hosts'] as List).map((host) => Host.fromJson(host)).toList(),
-    );
+  factory ScanResult.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return ScanResult(
+        general_info: GeneralInfo(
+          task_name: 'ERROR',
+          start: 'ERROR',
+          end: 'ERROR',
+          version: 'ERROR',
+          elapsed: 'ERROR',
+          summary: 'ERROR',
+          up: 0,
+          down: 0,
+          total: 0,
+        ),
+        hosts: {},
+        diff: {},
+      );
+    }
+    return _$ScanResultFromJson(json);
   }
+
+  Map<String, dynamic> toJson() => _$ScanResultToJson(this);
 }
 
+@JsonSerializable()
 class GeneralInfo {
-  final int down;
-  final double elapsed;
-  final String end;
-  final String start;
-  final String summary;
-  final String taskName;
-  final int total;
-  final int up;
-  final String version;
+  String task_name;
+  String start;
+  String end;
+  String version;
+  String elapsed;
+  String summary;
+  int up;
+  int down;
+  int total;
 
   GeneralInfo({
-    required this.down,
-    required this.elapsed,
-    required this.end,
+    required this.task_name,
     required this.start,
-    required this.summary,
-    required this.taskName,
-    required this.total,
-    required this.up,
+    required this.end,
     required this.version,
+    required this.elapsed,
+    required this.summary,
+    required this.up,
+    required this.down,
+    required this.total,
   });
 
-  factory GeneralInfo.fromJson(Map<String, dynamic> json) {
-    return GeneralInfo(
-      down: json['down'],
-      elapsed: double.parse(json['elapsed']), // Parse the elapsed field as a double
-      end: json['end'],
-      start: json['start'],
-      summary: json['summary'],
-      taskName: json['task_name'],
-      total: json['total'],
-      up: json['up'],
-      version: json['version'],
-    );
-  }
+  factory GeneralInfo.fromJson(Map<String, dynamic> json) => _$GeneralInfoFromJson(json);
+  Map<String, dynamic> toJson() => _$GeneralInfoToJson(this);
 }
 
+@JsonSerializable()
 class Host {
-  final String ip;
-  final List<Port> ports;
-  final String status;
-  final List<Vulnerability>? vulnerabilities; // Make vulnerabilities nullable
+  String ip;
+  List<Port> ports;
+  String status;
+  Map<String, Vulnerability> vulns;
 
   Host({
     required this.ip,
     required this.ports,
     required this.status,
-    this.vulnerabilities,
+    required this.vulns,
   });
 
-  factory Host.fromJson(Map<String, dynamic> json) {
-    return Host(
-      ip: json['ip'],
-      ports: (json['ports'] as List).map((port) => Port.fromJson(port)).toList(),
-      status: json['status'],
-      vulnerabilities: json['vulns'] != null ? (json['vulns'] as List).map((vuln) => Vulnerability.fromJson(vuln)).toList() : null,
-    );
-  }
+  factory Host.fromJson(Map<String, dynamic> json) => _$HostFromJson(json);
+  Map<String, dynamic> toJson() => _$HostToJson(this);
 }
 
+@JsonSerializable()
 class Port {
-  final int port;
-  final String protocol;
-  final String service;
-  final String state;
+  int port;
+  String protocol;
+  String service;
+  String state;
 
   Port({
     required this.port,
@@ -89,50 +98,54 @@ class Port {
     required this.state,
   });
 
-  factory Port.fromJson(Map<String, dynamic> json) {
-    return Port(
-      port: json['port'],
-      protocol: json['protocol'],
-      service: json['service'],
-      state: json['state'],
-    );
-  }
+  factory Port.fromJson(Map<String, dynamic> json) => _$PortFromJson(json);
+  Map<String, dynamic> toJson() => _$PortToJson(this);
 }
 
+@JsonSerializable()
 class Vulnerability {
-  final String cpe;
-  final String cvss;
-  final String cvssVector;
-  final String? cwe;
-  final String description;
-  final String id;
-  final int port;
-  final String references;
-  final String? solutions;
+  String cpe;
+  String cvss;
+  String cvss_vector;
+  List<String> cwe;
+  String description;
+  String id;
+  int port;
+  String references;
+  List<String> solutions;
 
   Vulnerability({
     required this.cpe,
     required this.cvss,
-    required this.cvssVector,
+    required this.cvss_vector,
+    required this.cwe,
     required this.description,
     required this.id,
     required this.port,
     required this.references,
-    this.cwe,
-    this.solutions,
+    required this.solutions,
   });
 
-  factory Vulnerability.fromJson(Map<String, dynamic> json) {
-    return Vulnerability(
-      cpe: json['cpe'],
-      cvss: json['cvss'],
-      cvssVector: json['cvss_vector'],
-      description: json['description'],
-      id: json['id'],
-      port: json['port'],
-      references: json['references'],
-      cwe: json['cwe'],
-      solutions: json['solutions'],
+  factory Vulnerability.fromJson(Map<String, dynamic> json) => _$VulnerabilityFromJson(json);
+  Map<String, dynamic> toJson() => _$VulnerabilityToJson(this);
+}
+
+@JsonSerializable()
+class Diff {
+  Map<String, Map<String, Vulnerability>> added;
+  Map<String, Map<String, Vulnerability>> removed;
+
+  Diff({
+    required this.added,
+    required this.removed,
+  });
+
+  factory Diff.fromJson(Map<String, dynamic> json) {
+    return Diff(
+      added: (json['+'] as Map<String, dynamic>?)?.map((k, v) => MapEntry(k, (v as Map<String, dynamic>).map((k, v) => MapEntry(k, Vulnerability.fromJson(v as Map<String, dynamic>))))) ?? {},
+      removed: (json['-'] as Map<String, dynamic>?)?.map((k, v) => MapEntry(k, (v as Map<String, dynamic>).map((k, v) => MapEntry(k, Vulnerability.fromJson(v as Map<String, dynamic>))))) ?? {},
     );
   }
+
+  Map<String, dynamic> toJson() => _$DiffToJson(this);
 }

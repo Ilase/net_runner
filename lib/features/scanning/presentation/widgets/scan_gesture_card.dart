@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:net_runner/features/scanning/presentation/create_scan_page.dart';
 import 'package:net_runner/features/scanning/presentation/scan_view_page.dart';
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
 
@@ -29,8 +30,8 @@ class _ScanGestureCardState extends State<ScanGestureCard> {
     return GestureDetector(
       onTap: () {
         if (widget.status == "completed") {
-          //TODO: rewrite
-          Navigator.push(context,MaterialPageRoute(builder: (context) =>ScanViewPage(taskName: widget.title, taskType: widget.scanType,)));
+          //TODO: rewrite0t
+          Navigator.push(context,MaterialPageRoute(builder: (context) =>ScanResultWidget(taskType: widget.scanType, taskName: widget.title,)));
         }
       },
       child:

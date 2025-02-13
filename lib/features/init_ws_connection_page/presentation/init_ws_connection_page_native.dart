@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:net_runner/core/data/base_url.dart';
+import 'package:net_runner/core/data/ip_input_formatter.dart';
 import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/api_data_controller/api_data_controller_bloc.dart';
 import 'package:net_runner/core/domain/connection_init/connection_init_bloc.dart';
@@ -60,7 +62,8 @@ class _InitWsConnectionPageState extends State<InitWsConnectionPage> {
                     ),
                     TextField(
                       inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(r'^[\d\.\:]+$')),
+                        IPTextInputFormatter.withPort(),
+                        // FilteringTextInputFormatter.allow(RegExp(r'^[\d\.\:]+$')),
                       ],
                       controller: _uriAddress,
                       decoration: const InputDecoration(labelText: 'Address*'),
