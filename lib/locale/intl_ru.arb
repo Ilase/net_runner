@@ -1,0 +1,18 @@
+{
+    "@@locale": "ru",
+
+    "appBarAppTitle": "NetRunner",
+    "@appBarAppTitle": {},
+
+    "appBarActionsButtonTitle": "Действия",
+    "@appBarActionsButtonTitle": {},
+    
+    "appBarInfoButtonTitle": "Справка",
+    "@appBarInfoButtonTitle": {},
+
+    "splashScreenLoading": "Загрузка",
+    "@splashScreenLoading": {},
+    
+    "closeButton": "Закрыть",
+    "@closeButton": {}
+}

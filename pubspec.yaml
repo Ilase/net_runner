@@ -1,25 +1,59 @@
-name: net_scanner_test_client
-description: "A new Flutter project."
+name: net_runner
+description: "Client for scan local network"
 publish_to: 'none'
 version: 0.1.0
 
 environment:
   sdk: ^3.5.4
 
+analyzer:
+  errors:
+    invalid_annotation_target: ignore
+
 dependencies:
   flutter:
     sdk: flutter
+  json_annotation: ^4.9.0
   xml: ^6.1.0
   path_provider: ^2.0.11
   csslib: ^1.0.2
   loading_animation_widget: ^1.3.0
+  flutter_slider_drawer: ^3.0.2
+  flutter_zoom_drawer: ^3.2.0
+  google_fonts: ^6.2.1
+  package_info_plus: ^8.1.2
+  auto_size_text: ^3.0.0
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+  #logging: ^1.3.0
+  flutter_cache_manager: ^3.4.1
+  universal_platform: ^1.1.0
+  platform_detector: ^0.2.0
+  logger: ^2.5.0
+  http: ^1.2.2
+  bloc: ^9.0.0
+  equatable: ^2.0.7
+  web_socket_channel: ^3.0.1
+  flutter_bloc: ^9.0.0
+  shared_preferences: ^2.3.5
+  web: ^1.1.0
+  dropdown_button2: ^2.3.9
+  freezed_annotation: ^2.4.4
+  freezed: ^2.5.8
+  mask_text_input_formatter: ^2.9.0
+  graphview: ^1.2.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
+  json_serializable: ^6.9.3
+  build_runner: ^2.4.7
+
 
 flutter:
+  generate: enable
   uses-material-design: true
-  assets:
-    - assets/data.xml
+  
 

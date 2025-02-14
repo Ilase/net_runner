@@ -1,0 +1,20 @@
+{
+    "@@locale": "en",
+
+    "appBarAppTitle": "NetRunner",
+    "@appBarAppTitle": {},
+
+    "appBarActionsButtonTitle": "Actions",
+    "@appBarActionsButtonTitle": {},
+    
+    "appBarInfoButtonTitle": "Help",
+    "@appBarInfoButtonTitle": {},
+
+    "splashScreenLoading": "Loading",
+    "@splashScreenLoading": {},
+
+    "closeButton": "Close",
+    "@closeButton": {}
+
+
+}
