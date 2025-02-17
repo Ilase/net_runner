@@ -48,7 +48,7 @@ class ScanResultWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildGeneralInfo(scanResult.general_info),
-            _buildDiff(scanResult.diff),
+            //_buildDiff(scanResult.diff),
             _buildHosts(scanResult.hosts),
           ],
         ),

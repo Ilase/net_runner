@@ -9,6 +9,7 @@ import 'package:net_runner/core/domain/api/ping_list/ping_list_cubit.dart';
 import 'package:net_runner/core/domain/api_data_controller/api_data_controller_bloc.dart';
 import 'package:net_runner/core/domain/checkbox_controller/checkbox_controller_bloc.dart';
 import 'package:net_runner/core/domain/connection_init/connection_init_bloc.dart';
+import 'package:net_runner/core/domain/graph_request/graph_request_bloc.dart';
 import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
 import 'package:net_runner/core/domain/web_data_repo/web_data_repo_bloc.dart';
 import 'package:net_runner/core/domain/web_socket/web_socket_bloc.dart';
@@ -50,6 +51,7 @@ void main() async {
         BlocProvider.value(value: elementBloc),
         BlocProvider.value(value: apiDataControllerBloc),
         BlocProvider.value(value: hostListCubit),
+        BlocProvider(create: (context) => GraphRequestBloc()),
         BlocProvider(create: (context) => PostRequestBloc(elementBloc, apiDataControllerBloc)),
         BlocProvider(create: (context) => WebSocketBloc(elementBloc)),
         BlocProvider(create: (context) => CheckboxControllerBloc()),

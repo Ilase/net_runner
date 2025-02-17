@@ -1,138 +1,169 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:graphview/GraphView.dart';
+import 'package:net_runner/core/data/logger.dart';
+import 'package:net_runner/core/domain/graph_request/graph_request_bloc.dart';
 
-
-
-class MtGraphPg extends StatefulWidget {
-  const MtGraphPg({super.key});
+class GraphPg extends StatefulWidget {
+  const GraphPg({super.key});
 
   @override
-  _MtGraphPgState createState() => _MtGraphPgState();
+  State<GraphPg> createState() => _GraphPgState();
 }
 
-class _MtGraphPgState extends State<MtGraphPg> with SingleTickerProviderStateMixin {
-  late List<Node> nodes;
-  late List<Edge> edges;
-  late AnimationController controller;
+class _GraphPgState extends State<GraphPg> {
+  final Graph graph = Graph();
+  Map<String, dynamic>? selectedNodeData;
 
-  @override
-  void initState() {
-    super.initState();
-    nodes = [
-      Node(position: const Offset(100, 100), label: 'A'),
-      Node(position: const Offset(200, 200), label: 'B'),
-      Node(position: const Offset(300, 100), label: 'C'),
-    ];
-    edges = [
-      Edge(from: nodes[0], to: nodes[1]),
-      Edge(from: nodes[1], to: nodes[2]),
-    ];
-
-    controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 16),
-    )..addListener(() {
-      setState(() {
-        applyForces(nodes, edges);
-        updateNodes(nodes);
-      });
+  void _showNodeInfo(Map<String, dynamic> nodeData) {
+    setState(() {
+      selectedNodeData = nodeData;
     });
-
-    controller.repeat();
   }
 
-  void applyForces(List<Node> nodes, List<Edge> edges) {
-    const double springLength = 100.0;
-    const double springStrength = 0.1;
-    const double repulsionStrength = 400.0;
-    const double minDistance = 1.0;
-
-    for (var edge in edges) {
-      var delta = edge.to.position - edge.from.position;
-      var distance = delta.distance;
-      if (distance.isNaN || distance < minDistance) continue;
-      var force = (springLength - distance) * springStrength;
-      var direction = delta / distance;
-
-      edge.from.velocity += direction * force;
-      edge.to.velocity -= direction * force;
-    }
-
-    for (var i = 0; i < nodes.length; i++) {
-      for (var j = i + 1; j < nodes.length; j++) {
-        var delta = nodes[j].position - nodes[i].position;
-        var distance = delta.distance;
-        if (distance.isNaN || distance < minDistance) continue;
-        var force = repulsionStrength / (distance * distance);
-        var direction = delta / distance;
-
-        nodes[i].velocity -= direction * force;
-        nodes[j].velocity += direction * force;
-      }
-    }
-  }
-
-
-  void updateNodes(List<Node> nodes) {
-    const double damping = 0.9;
-
-    for (var node in nodes) {
-      node.position += node.velocity;
-      node.velocity *= damping;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomPaint(
-      size: Size.infinite,
-      painter: GraphPainter(nodes: nodes, edges: edges),
+  Widget _buildNode(Map<String, dynamic> nodeData) {
+    return GestureDetector(
+      onTap: () => _showNodeInfo(nodeData),
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 300),
+        decoration: BoxDecoration(
+          color: Colors.blueAccent,
+          shape: BoxShape.rectangle,
+          borderRadius: BorderRadius.circular(15),
+        ),
+        padding: EdgeInsets.all(8),
+        child: Text(
+          nodeData['ip'],
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
     );
   }
 
   @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
+  Widget build(BuildContext context) {
+    context.read<GraphRequestBloc>().add(GraphRequestGetNetwork(taskName: "TASK-00044"));
+
+    return Stack(
+      children: [
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Network"),
+                    IconButton(
+                      onPressed: () {
+                        context.read<GraphRequestBloc>().add(GraphRequestGetNetwork(taskName: "TASK-00044"));
+                      },
+                      icon: Icon(Icons.refresh),
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: BlocConsumer<GraphRequestBloc, GraphRequestState>(
+                    builder: (context, state) {
+                      if (state is GraphRequestSuccess) {
+                        try {
+                          List<dynamic> hosts = state.graphJson["hosts"];
+                          List<String> ips = hosts.map((host) => host['ip'].toString()).toList();
+
+                          String subnetMask = ips.isNotEmpty
+                              ? ips.first.split('.').sublist(0, 3).join('.') + ".0/24"
+                              : "0.0.0.0/24";
+
+                          Node subnetNode = Node.Id(subnetMask);
+                          graph.addNode(subnetNode);
+
+                          List<Node> nodes = hosts.map((host) {
+                            Node node = Node.Id(host['ip']);
+                            graph.addNode(node);
+                            graph.addEdge(subnetNode, node);
+                            return node;
+                          }).toList();
+
+                          return InteractiveViewer(
+                            minScale: 0.1,
+                            maxScale: 10,
+                            constrained: false,
+                            child: GraphView(
+                              graph: graph,
+                              algorithm: FruchtermanReingoldAlgorithm(
+                                attractionRate: 0.01,
+                                repulsionPercentage: 0.1,
+                                iterations: 3000,
+                              ),
+                              paint: Paint()
+                                ..color = Colors.blue
+                                ..strokeWidth = 2
+                                ..strokeCap = StrokeCap.round,
+                              builder: (Node node) {
+                                var nodeData = hosts.firstWhere(
+                                        (h) => h['ip'] == node.key!.value,
+                                    orElse: () => <String, dynamic>{}
+                                ).map<String, dynamic>((key, value) => MapEntry(key.toString(), value));
+
+
+                                return _buildNode(nodeData);
+                              },
+                            ),
+                          );
+                        } catch (e) {
+                          ntLogger.e(e);
+                        }
+                      } else if (state is GraphRequestInProgress) {
+                        return Center(child: CircularProgressIndicator());
+                      } else {
+                        return Center(child: Text('FAIL'));
+                      }
+                      return Container();
+                    },
+                    listener: (context, state) {},
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        if (selectedNodeData != null)
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: Container(
+              width: 250,
+              padding: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(color: Colors.black26, blurRadius: 10, spreadRadius: 2),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text("IP: ${selectedNodeData!['ip']}", style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text("MAC: ${selectedNodeData!['mac']}", style: TextStyle(fontSize: 14)),
+                  Text("OS: ${selectedNodeData!['os']}", style: TextStyle(fontSize: 14)),
+                  Text("CPE: ${selectedNodeData!['cpe']}", style: TextStyle(fontSize: 14)),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: IconButton(
+                      icon: Icon(Icons.close, size: 20),
+                      onPressed: () => setState(() => selectedNodeData = null),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+      ],
+    );
   }
-}
-
-class Node {
-  Offset position;
-  Offset velocity;
-  String label;
-
-  Node({required this.position, this.velocity = Offset.zero, required this.label});
-}
-
-class Edge {
-  Node from;
-  Node to;
-
-  Edge({required this.from, required this.to});
-}
-
-class GraphPainter extends CustomPainter {
-  final List<Node> nodes;
-  final List<Edge> edges;
-
-  GraphPainter({required this.nodes, required this.edges});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    var paint = Paint()
-      ..color = Colors.blue
-      ..strokeWidth = 2;
-
-    for (var edge in edges) {
-      canvas.drawLine(edge.from.position, edge.to.position, paint);
-    }
-
-    paint.color = Colors.red;
-    for (var node in nodes) {
-      canvas.drawCircle(node.position, 10, paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => true;
 }

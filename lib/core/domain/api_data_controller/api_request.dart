@@ -16,6 +16,7 @@ class Api {
   };
   static const Map<String,String> taskType ={
     "pentest" : 'pentest',
+    "networkscan" : 'networkscan'
   };
 
   String get prefix => api + stringVersion;

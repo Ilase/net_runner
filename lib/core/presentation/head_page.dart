@@ -5,6 +5,7 @@ import 'package:net_runner/core/data/menu_item_data.dart';
 import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
 import 'package:net_runner/core/domain/web_socket/web_socket_bloc.dart';
 import 'package:net_runner/core/presentation/widgets/drop_menu.dart';
+import 'package:net_runner/features/graph/graph_pg.dart';
 import 'package:net_runner/features/hosts/presentation/hosts_pg.dart';
 import 'package:net_runner/features/scanning/presentation/scanning_pg.dart';
 import 'package:net_runner/locale/netrunner_localizations.dart';
@@ -50,6 +51,7 @@ class _HeadPageState extends State<HeadPage> {
                         [
                           IconButton(onPressed: (){
                             ScaffoldMessenger.of(context).clearMaterialBanners();
+                            dispose();
                           },
                           icon: Icon(Icons.close),
                           ),
@@ -131,7 +133,22 @@ class _HeadPageState extends State<HeadPage> {
                         style: AppTheme.lightTheme.textTheme.labelSmall,
                       ),
                     ),
-
+                    NavigationRailDestination(
+                      icon: Icon(
+                        Icons.graphic_eq,
+                        size: 45,
+                        color: AppTheme.lightTheme.colorScheme.onSurface,
+                      ),
+                      selectedIcon: Icon(
+                        Icons.graphic_eq_rounded,
+                        size: 45,
+                        color: AppTheme.lightTheme.colorScheme.onSurface,
+                      ),
+                      label: Text(
+                        'Сеть*',
+                        style: AppTheme.lightTheme.textTheme.labelSmall,
+                      ),
+                    ),
                   ],
                   selectedIndex: _selectedIndex),
               Expanded(
@@ -143,6 +160,7 @@ class _HeadPageState extends State<HeadPage> {
                 children: const [
                   HostsPg(),
                   ScanningPg(),
+                  GraphPg(),
                 ],
               )),
             ],
