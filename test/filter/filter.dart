@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:net_runner/core/presentation/widgets/dropdown_field.dart';
+// import 'package:net_runner/core/presentation/widgets/dropdown_field.dart';
 import 'date_picker.dart';
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
 
@@ -30,7 +30,11 @@ class _FilterState extends State<Filter> {
   String? _selectedReportType;
   String? _selectedDataType;
 
-  final List<String> _intervalOptions = ['Option 1', 'Option 2', 'Option 3']; //заглушки
+  final List<String> _intervalOptions = [
+    'Option 1',
+    'Option 2',
+    'Option 3'
+  ]; //заглушки
   final List<String> _nameOptions = ['Name 1', 'Name 2', 'Name 3'];
   final List<String> _reportTypeOptions = ['Report 1', 'Report 2', 'Report 3'];
   final List<String> _dataTypeOptions = ['Data 1', 'Data 2', 'Data 3'];
@@ -54,16 +58,16 @@ class _FilterState extends State<Filter> {
               ),
             ),
             SizedBox(height: 25),
-            DropdownField(
-              label: 'Интервал',
-              items: _intervalOptions,
-              selectedValue: _selectedInterval,
-              onChanged: (value) {
-                setState(() {
-                  _selectedInterval = value;
-                });
-              },
-            ),
+            // DropdownField(
+            //   label: 'Интервал',
+            //   items: _intervalOptions,
+            //   selectedValue: _selectedInterval,
+            //   onChanged: (value) {
+            //     setState(() {
+            //       _selectedInterval = value;
+            //     });
+            //   },
+            // ),
             DatePicker(
               controller: _startDateController,
               label: "Задание создано с",
@@ -75,38 +79,38 @@ class _FilterState extends State<Filter> {
               initialDate: _endDate,
             ),
             SizedBox(height: 20),
-            DropdownField(
-              label: 'Имя',
-              items: _nameOptions,
-              selectedValue: _selectedName,
-              onChanged: (value) {
-                setState(() {
-                  _selectedName = value;
-                });
-              },
-            ),
-            SizedBox(height: 20),
-            DropdownField(
-              label: 'Тип отчета',
-              items: _reportTypeOptions,
-              selectedValue: _selectedReportType,
-              onChanged: (value) {
-                setState(() {
-                  _selectedReportType = value;
-                });
-              },
-            ),
-            SizedBox(height: 20),
-            DropdownField(
-              label: 'Тип данных',
-              items: _dataTypeOptions,
-              selectedValue: _selectedDataType,
-              onChanged: (value) {
-                setState(() {
-                  _selectedDataType = value;
-                });
-              },
-            ),
+            // DropdownField(
+            //   label: 'Имя',
+            //   items: _nameOptions,
+            //   selectedValue: _selectedName,
+            //   onChanged: (value) {
+            //     setState(() {
+            //       _selectedName = value;
+            //     });
+            //   },
+            // ),
+            // SizedBox(height: 20),
+            // DropdownField(
+            //   label: 'Тип отчета',
+            //   items: _reportTypeOptions,
+            //   selectedValue: _selectedReportType,
+            //   onChanged: (value) {
+            //     setState(() {
+            //       _selectedReportType = value;
+            //     });
+            //   },
+            // ),
+            // SizedBox(height: 20),
+            // DropdownField(
+            //   label: 'Тип данных',
+            //   items: _dataTypeOptions,
+            //   selectedValue: _selectedDataType,
+            //   onChanged: (value) {
+            //     setState(() {
+            //       _selectedDataType = value;
+            //     });
+            //   },
+            // ),
             SizedBox(height: 30),
             Align(
               alignment: Alignment.center,
