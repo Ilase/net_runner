@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:net_runner/core/data/menu_item_data.dart';
-import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
-import 'package:net_runner/core/domain/web_socket/web_socket_bloc.dart';
-import 'package:net_runner/core/presentation/widgets/drop_menu.dart';
 import 'package:net_runner/features/graph/graph_pg.dart';
 import 'package:net_runner/features/hosts/presentation/hosts_pg.dart';
 import 'package:net_runner/features/scanning/presentation/scanning_pg.dart';
 import 'package:net_runner/locale/netrunner_localizations.dart';
-import 'package:net_runner/core/presentation/widgets/drop_menu.dart'
-    as dropmenu;
+
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
 
 // ignore: must_be_immutable
@@ -43,27 +37,29 @@ class _HeadPageState extends State<HeadPage> {
               width: 10,
             ),
             ElevatedButton(
-              onPressed: (){
-              ScaffoldMessenger.of(context).showMaterialBanner(
+              onPressed: () {
+                ScaffoldMessenger.of(context).showMaterialBanner(
                   MaterialBanner(
-                      content: Text('This is warning message', style: TextStyle(color: Colors.redAccent),),
-                      actions:
-                        [
-                          IconButton(onPressed: (){
-                            ScaffoldMessenger.of(context).clearMaterialBanners();
-                            dispose();
-                          },
-                          icon: Icon(Icons.close),
-                          ),
-                        ],
+                    content: Text(
+                      'This is warning message',
+                      style: TextStyle(color: Colors.redAccent),
+                    ),
+                    actions: [
+                      IconButton(
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).clearMaterialBanners();
+                          dispose();
+                        },
+                        icon: Icon(Icons.close),
+                      ),
+                    ],
                   ),
-              );
-
-            }, child: Text('Message test'),),
+                );
+              },
+              child: Text('Message test'),
+            ),
             IconButton(
-              onPressed: (){
-                context.read<WebSocketBloc>().add(WebSocketDisconnect());
-                context.read<PostRequestBloc>().add(ClearUriPostRequestEvent());
+              onPressed: () {
                 Navigator.of(context).pushNamed('/init');
               },
               icon: const Icon(Icons.electrical_services_rounded),
@@ -167,6 +163,4 @@ class _HeadPageState extends State<HeadPage> {
           )),
         ));
   }
-
-
 }

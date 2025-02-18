@@ -3,35 +3,36 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:http/http.dart' as http;
-import 'package:net_runner/core/data/logger.dart';
-import 'package:net_runner/core/domain/api/host_list/host_list_cubit.dart';
-import 'package:net_runner/core/domain/api/ping_list/ping_list_cubit.dart';
-
+import 'package:net_runner/core/domain/api/api_endpoints.dart';
 part 'api_event.dart';
 part 'api_state.dart';
 
 class ApiBloc extends Bloc<ApiEvent, ApiState> {
-  PingListCubit pingList = PingListCubit();
-  HostListCubit hostList = HostListCubit();
-
+  late ApiEndpoints apiEndpoints;
+  //static const Map<String, dynamic> apiEndpoints = {};
   ApiBloc() : super(ApiInitial()) {
-    on<GetHosts>(_getHostList);
+    on<ConnectToServerEvent>(_connectToServer);
   }
 
-  Future<void> _getHostList(GetHosts event, Emitter emit) async {
-    final response =
-        await http.get(Uri.parse("http://192.168.20.193:3002/api/v1/host"));
-    //ntLogger.i(jsonDecode(response.body));
-    if (response.statusCode == 200) {
-      hostList.updateState(jsonDecode(response.body));
+  Future<void> _connectToServer(
+    ConnectToServerEvent event,
+    Emitter emit,
+  ) async {
+    apiEndpoints = event.endpoints;
+    bool isConnected = await _checkConnectionToServer();
+    if (isConnected) {
+      emit(ConnectedState());
     } else {
-      ntLogger.e("Cant add hosts to list");
+      emit(ConnectErrorState());
     }
   }
 
-  Future<void> _getPingList() async {}
-
-  Future<void> _getGroupList() async {}
-
-  Future<void> _postRequest() async {}
+  Future<bool> _checkConnectionToServer() async {
+    final response = await http.get(apiEndpoints.getUri("check-connection"));
+    if (response.statusCode == 200 &&
+        jsonDecode(response.body)["netrunnerStatus"] == "up") {
+      return true;
+    }
+    return false;
+  }
 }

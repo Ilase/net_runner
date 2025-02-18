@@ -4,6 +4,7 @@ part 'scan_responce.g.dart';
 
 @JsonSerializable()
 class ScanResult {
+  // ignore: non_constant_identifier_names
   GeneralInfo general_info;
   Map<String, Host> hosts;
   Map<String, Diff> diff;
@@ -62,7 +63,8 @@ class GeneralInfo {
     required this.total,
   });
 
-  factory GeneralInfo.fromJson(Map<String, dynamic> json) => _$GeneralInfoFromJson(json);
+  factory GeneralInfo.fromJson(Map<String, dynamic> json) =>
+      _$GeneralInfoFromJson(json);
   Map<String, dynamic> toJson() => _$GeneralInfoToJson(this);
 }
 
@@ -126,7 +128,8 @@ class Vulnerability {
     required this.solutions,
   });
 
-  factory Vulnerability.fromJson(Map<String, dynamic> json) => _$VulnerabilityFromJson(json);
+  factory Vulnerability.fromJson(Map<String, dynamic> json) =>
+      _$VulnerabilityFromJson(json);
   Map<String, dynamic> toJson() => _$VulnerabilityToJson(this);
 }
 
@@ -142,8 +145,16 @@ class Diff {
 
   factory Diff.fromJson(Map<String, dynamic> json) {
     return Diff(
-      added: (json['+'] as Map<String, dynamic>?)?.map((k, v) => MapEntry(k, (v as Map<String, dynamic>).map((k, v) => MapEntry(k, Vulnerability.fromJson(v as Map<String, dynamic>))))) ?? {},
-      removed: (json['-'] as Map<String, dynamic>?)?.map((k, v) => MapEntry(k, (v as Map<String, dynamic>).map((k, v) => MapEntry(k, Vulnerability.fromJson(v as Map<String, dynamic>))))) ?? {},
+      added: (json['+'] as Map<String, dynamic>?)?.map((k, v) => MapEntry(
+              k,
+              (v as Map<String, dynamic>).map((k, v) => MapEntry(
+                  k, Vulnerability.fromJson(v as Map<String, dynamic>))))) ??
+          {},
+      removed: (json['-'] as Map<String, dynamic>?)?.map((k, v) => MapEntry(
+              k,
+              (v as Map<String, dynamic>).map((k, v) => MapEntry(
+                  k, Vulnerability.fromJson(v as Map<String, dynamic>))))) ??
+          {},
     );
   }
 

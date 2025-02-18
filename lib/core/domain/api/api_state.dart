@@ -1,6 +1,9 @@
 part of 'api_bloc.dart';
 
-@immutable
-sealed class ApiState {}
+abstract class ApiState {}
 
 final class ApiInitial extends ApiState {}
+
+class ConnectedState extends ApiState {}
+
+class ConnectErrorState extends ApiState {}

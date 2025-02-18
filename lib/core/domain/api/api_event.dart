@@ -2,4 +2,7 @@ part of 'api_bloc.dart';
 
 abstract class ApiEvent {}
 
-class GetHosts extends ApiEvent {}
+class ConnectToServerEvent extends ApiEvent {
+  final ApiEndpoints endpoints;
+  ConnectToServerEvent({required this.endpoints});
+}

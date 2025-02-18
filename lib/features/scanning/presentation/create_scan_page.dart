@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/data/logger.dart';
-import 'package:net_runner/core/domain/api/host_list/host_list_cubit.dart';
-import 'package:net_runner/core/domain/api_data_controller/api_data_controller_bloc.dart';
-import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
 
 class CreateScanPage extends StatefulWidget {
   const CreateScanPage({super.key});
@@ -77,9 +74,11 @@ class _CreateScanPageState extends State<CreateScanPage> {
                     max: 5,
                     divisions: 4,
                     onChanged: (double value) {
-                      setState(() {
-                        currentSliderValue = value;
-                      },);
+                      setState(
+                        () {
+                          currentSliderValue = value;
+                        },
+                      );
                     },
                   ),
                   const SizedBox(height: 16),
@@ -89,29 +88,7 @@ class _CreateScanPageState extends State<CreateScanPage> {
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: () {
-                      // You can use the selectedIPs list here
-                      ntLogger.t('Selected IPs: $selectedIPs');
-                      context.read<PostRequestBloc>().add(PostRequestSendEvent(
-                        endpoint: '/task',
-                        body: {
-                          "name": _nameController.text,
-                          "hosts": selectedIPs,
-                          "type": _scanTypeController.text,
-                          "params": {
-                            "ports": _portsController.text,
-                            "speed": currentSliderValue.toInt().toString()
-
-                          },
-                          },
-                        ),
-                      );
-                      _portsController.clear();
-                      _scanTypeController.clear();
-                      _nameController.clear();
-
-                      Navigator.of(context).pop();
-                    },
+                    onPressed: () {},
                     child: const Text('Confirm'),
                   ),
                 ],
@@ -136,49 +113,10 @@ class _CreateScanPageState extends State<CreateScanPage> {
                       children: [
                         const Text('Scan targets'),
                         IconButton(
-                          onPressed: () {
-                            // context.read<PostRequestBloc>().add(const PostRequestGetEvent(endpoint: '/host'));
-                            context.read<ApiDataControllerBloc>().add(GetRequestEvent(endpoint: '/host'));
-                          },
+                          onPressed: () {},
                           icon: const Icon(Icons.refresh),
                         ),
                       ],
-                    ),
-                    Expanded(
-                      child: BlocBuilder<HostListCubit, HostListState>(
-                        builder: (context, state) {
-                          if (state is EmptyState) {
-                            return const Center(child: CircularProgressIndicator());
-                          } else if (state is FullState) {
-                            return ListView.builder(
-                              itemCount: state.hostList.length,
-                              itemBuilder: (context, index) {
-                                final item = state.hostList[index];
-                                final ip = item['ip'];
-                                final isChecked = selectedIPs.contains(ip);
-                                return ListTile(
-                                  title: Text(ip ?? 'No IP'),
-                                  subtitle: Text(item['name'] ?? 'No Name'),
-                                  trailing: Checkbox(
-                                    value: isChecked,
-                                    onChanged: (bool? value) {
-                                      setState(() {
-                                        if (value != null && value) {
-                                          selectedIPs.add(ip);
-                                        } else {
-                                          selectedIPs.remove(ip);
-                                        }
-                                      });
-                                    },
-                                  ),
-                                );
-                              },
-                            );
-                          } else {
-                            return const Center(child: Text('oops'),);
-                          }
-                        },
-                      ),
                     ),
                   ],
                 ),
