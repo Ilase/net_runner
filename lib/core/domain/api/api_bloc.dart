@@ -23,8 +23,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     bool isConnected = await _checkConnectionToServer();
     if (isConnected) {
       emit(ConnectedState()); // Отправка стейта удачного подключения
-      await _getHostList(); // *Debug
-      await _getTaskList(); // *Debug
+
 
     } else {
       emit(ConnectErrorState()); // Отправка стейта ошибки подключения
@@ -42,7 +41,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
       apiListCubit.updateState(
           jsonDecode(response.body)
       );
-      print(apiListCubit.state); // *Debug_print
+
       return true;
     }
     return false;
@@ -60,7 +59,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
       apiListCubit.updateState({
         "hostList": hostList
       });
-      print(apiListCubit.state); // *Debug_print
+
       return true;
     }
     return false;
@@ -74,7 +73,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
       apiListCubit.updateState({
         "taskList": jsonDecode(response.body)
       });
-      print(apiListCubit.state); // *Debug_print
+
       return true;
     }
     return false;
