@@ -17,6 +17,15 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool isDrawerExpanded = false;
+  int selectedPageIndex = 0;
+
+  final List<Widget> pages = [
+    Center(child: Text("Страница 1", style: TextStyle(fontSize: 24))),
+    Center(child: Text("Страница 2", style: TextStyle(fontSize: 24))),
+    Center(child: Text("Страница 3", style: TextStyle(fontSize: 24))),
+    Center(child: Text("Страница 4", style: TextStyle(fontSize: 24))),
+    Center(child: Text("Страница 5", style: TextStyle(fontSize: 24))),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -24,32 +33,42 @@ class _HomePageState extends State<HomePage> {
       body: Row(
         children: [
           AnimatedContainer(
-            width: isDrawerExpanded ? 300 : 100,
+            width:
+                isDrawerExpanded ? MediaQuery.of(context).size.width / 6 : 100,
             curve: Curves.easeInOut,
             duration: Duration(milliseconds: 500),
-            decoration: BoxDecoration(
-              border: Border.all(width: 2),
-            ),
+            decoration: BoxDecoration(border: Border.all(width: 2)),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  child: Column(
-                    children: [
-                      AnimatedCrossFade(
-                        firstChild: Text('Page1'),
-                        secondChild: Icon(Icons.ac_unit),
+                Column(
+                  children: List.generate(pages.length, (index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: AnimatedCrossFade(
+                        firstChild: ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              selectedPageIndex = index;
+                            });
+                          },
+                          child: Text("Страница ${index + 1}"),
+                        ),
+                        secondChild: IconButton(
+                          icon: Icon(Icons.circle, size: 50),
+                          onPressed: () {
+                            setState(() {
+                              selectedPageIndex = index;
+                            });
+                          },
+                        ),
                         crossFadeState: isDrawerExpanded
                             ? CrossFadeState.showFirst
                             : CrossFadeState.showSecond,
                         duration: Duration(milliseconds: 500),
                       ),
-                      Text('Page 2'),
-                      Text('Page 3'),
-                      Text('Page 4'),
-                      Text('Page 5'),
-                    ],
-                  ),
+                    );
+                  }),
                 ),
                 Align(
                   alignment: Alignment.bottomLeft,
@@ -59,15 +78,18 @@ class _HomePageState extends State<HomePage> {
                         isDrawerExpanded = !isDrawerExpanded;
                       });
                     },
-                    icon: Icon(
-                      Icons.accessible,
-                    ),
+                    icon: Icon(Icons.menu),
                   ),
                 ),
               ],
             ),
           ),
-          Expanded(child: Placeholder())
+          Expanded(
+            child: IndexedStack(
+              index: selectedPageIndex,
+              children: pages,
+            ),
+          ),
         ],
       ),
     );

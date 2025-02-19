@@ -11,79 +11,79 @@ class _HostsPgState extends State<HostsPg> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: DefaultTabController(
-        length: 2,
-        child: Column(
-          children: [
-            TabBar(tabs: [
-              Tab(
-                text: 'Hosts',
-              ),
-              Tab(
-                text: 'Groups',
-              ),
-            ]),
-            Expanded(
-              child: TabBarView(
-                children: [
-                  _buildHostTab(context),
-                  _buildGroupTab(context),
-                ],
-              ),
+      child: Column(
+        children: [
+          Text('Хосты и группы'),
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: 16.0,
+                      left: 16.0,
+                      right: 16.0,
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(15)),
+                        boxShadow: [
+                          BoxShadow(
+                              offset: Offset(3, 3),
+                              blurRadius: 60,
+                              color: Colors.grey),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    decoration:
+                                        InputDecoration(labelText: 'Поиск'),
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(Icons.search),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: 16.0,
+                      left: 16.0,
+                      right: 16.0,
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey,
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(15)),
+                        boxShadow: [],
+                      ),
+                      child: Placeholder(),
+                    ),
+                  ),
+                )
+              ],
             ),
-          ],
-        ),
+          )
+        ],
       ),
-    );
-  }
-
-  Widget _buildGroupTab(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Groups*',
-            ),
-            ElevatedButton(
-              onPressed: () {},
-              child: Text('Add groups'),
-            ),
-            IconButton(
-              onPressed: () {
-                // context.read<PostRequestBloc>().add(const PostRequestGetEvent(endpoint: '/host')); // TODO: remake dynamic
-              },
-              icon: const Icon(Icons.refresh),
-            )
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildHostTab(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Hosts*',
-            ),
-            ElevatedButton(
-              onPressed: () {},
-              child: Text('Add hosts'),
-            ),
-            IconButton(
-              onPressed: () {
-                //TODO: remake dynamic
-              },
-              icon: const Icon(Icons.refresh),
-            )
-          ],
-        ),
-      ],
     );
   }
 }
