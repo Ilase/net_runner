@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:net_runner/core/domain/api/api_bloc.dart';
+import 'package:net_runner/core/domain/group_list/group_list_cubit.dart';
+import 'package:net_runner/core/domain/host_list/host_list_cubit.dart';
 
 class HostsPg extends StatefulWidget {
   const HostsPg({super.key});
@@ -13,7 +17,25 @@ class _HostsPgState extends State<HostsPg> {
     return Center(
       child: Column(
         children: [
-          Text('Хосты и группы'),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      offset: Offset(3, 3),
+                      blurRadius: 10,
+                      color: Colors.grey,
+                    ),
+                  ]),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text('Хосты и группы'),
+              ),
+            ),
+          ),
           Expanded(
             child: Row(
               children: [
@@ -31,9 +53,10 @@ class _HostsPgState extends State<HostsPg> {
                             BorderRadius.vertical(top: Radius.circular(15)),
                         boxShadow: [
                           BoxShadow(
-                              offset: Offset(3, 3),
-                              blurRadius: 60,
-                              color: Colors.grey),
+                            offset: Offset(3, 3),
+                            blurRadius: 10,
+                            color: Colors.grey,
+                          ),
                         ],
                       ),
                       child: Padding(
@@ -43,6 +66,14 @@ class _HostsPgState extends State<HostsPg> {
                           children: [
                             Row(
                               children: [
+                                IconButton(
+                                  onPressed: () {
+                                    context
+                                        .read<ApiBloc>()
+                                        .add(GetGroupListEvent());
+                                  },
+                                  icon: Icon(Icons.refresh),
+                                ),
                                 Expanded(
                                   child: TextField(
                                     decoration:
@@ -54,7 +85,22 @@ class _HostsPgState extends State<HostsPg> {
                                   icon: Icon(Icons.search),
                                 ),
                               ],
-                            )
+                            ),
+                            BlocBuilder<GroupListCubit, GroupListState>(
+                              builder: (builder, state) {
+                                if (state is FilledState) {
+                                  return Center(
+                                    child: Text('good'),
+                                  );
+                                } else {
+                                  return Expanded(
+                                    child: Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
                           ],
                         ),
                       ),

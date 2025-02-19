@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
+import 'package:net_runner/core/domain/group_list/group_list_cubit.dart';
 import 'package:net_runner/core/domain/host_list/host_list_cubit.dart';
 import 'package:net_runner/features/connection_page/presentation/connection_page.dart';
 import 'package:net_runner/features/head_page/head_page.dart';
@@ -20,11 +21,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-  ApiListCubit apiListCubit = ApiListCubit();
+  HostListCubit hostListCubit = HostListCubit();
+  GroupListCubit groupListCubit = GroupListCubit();
+
   runApp(MultiBlocProvider(
     providers: [
+      BlocProvider.value(value: groupListCubit),
+      BlocProvider.value(value: hostListCubit),
       BlocProvider(
-        create: (context) => ApiBloc(apiListCubit: apiListCubit),
+        create: (context) => ApiBloc(
+          hostListCubit: hostListCubit,
+          groupListCubit: groupListCubit,
+        ),
       ),
     ],
     child: StartPoint(

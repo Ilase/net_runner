@@ -25,6 +25,12 @@ class ApiEndpoints {
         host: host,
         path: '$baseApiPath/host',
       ),
+      "get-group-list": Uri(
+        scheme: scheme,
+        port: port,
+        host: host,
+        path: '$baseApiPath/group',
+      ),
       "ws": Uri(
         scheme: scheme,
         port: port,

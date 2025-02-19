@@ -101,13 +101,9 @@ class _HeadPageState extends State<HeadPage> {
                           onPressed: () {},
                           icon: Icon(Icons.exit_to_app),
                         ),
-                        AnimatedCrossFade(
-                          firstChild: Icon(Icons.arrow_back),
-                          secondChild: Icon(Icons.arrow_forward_sharp),
-                          crossFadeState: isDrawerExpanded
-                              ? CrossFadeState.showFirst
-                              : CrossFadeState.showSecond,
-                          duration: Duration(milliseconds: 200),
+                        IconButton(
+                          onPressed: () {},
+                          icon: Icon(Icons.person_2_outlined),
                         ),
                       ],
                     )
