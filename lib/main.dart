@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
+import 'package:net_runner/core/domain/host_list/host_list_cubit.dart';
 import 'package:net_runner/features/connection_page/presentation/connection_page.dart';
 import 'package:net_runner/features/hosts/presentation/add_host_page.dart';
 import 'package:net_runner/features/scanning/presentation/create_scan_page.dart';
@@ -19,10 +20,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  ApiListCubit apiListCubit = ApiListCubit();
   runApp(MultiBlocProvider(
     providers: [
       BlocProvider(
-        create: (context) => ApiBloc(),
+        create: (context) => ApiBloc(apiListCubit: apiListCubit),
       ),
     ],
     child: StartPoint(
