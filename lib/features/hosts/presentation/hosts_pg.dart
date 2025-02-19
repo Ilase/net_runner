@@ -12,6 +12,8 @@ class HostsPg extends StatefulWidget {
 }
 
 class _HostsPgState extends State<HostsPg> {
+  Map<String, dynamic>? _selectedItem;
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -86,20 +88,37 @@ class _HostsPgState extends State<HostsPg> {
                                 ),
                               ],
                             ),
-                            BlocBuilder<GroupListCubit, GroupListState>(
-                              builder: (builder, state) {
-                                if (state is FilledState) {
-                                  return Center(
-                                    child: Text('good'),
-                                  );
-                                } else {
-                                  return Expanded(
-                                    child: Center(
-                                      child: CircularProgressIndicator(),
-                                    ),
-                                  );
-                                }
-                              },
+                            SizedBox(
+                              height: 8,
+                            ),
+                            Expanded(
+                              child:
+                                  BlocBuilder<GroupListCubit, GroupListState>(
+                                builder: (builder, state) {
+                                  if (state is FilledState) {
+                                    final List<dynamic> list =
+                                        state.list["groupList"];
+                                    return Center(
+                                      child: AnimatedList(
+                                        initialItemCount: list.length,
+                                        itemBuilder:
+                                            (context, index, animation) {
+                                          return ListTile(
+                                            title: Text('$index'),
+                                            subtitle: Text(list[index]["name"]),
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  } else {
+                                    return Expanded(
+                                      child: Center(
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
                             ),
                           ],
                         ),
@@ -116,12 +135,26 @@ class _HostsPgState extends State<HostsPg> {
                     ),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.grey,
+                        color: Colors.white,
                         borderRadius:
                             BorderRadius.vertical(top: Radius.circular(15)),
-                        boxShadow: [],
+                        boxShadow: [
+                          BoxShadow(
+                            offset: Offset(3, 3),
+                            blurRadius: 10,
+                            color: Colors.grey,
+                          ),
+                        ],
                       ),
-                      child: Placeholder(),
+                      child: Builder(builder: (builder) {
+                        if (_selectedItem != null) {
+                          return Placeholder();
+                        } else {
+                          return Center(
+                            child: Text('Выберете группу для просмотра'),
+                          );
+                        }
+                      }),
                     ),
                   ),
                 )
