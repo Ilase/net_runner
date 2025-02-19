@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:net_runner/core/data/base_url.dart';
-import 'package:net_runner/core/data/data_loader.dart';
 import 'package:net_runner/core/data/ip_input_formatter.dart';
-import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
 import 'package:net_runner/core/domain/api/api_endpoints.dart';
-import 'package:net_runner/features/splash_screen/splash_screen.dart';
+import 'package:net_runner/core/presentation/widgets/notification_manager.dart';
 
 import 'package:net_runner/utils/constants/themes/text_styles.dart';
 
@@ -27,16 +22,12 @@ class _ConnectionPageState extends State<ConnectionPage> {
 
   @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.sizeOf(context);
-    final double width = size.width;
-    final double height = size.height;
     return Scaffold(
       body: BlocListener<ApiBloc, ApiState>(
         listener: (context, state) {
           if (context.read<ApiBloc>().state is ConnectedState) {
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text('Connected')));
-
+            NotificationManager()
+                .showAnimatedNotification(context, 'Commected');
             Navigator.of(context).pushNamed('/head');
           } else if (context.read<ApiBloc>().state is ConnectErrorState) {
             ScaffoldMessenger.of(context)

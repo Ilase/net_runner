@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:net_runner/core/presentation/widgets/notification_manager.dart';
 import 'package:net_runner/features/graph/graph_pg.dart';
 import 'package:net_runner/features/hosts/presentation/hosts_pg.dart';
 import 'package:net_runner/features/scanning/presentation/scanning_pg.dart';
@@ -98,7 +99,10 @@ class _HeadPageState extends State<HeadPage> {
                     Column(
                       children: [
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            NotificationManager()
+                                .showAnimatedNotification(context, 'ERRPR');
+                          },
                           icon: Icon(Icons.exit_to_app),
                         ),
                         IconButton(
