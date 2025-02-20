@@ -17,7 +17,6 @@ import 'package:net_runner/utils/routes/routes.dart';
 import 'package:platform_detector/widgets/platform_type_widget.dart';
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
 
-// String _platform_ = "Unknown";
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
