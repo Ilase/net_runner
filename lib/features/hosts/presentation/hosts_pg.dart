@@ -19,6 +19,7 @@ class _HostsPgState extends State<HostsPg> {
     return Center(
       child: Column(
         children: [
+<<<<<<< HEAD
           // Padding(
           //   padding: const EdgeInsets.all(16.0),
           //   child: Container(
@@ -38,6 +39,28 @@ class _HostsPgState extends State<HostsPg> {
           //     ),
           //   ),
           // ),
+=======
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    offset: Offset(3, 3),
+                    blurRadius: 10,
+                    color: Colors.grey,
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text('Хосты и группы'),
+              ),
+            ),
+          ),
+>>>>>>> 7db0ed4 (Update scanning view state)
           Expanded(
             child: Row(
               children: [
