@@ -25,11 +25,11 @@ class _ConnectionPageState extends State<ConnectionPage> {
     return Scaffold(
       body: BlocListener<ApiBloc, ApiState>(
         listener: (context, state) {
-          if (context.read<ApiBloc>().state is ConnectedState) {
-            NotificationManager()
-                .showAnimatedNotification(context, 'Commected');
+          if (state is ConnectedState) {
+            NotificationManager().showAnimatedNotification(
+                context, 'Connected', 'Connection successful');
             Navigator.of(context).pushNamed('/head');
-          } else if (context.read<ApiBloc>().state is ConnectErrorState) {
+          } else if (state is ConnectErrorState) {
             ScaffoldMessenger.of(context)
                 .showSnackBar(SnackBar(content: Text('Error')));
           }

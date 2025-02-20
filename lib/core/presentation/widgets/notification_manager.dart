@@ -7,7 +7,8 @@ class NotificationManager {
 
   final List<OverlayEntry> _snackbars = [];
 
-  void showNotification(BuildContext context, String message) {
+  void showNotification(
+      BuildContext context, String messageTitle, String messageBody) {
     final overlay = Overlay.of(context);
 
     late OverlayEntry overlayEntry;
@@ -18,7 +19,8 @@ class NotificationManager {
           bottom: 20 + (index * 90), // Смещение вверх на 90px (высота + отступ)
           right: 20,
           child: Notification(
-            message: message,
+            messageTitle: messageTitle,
+            messageBody: messageBody,
             onClose: () {
               _removeSnackbar(overlayEntry);
             },
@@ -31,7 +33,8 @@ class NotificationManager {
     overlay.insert(overlayEntry);
   }
 
-  void showAnimatedNotification(BuildContext context, String message) {
+  void showAnimatedNotification(
+      BuildContext context, String messageTitle, String messageBody) {
     final overlay = Overlay.of(context);
 
     late OverlayEntry overlayEntry;
@@ -39,7 +42,8 @@ class NotificationManager {
       builder: (context) {
         int index = _snackbars.indexOf(overlayEntry);
         return AnimatedNotification(
-          message: message,
+          messageTitle: messageTitle,
+          messageBody: messageBody,
           index: index,
           onClose: () => _removeSnackbar(overlayEntry),
         );
@@ -59,11 +63,15 @@ class NotificationManager {
 }
 
 class Notification extends StatefulWidget {
-  final String message;
+  final String messageTitle;
+  final String messageBody;
   final VoidCallback onClose;
 
-  const Notification({Key? key, required this.message, required this.onClose})
-      : super(key: key);
+  const Notification(
+      {super.key,
+      required this.messageTitle,
+      required this.onClose,
+      required this.messageBody});
 
   @override
   _NotificationState createState() => _NotificationState();
@@ -128,18 +136,44 @@ class _NotificationState extends State<Notification>
             ],
           ),
           constraints: BoxConstraints(maxWidth: 300),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
+          child: Column(
             children: [
-              Expanded(
-                child: Text(
-                  widget.message,
-                  style: TextStyle(color: Colors.blue),
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Text(
+                    widget.messageTitle,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.blue,
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.close,
+                      color: Colors.blue,
+                      size: 16,
+                    ),
+                    onPressed: _hideSnackbar,
+                  ),
+                ],
               ),
-              IconButton(
-                icon: Icon(Icons.close, color: Colors.white),
-                onPressed: _hideSnackbar,
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  widget.messageBody,
+                  maxLines: null,
+                  softWrap: true,
+                  overflow: TextOverflow.ellipsis,
+
+                  ///message style
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.blue,
+                  ),
+                ),
               ),
             ],
           ),
@@ -150,13 +184,15 @@ class _NotificationState extends State<Notification>
 }
 
 class AnimatedNotification extends StatefulWidget {
-  final String message;
+  final String messageTitle;
+  final String messageBody;
   final int index;
   final VoidCallback onClose;
 
   const AnimatedNotification({
     Key? key,
-    required this.message,
+    required this.messageTitle,
+    required this.messageBody,
     required this.index,
     required this.onClose,
   }) : super(key: key);
@@ -179,10 +215,8 @@ class _AnimatedNotificationState extends State<AnimatedNotification>
       duration: Duration(milliseconds: 300),
     );
 
-    _slideAnimation = Tween<Offset>(
-      begin: Offset(0, 1), // Начинаем снизу
-      end: Offset(0, 0), // Двигаемся в нормальное положение
-    ).animate(
+    _slideAnimation =
+        Tween<Offset>(begin: Offset(0, 1), end: Offset(0, 0)).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
     );
 
@@ -216,7 +250,8 @@ class _AnimatedNotificationState extends State<AnimatedNotification>
         );
       },
       child: Notification(
-        message: widget.message,
+        messageTitle: widget.messageTitle,
+        messageBody: widget.messageBody,
         onClose: _hideNotification,
       ),
     );

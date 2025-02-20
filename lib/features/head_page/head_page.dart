@@ -100,8 +100,10 @@ class _HeadPageState extends State<HeadPage> {
                       children: [
                         IconButton(
                           onPressed: () {
-                            NotificationManager()
-                                .showAnimatedNotification(context, 'ERRPR');
+                            NotificationManager().showAnimatedNotification(
+                                context,
+                                'ERROR',
+                                'Error accurred while something');
                           },
                           icon: Icon(Icons.exit_to_app),
                         ),
