@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:bloc/bloc.dart';
-import 'package:meta/meta.dart';
 import 'package:http/http.dart' as http;
 import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/api/api_endpoints.dart';
 import 'package:net_runner/core/domain/group_list/group_list_cubit.dart';
 import 'package:net_runner/core/domain/host_list/host_list_cubit.dart';
+import 'package:net_runner/core/domain/task_list/task_list_cubit.dart';
 part 'api_event.dart';
 part 'api_state.dart';
 
@@ -13,11 +13,12 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
   late ApiEndpoints apiEndpoints;
   HostListCubit hostListCubit;
   GroupListCubit groupListCubit;
-
+  TaskListCubit taskListCubit;
   //static const Map<String, dynamic> apiEndpoints = {};
   ApiBloc({
     required this.hostListCubit,
     required this.groupListCubit,
+    required this.taskListCubit,
   }) : super(ApiInitial()) {
     on<ConnectToServerEvent>(_connectToServer);
     on<GetGroupListEvent>(_getGroupList);
@@ -47,6 +48,8 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     }
     return false;
   }
+
+  Future<void> _connectToWs() async {}
 
   /// Функция для обновления листа стейта в ApiListCubit и проверки ответа от сервера
   /// GET .../host

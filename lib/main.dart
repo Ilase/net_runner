@@ -4,6 +4,7 @@ import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
 import 'package:net_runner/core/domain/group_list/group_list_cubit.dart';
 import 'package:net_runner/core/domain/host_list/host_list_cubit.dart';
+import 'package:net_runner/core/domain/task_list/task_list_cubit.dart';
 import 'package:net_runner/features/connection_page/presentation/connection_page.dart';
 import 'package:net_runner/features/head_page/head_page.dart';
 import 'package:net_runner/features/hosts/presentation/add_host_page.dart';
@@ -23,6 +24,7 @@ void main() async {
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   HostListCubit hostListCubit = HostListCubit();
   GroupListCubit groupListCubit = GroupListCubit();
+  TaskListCubit taskListCubit = TaskListCubit();
 
   runApp(MultiBlocProvider(
     providers: [
@@ -30,6 +32,7 @@ void main() async {
       BlocProvider.value(value: hostListCubit),
       BlocProvider(
         create: (context) => ApiBloc(
+          taskListCubit: taskListCubit,
           hostListCubit: hostListCubit,
           groupListCubit: groupListCubit,
         ),
