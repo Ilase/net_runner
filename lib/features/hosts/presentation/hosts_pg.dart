@@ -58,7 +58,11 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
       children: [
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.only(
+              top: 16,
+              left: 16,
+              right: 16,
+            ),
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -191,7 +195,64 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
 
   Widget _buildHostsView(BuildContext context) {
     return Center(
-      child: Text('Хосты: Здесь будет отображаться список хостов.'),
+      child: Row(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(
+                top: 16,
+                left: 16,
+                right: 16,
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+                  boxShadow: [
+                    BoxShadow(
+                      offset: Offset(3, 3),
+                      blurRadius: 10,
+                      color: Colors.grey,
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          IconButton(
+                            onPressed: () {},
+                            icon: Icon(Icons.refresh),
+                          ),
+                          Expanded(
+                            child: TextField(
+                              decoration: InputDecoration(labelText: 'Поиск'),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {},
+                            icon: Icon(Icons.search),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 8),
+                      Divider(),
+                      SizedBox(height: 8),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: _selectedItem != null
+                ? _buildGroupDetailsView()
+                : Center(child: Text('Выберите хост для просмотра')),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -29,6 +29,7 @@ void main() async {
     providers: [
       BlocProvider.value(value: groupListCubit),
       BlocProvider.value(value: hostListCubit),
+      BlocProvider.value(value: taskListCubit),
       BlocProvider(
         create: (context) => ApiBloc(
           taskListCubit: taskListCubit,
