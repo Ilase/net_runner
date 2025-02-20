@@ -15,14 +15,19 @@ class TaskListCubit extends Cubit<TaskListState> {
 
   void updateElementInTaskList(Map<String, dynamic> updatedElement) {
     emit(LoadingState());
+
     final index =
         taskList.indexWhere((task) => task["ID"] == updatedElement["ID"]);
+    final updatedList = List.from(taskList);
+
     if (index != -1) {
-      final updatedList = List.from(taskList);
       updatedList[index] = updatedElement;
-      taskList = updatedList;
-      emit(FilledState(list: {"taskList": taskList}));
+    } else {
+      updatedList.add(updatedElement);
     }
+
+    taskList = updatedList;
+    emit(FilledState(list: {"taskList": taskList}));
   }
 
   void clearList() {

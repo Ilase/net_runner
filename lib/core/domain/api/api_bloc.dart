@@ -30,6 +30,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
   }) : super(ApiInitial()) {
     on<ConnectToServerEvent>(_connectToServer);
     on<GetGroupListEvent>(_getGroupList);
+    on<FetchTaskListEvent>;
   }
 
   Future<void> _connectToServer(
@@ -60,6 +61,16 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     } else {
       emit(ConnectErrorState()); // Отправка стейта ошибки подключения
     }
+  }
+
+  Future<void> _fetchTasKListEvent(
+      FetchTaskListEvent event, Emitter emit) async {
+    final response = await http.get(apiEndpoints.getUri("task"));
+    if (response.statusCode == 200) {
+      taskListCubit.fillTaskListFromGet(jsonDecode(response.body));
+    }
+
+    /// TODO: add handler cubit
   }
 
   /// Функция для проверки подключения к серверу

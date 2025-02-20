@@ -8,3 +8,5 @@ class ConnectToServerEvent extends ApiEvent {
 }
 
 class GetGroupListEvent extends ApiEvent {}
+
+class FetchTaskListEvent extends ApiEvent {}
