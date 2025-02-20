@@ -32,7 +32,7 @@ class ApiEndpoints {
         path: '$baseApiPath/group',
       ),
       "ws": Uri(
-        scheme: scheme,
+        scheme: "ws",
         port: port,
         host: host,
         path: '$baseApiPath/ws',
