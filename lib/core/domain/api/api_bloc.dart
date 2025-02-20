@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:http/http.dart' as http;
@@ -6,6 +7,7 @@ import 'package:net_runner/core/domain/api/api_endpoints.dart';
 import 'package:net_runner/core/domain/group_list/group_list_cubit.dart';
 import 'package:net_runner/core/domain/host_list/host_list_cubit.dart';
 import 'package:net_runner/core/domain/task_list/task_list_cubit.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 part 'api_event.dart';
 part 'api_state.dart';
 
@@ -14,6 +16,12 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
   HostListCubit hostListCubit;
   GroupListCubit groupListCubit;
   TaskListCubit taskListCubit;
+
+  ///
+  late WebSocketChannel webSocketChannel;
+  StreamSubscription? _webSocketSubscription;
+
+  ///
   //static const Map<String, dynamic> apiEndpoints = {};
   ApiBloc({
     required this.hostListCubit,
@@ -32,7 +40,23 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     emit(ConnectLoadState()); // Отправка стейта загрузки
     bool isConnected = await _checkConnectionToServer();
     if (isConnected) {
-      emit(ConnectedState()); // Отправка стейта удачного подключения
+      try {
+        webSocketChannel = WebSocketChannel.connect(apiEndpoints.getUri("ws"));
+        _webSocketSubscription = webSocketChannel.stream.listen(
+          (message) async {
+            try {
+              final Map<String, dynamic> decodedMessage = jsonDecode(message);
+              ntLogger.w('Message from web socket: \n $decodedMessage');
+              taskListCubit.updateElementInTaskList(decodedMessage);
+            } catch (e) {} //add error stack
+          },
+        );
+        emit(ConnectedState());
+      } catch (e) {
+        ntLogger.e(e.toString());
+      }
+
+      // Отправка стейта удачного подключения
     } else {
       emit(ConnectErrorState()); // Отправка стейта ошибки подключения
     }
