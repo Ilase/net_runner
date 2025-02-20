@@ -65,7 +65,7 @@ class _ScanningPgState extends State<ScanningPg> {
                 children: [
                   /// Левая панель (сканирования)
                   Expanded(
-                    flex: _selectedItem == null ? 1 : 2, // Расширяется, если нет выбранного элемента
+                    flex: _selectedItem == null ? 7 : 10, // Расширяется, если нет выбранного элемента
                     child: Padding(
                       padding: const EdgeInsets.only(
                         top: 16.0,
@@ -102,16 +102,24 @@ class _ScanningPgState extends State<ScanningPg> {
                                         child: AnimatedList(
                                           initialItemCount: list.length,
                                           itemBuilder: (context, index, animation) {
-                                            return ListTile(
-                                              onTap: () {
-                                                setState(() {
-                                                  _selectedItem = list[index];
-                                                  _selectedItemHosts = list[index]["hosts"];
-                                                });
-                                              },
-                                              title: Text('Сканирование $index'),
-                                              subtitle: Text(list[index]["name"]),
-                                              trailing: Icon(Icons.arrow_forward),
+                                            // Поправить ***
+                                            // return ListTile(
+                                            //   onTap: () {
+                                            //     setState(() {
+                                            //       _selectedItem = list[index];
+                                            //       _selectedItemHosts = list[index]["hosts"];
+                                            //     });
+                                            //   },
+                                            //   title: Text('Сканирование $index'),
+                                            //   subtitle: Text(list[index]["name"]),
+                                            //   trailing: Icon(Icons.arrow_forward),
+                                            // );
+                                            return Container(
+                                              height: 5,
+                                              decoration: BoxDecoration(
+                                                color: Colors.blue,
+                                              ),
+                                              child: null,
                                             );
                                           },
                                         ),
@@ -129,11 +137,13 @@ class _ScanningPgState extends State<ScanningPg> {
                     ),
                   ),
 
+
                   /// Правая панель (подробности)
                   AnimatedContainer(
+                    height: double.infinity,
                     duration: Duration(milliseconds: 300),
                     curve: Curves.easeInOut,
-                    width: _selectedItem == null ? 0 : MediaQuery.of(context).size.width * 0.3,
+                    width: _selectedItem == null ? 0 : MediaQuery.of(context).size.width * 0.7,
                     child: _selectedItem == null
                         ? SizedBox()
                         : Padding(
@@ -141,11 +151,12 @@ class _ScanningPgState extends State<ScanningPg> {
                         top: 16.0,
                         left: 16.0,
                         right: 16.0,
+                        bottom: 16.0,
                       ),
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
                           boxShadow: [
                             BoxShadow(
                               offset: Offset(3, 3),
