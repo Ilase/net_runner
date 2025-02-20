@@ -14,7 +14,12 @@ class HostsPg extends StatefulWidget {
 class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   bool _isEditingGroupMode = false;
-  Map<String, dynamic>? _selectedItem;
+  Map<String, dynamic>? _selectedGroupItem;
+  Map<String, dynamic>? _selectedHostItem;
+
+  String hostTabState = "default";
+  String groupTabState = "default";
+
   List<dynamic>? _selectedItemHosts;
 
   @override
@@ -96,6 +101,15 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
                           onPressed: () {},
                           icon: Icon(Icons.search),
                         ),
+                        Divider(),
+                        IconButton(
+                          onPressed: () {
+                            setState(() {
+                              groupTabState = "adding";
+                            });
+                          },
+                          icon: Icon(Icons.add_circle_outline),
+                        ),
                       ],
                     ),
                     SizedBox(height: 8),
@@ -112,8 +126,9 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
                                 return ListTile(
                                   onTap: () {
                                     setState(() {
-                                      _selectedItem = list[index];
+                                      _selectedGroupItem = list[index];
                                       _selectedItemHosts = list[index]["hosts"];
+                                      groupTabState = "view";
                                     });
                                   },
                                   title: Text(list[index]["name"]),
@@ -134,10 +149,41 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
           ),
         ),
         Expanded(
-          child: _selectedItem != null
-              ? _buildGroupDetailsView()
-              : Center(child: Text('Выберите группу для просмотра')),
-        ),
+            child: Padding(
+          padding: const EdgeInsets.only(
+            top: 16,
+            left: 16,
+            right: 16,
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  offset: Offset(3, 3),
+                  color: Colors.grey,
+                  blurRadius: 15,
+                )
+              ],
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(15),
+              ),
+            ),
+            child: Builder(
+              builder: (builder) {
+                if (groupTabState == "adding") {
+                  return _buildAddGroup();
+                } else if (groupTabState == "view") {
+                  return _buildGroupDetailsView();
+                } else {
+                  return Center(
+                    child: Text('Выберите группу для просмотра'),
+                  );
+                }
+              },
+            ),
+          ),
+        )),
       ],
     );
   }
@@ -151,7 +197,7 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Группа: ${_selectedItem!["name"]}'),
+              Text('Группа: ${_selectedGroupItem!["name"]}'),
               Row(
                 children: [
                   IconButton(onPressed: () {}, icon: Icon(Icons.edit)),
@@ -161,8 +207,9 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
                   IconButton(
                     onPressed: () {
                       setState(() {
-                        _selectedItem = null;
+                        _selectedGroupItem = null;
                         _selectedItemHosts = null;
+                        groupTabState = "default";
                       });
                     },
                     icon: Icon(Icons.close),
@@ -172,7 +219,7 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
             ],
           ),
           Divider(),
-          Text('Описание: ${_selectedItem!["description"]}'),
+          Text('Описание: ${_selectedGroupItem!["description"]}'),
           Divider(),
           Text('Хосты:'),
           Expanded(
@@ -235,6 +282,10 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
                             onPressed: () {},
                             icon: Icon(Icons.search),
                           ),
+                          IconButton(
+                            onPressed: () {},
+                            icon: Icon(Icons.add_circle_outline),
+                          ),
                         ],
                       ),
                       SizedBox(height: 8),
@@ -247,12 +298,49 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
             ),
           ),
           Expanded(
-            child: _selectedItem != null
-                ? _buildGroupDetailsView()
-                : Center(child: Text('Выберите хост для просмотра')),
+            child: Builder(
+              builder: (builder) {
+                if (hostTabState == "view") {
+                  return Placeholder();
+                } else if (hostTabState == "adding") {
+                  return Placeholder();
+                } else {
+                  return Center(
+                    child: Text('Выберите хост для просмотра'),
+                  );
+                }
+              },
+            ),
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildAddGroup() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Добавить группу'),
+              IconButton(
+                  onPressed: () {
+                    setState(() {
+                      groupTabState = "default";
+                    });
+                  },
+                  icon: Icon(Icons.close))
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHostDetails() {
+    return Placeholder();
   }
 }
