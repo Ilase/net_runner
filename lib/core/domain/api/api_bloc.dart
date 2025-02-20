@@ -6,6 +6,7 @@ import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/api/api_endpoints.dart';
 import 'package:net_runner/core/domain/group_list/group_list_cubit.dart';
 import 'package:net_runner/core/domain/host_list/host_list_cubit.dart';
+import 'package:net_runner/core/domain/pentest_report_controller/pentest_report_controller_cubit.dart';
 import 'package:net_runner/core/domain/task_list/task_list_cubit.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 part 'api_event.dart';
@@ -16,6 +17,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
   HostListCubit hostListCubit;
   GroupListCubit groupListCubit;
   TaskListCubit taskListCubit;
+  PentestReportControllerCubit pentestReportControllerCubit;
 
   ///
   late WebSocketChannel webSocketChannel;
@@ -27,10 +29,12 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     required this.hostListCubit,
     required this.groupListCubit,
     required this.taskListCubit,
+    required this.pentestReportControllerCubit,
   }) : super(ApiInitial()) {
     on<ConnectToServerEvent>(_connectToServer);
     on<GetGroupListEvent>(_getGroupList);
     on<FetchTaskListEvent>;
+    on<GetPentestReportEvent>(_getPentestReport);
   }
 
   Future<void> _connectToServer(
@@ -109,7 +113,10 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     }
   }
 
-  Future<void> _getGroupList(GetGroupListEvent event, Emitter emit) async {
+  Future<void> _getGroupList(
+    GetGroupListEvent event,
+    Emitter emit,
+  ) async {
     final response = await http.get(apiEndpoints.getUri("get-group-list"));
     if (response.statusCode == 200) {
       List groupList = jsonDecode(response.body);
@@ -118,6 +125,23 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
       groupListCubit.updateState({"groupList": groupList});
     } else {
       ntLogger.e('Error occurred while parsing data');
+    }
+  }
+
+  Future<void> _getPentestReport(
+    GetPentestReportEvent event,
+    Emitter emit,
+  ) async {
+    final response = await http.get(
+      apiEndpoints.getUri(
+        "get-task-list",
+        extraPaths: [event.taskName],
+      ),
+    );
+    if (response.statusCode == 200) {
+      pentestReportControllerCubit.getTask(jsonDecode(response.body));
+    } else {
+      ntLogger.e('ERROR on getting report');
     }
   }
 }
