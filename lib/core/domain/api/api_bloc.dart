@@ -30,7 +30,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
   }) : super(ApiInitial()) {
     on<ConnectToServerEvent>(_connectToServer);
     on<GetGroupListEvent>(_getGroupList);
-    on<FetchTaskListEvent>(_fetchTasKListEvent);
+    on<FetchTaskListEvent>;
   }
 
   Future<void> _connectToServer(
@@ -65,7 +65,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
 
   Future<void> _fetchTasKListEvent(
       FetchTaskListEvent event, Emitter emit) async {
-    final response = await http.get(apiEndpoints.getUri("get-task-list"));
+    final response = await http.get(apiEndpoints.getUri("task"));
     if (response.statusCode == 200) {
       taskListCubit.fillTaskListFromGet(jsonDecode(response.body));
     }
@@ -100,15 +100,14 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     }
   }
 
-  /// Dead-code
-  // Future<void> _getTaskList() async {
-  //   final response = await http.get(apiEndpoints.getUri("get-task-list"));
-  //
-  //   if (response.statusCode == 200) {
-  //     /// Обновление списка
-  //     //apiListCubit.updateState({"taskList": jsonDecode(response.body)});
-  //   }
-  // }
+  Future<void> _getTaskList() async {
+    final response = await http.get(apiEndpoints.getUri("get-task-list"));
+
+    if (response.statusCode == 200) {
+      /// Обновление списка
+      //apiListCubit.updateState({"taskList": jsonDecode(response.body)});
+    }
+  }
 
   Future<void> _getGroupList(GetGroupListEvent event, Emitter emit) async {
     final response = await http.get(apiEndpoints.getUri("get-group-list"));

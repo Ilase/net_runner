@@ -10,3 +10,12 @@ class ConnectToServerEvent extends ApiEvent {
 class GetGroupListEvent extends ApiEvent {}
 
 class FetchTaskListEvent extends ApiEvent {}
+
+class GetPentestReportEvent extends ApiEvent {
+  final String taskName;
+
+  ///TODO: Rewrite to TASK ID;
+  GetPentestReportEvent({required this.taskName});
+}
+
+class ClosePentestReportEvent extends ApiEvent {}
