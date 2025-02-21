@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
+import 'package:net_runner/core/domain/pentest_report_controller/pentest_report_controller_cubit.dart';
 import 'package:net_runner/core/domain/task_list/task_list_cubit.dart';
 import 'package:net_runner/core/presentation/widgets/notification_manager.dart';
 
@@ -113,6 +114,11 @@ class _ScanningPgState extends State<ScanningPg> {
                                                   const EdgeInsets.all(16.0),
                                               child: GestureDetector(
                                                 onTap: () {
+                                                  context.read<ApiBloc>().add(
+                                                      GetReport(
+                                                          task_number: list[
+                                                                  index]
+                                                              ["number_task"]));
                                                   setState(() {
                                                     _selectedItem = list[index];
                                                   });
@@ -231,59 +237,76 @@ class _ScanningPgState extends State<ScanningPg> {
                               ),
                               child: Padding(
                                 padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                            'Сканирование: ${_selectedItem!["name"]}'),
-                                        Text(
-                                            '${_selectedItem!["number_task"]}'),
-                                        IconButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              _selectedItem = null;
-                                              _selectedItemHosts = null;
-                                            });
-                                          },
-                                          icon: Icon(Icons.close),
-                                        ),
-                                      ],
-                                    ),
-                                    Divider(),
-                                    Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [],
-                                      ),
-                                    ),
-                                    Divider(),
-                                    Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text('Хосты'),
-                                    ),
-                                    if (_selectedItemHosts != null &&
-                                        _selectedItemHosts!.isNotEmpty)
-                                      ..._selectedItemHosts!
-                                          .map((host) => ListTile(
-                                                title: Text(host["name"]),
-                                                subtitle: Text(host["ip"]),
-                                              )),
-                                    if (_selectedItemHosts == null ||
-                                        _selectedItemHosts!.isEmpty)
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text('Хостов нет',
-                                            style:
-                                                TextStyle(color: Colors.grey)),
-                                      ),
-                                  ],
-                                ),
+                                child: BlocBuilder<PentestReportControllerCubit,
+                                        PentestReportControllerState>(
+                                    builder: (context, state) {
+                                  if (state is LoadingTaskState) {
+                                    return Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  } else if (state is GetTaskState) {
+                                    return Center(
+                                      child: Text('GOOD'),
+                                    );
+                                  } else {
+                                    return Center(
+                                      child: Text('OOPS'),
+                                    );
+                                  }
+                                }),
+                                // child: Column(
+                                //   mainAxisSize: MainAxisSize.min,
+                                //   children: [
+                                //     Row(
+                                //       mainAxisAlignment:
+                                //           MainAxisAlignment.spaceBetween,
+                                //       children: [
+                                //         Text(
+                                //             'Сканирование: ${_selectedItem!["name"]}'),
+                                //         Text(
+                                //             '${_selectedItem!["number_task"]}'),
+                                //         IconButton(
+                                //           onPressed: () {
+                                //             setState(() {
+                                //               _selectedItem = null;
+                                //               _selectedItemHosts = null;
+                                //             });
+                                //           },
+                                //           icon: Icon(Icons.close),
+                                //         ),
+                                //       ],
+                                //     ),
+                                //     Divider(),
+                                //     Align(
+                                //       alignment: Alignment.centerLeft,
+                                //       child: Column(
+                                //         crossAxisAlignment:
+                                //             CrossAxisAlignment.start,
+                                //         children: [],
+                                //       ),
+                                //     ),
+                                //     Divider(),
+                                //     Align(
+                                //       alignment: Alignment.centerLeft,
+                                //       child: Text('Хосты'),
+                                //     ),
+                                //     if (_selectedItemHosts != null &&
+                                //         _selectedItemHosts!.isNotEmpty)
+                                //       ..._selectedItemHosts!
+                                //           .map((host) => ListTile(
+                                //                 title: Text(host["name"]),
+                                //                 subtitle: Text(host["ip"]),
+                                //               )),
+                                //     if (_selectedItemHosts == null ||
+                                //         _selectedItemHosts!.isEmpty)
+                                //       Padding(
+                                //         padding: const EdgeInsets.all(8.0),
+                                //         child: Text('Хостов нет',
+                                //             style:
+                                //                 TextStyle(color: Colors.grey)),
+                                //       ),
+                                //   ],
+                                // ),
                               ),
                             ),
                           ),

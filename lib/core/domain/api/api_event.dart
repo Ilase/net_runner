@@ -23,3 +23,8 @@ class ClosePentestReportEvent extends ApiEvent {}
 class GetHostListEvent extends ApiEvent {}
 
 class GetPingListEvent extends ApiEvent {}
+
+class GetReport extends ApiEvent {
+  final String task_number;
+  GetReport({required this.task_number});
+}

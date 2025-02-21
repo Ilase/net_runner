@@ -4,6 +4,7 @@ import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
 import 'package:net_runner/core/domain/group_list/group_list_cubit.dart';
 import 'package:net_runner/core/domain/host_list/host_list_cubit.dart';
+import 'package:net_runner/core/domain/pentest_report_controller/pentest_report_controller_cubit.dart';
 import 'package:net_runner/core/domain/ping_list/ping_list_cubit.dart';
 import 'package:net_runner/core/domain/task_list/task_list_cubit.dart';
 import 'package:net_runner/features/connection_page/presentation/connection_page.dart';
@@ -25,11 +26,14 @@ void main() async {
   HostListCubit hostListCubit = HostListCubit();
   GroupListCubit groupListCubit = GroupListCubit();
   TaskListCubit taskListCubit = TaskListCubit();
+  PentestReportControllerCubit pentestReportControllerCubit =
+      PentestReportControllerCubit();
 
   PingListCubit pingListCubit = PingListCubit();
 
   runApp(MultiBlocProvider(
     providers: [
+      BlocProvider.value(value: pentestReportControllerCubit),
       BlocProvider.value(value: pingListCubit),
       BlocProvider.value(value: groupListCubit),
       BlocProvider.value(value: hostListCubit),
@@ -40,6 +44,7 @@ void main() async {
           taskListCubit: taskListCubit,
           hostListCubit: hostListCubit,
           groupListCubit: groupListCubit,
+          pentestReportControllerCubit: pentestReportControllerCubit,
         ),
       ),
     ],
