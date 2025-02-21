@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:net_runner/core/data/logger.dart';
 
@@ -9,27 +10,27 @@ class TaskListCubit extends Cubit<TaskListState> {
   TaskListCubit() : super(TaskListInitial());
 
   void fillTaskListFromGet(List<dynamic> response) {
-    emit(LoadingState());
     taskList = List.from(response);
     emit(FilledState(list: {"taskList": taskList}));
   }
 
   void updateElementInTaskList(Map<String, dynamic> updatedElement) {
-    ntLogger.i(updatedElement);
-    emit(LoadingState());
+    ntLogger.i('TASKS UPDATE: \n\n${updatedElement}');
 
     final index =
         taskList.indexWhere((task) => task["ID"] == updatedElement["ID"]);
-    final updatedList = List.from(taskList);
+
+    /// Создаём новый список, чтобы Flutter точно увидел изменения
+    final updatedList = [...taskList];
 
     if (index != -1) {
-      updatedList[index] = updatedElement;
+      updatedList[index] = updatedElement; // Обновляем элемент
     } else {
-      updatedList.add(updatedElement);
+      updatedList.add(updatedElement); // Добавляем новый
     }
 
-    taskList = updatedList;
-    emit(FilledState(list: {"taskList": taskList}));
+    /// Используем copyWith, чтобы не терять другие данные
+    emit(FilledState(list: {"taskList": updatedList}));
   }
 
   void clearList() {

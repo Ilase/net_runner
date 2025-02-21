@@ -77,12 +77,14 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
 
   Future<void> _fetchTasKListEvent(
       FetchTaskListEvent event, Emitter emit) async {
+    // Показывает индикатор загрузки перед обновлением
+    taskListCubit.clearList(); // Очистить список перед запросом
+
     final response = await http.get(apiEndpoints.getUri("get-task-list"));
+    ntLogger.t(response.body);
     if (response.statusCode == 200) {
       taskListCubit.fillTaskListFromGet(jsonDecode(response.body));
     }
-
-    /// TODO: add handler cubit
   }
 
   /// Функция для проверки подключения к серверу

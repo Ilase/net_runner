@@ -128,11 +128,14 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
                               itemBuilder: (context, index) {
                                 return ListTile(
                                   onTap: () {
-                                    setState(() {
-                                      _selectedGroupItem = list[index];
-                                      _selectedItemHosts = list[index]["hosts"];
-                                      groupTabState = "view";
-                                    });
+                                    setState(
+                                      () {
+                                        _selectedGroupItem = list[index];
+                                        _selectedItemHosts =
+                                            list[index]["hosts"];
+                                        groupTabState = "view";
+                                      },
+                                    );
                                   },
                                   title: Text(list[index]["name"]),
                                   trailing: Icon(Icons.arrow_forward),
@@ -320,7 +323,7 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
                                                 host["ip"] == ipAddress);
 
                                         return ListTile(
-                                          title: Text(index.toString()),
+                                          leading: Text(index.toString()),
                                           subtitle: Text(ipAddress),
                                           trailing: isAdded
                                               ? Icon(Icons.check,
@@ -500,7 +503,7 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
                         });
                       },
                     ),
-                    SizedBox(height: 10), // Пространство перед кнопкой
+                    SizedBox(height: 10),
                   ],
                 ),
               );
@@ -508,7 +511,11 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
           ),
         ),
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            for (dynamic item in _selectedHostsRightList) {
+              context.read<ApiBloc>();
+            }
+          },
           child: Text('Добваить'),
         ),
       ],

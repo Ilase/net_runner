@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
 import 'package:net_runner/core/domain/task_list/task_list_cubit.dart';
-import 'package:net_runner/features/scanning/presentation/widgets/scan_gesture_card.dart';
+import 'package:net_runner/core/presentation/widgets/notification_manager.dart';
 
 class ScanningPg extends StatefulWidget {
   const ScanningPg({super.key});
@@ -103,87 +102,92 @@ class _ScanningPgState extends State<ScanningPg> {
                                     if (state is FilledState) {
                                       final List<dynamic> list =
                                           state.list["taskList"];
+                                      ntLogger.t(state.list["taskList"].length);
                                       return Center(
-                                        child: AnimatedList(
+                                        child: ListView.builder(
                                           reverse: true,
-                                          initialItemCount: list.length,
-                                          itemBuilder:
-                                              (context, index, animation) {
-                                            // Поправить ***
-                                            // return ListTile(
-                                            //   onTap: () {
-                                            //     setState(() {
-                                            //       _selectedItem = list[index];
-                                            //       _selectedItemHosts = list[index]["hosts"];
-                                            //     });
-                                            //   },
-                                            //   title: Text('Сканирование $index'),
-                                            //   subtitle: Text(list[index]["name"]),
-                                            //   trailing: Icon(Icons.arrow_forward),
-                                            // );
-                                            return SizedBox(
-                                              width: double
-                                                  .infinity, // Контейнер занимает всю ширину
-                                              child: Container(
-                                                padding: EdgeInsets.all(16),
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                ),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween, // Разместить элементы равномерно
-                                                  children: [
-                                                    Expanded(
-                                                      // Растягиваем колонку по ширине
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Text(
-                                                              list[index]["ID"].toString()),
-                                                          Text(list[index]
-                                                              ["name"]),
-                                                        ],
-                                                      ),
+                                          itemCount: list.length,
+                                          itemBuilder: (context, index) {
+                                            return Padding(
+                                              padding:
+                                                  const EdgeInsets.all(16.0),
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    _selectedItem = list[index];
+                                                  });
+                                                },
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15),
+                                                    color: Colors.white,
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        offset: Offset(3, 3),
+                                                        color: Colors.grey,
+                                                        blurRadius: 15,
+                                                      )
+                                                    ],
+                                                  ),
+                                                  width: double
+                                                      .infinity, // Контейнер занимает всю ширину
+                                                  child: Padding(
+                                                    padding: EdgeInsets.all(
+                                                      16.0,
                                                     ),
-                                                    Expanded(
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Text('Проценты'),
-                                                          Text(list[index]
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween, // Разместить элементы равномерно
+                                                      children: [
+                                                        Text(list[index]["ID"]
+                                                            .toString()),
+                                                        Expanded(
+                                                          // Растягиваем колонку по ширине
+                                                          child: Column(
+                                                            children: [
+                                                              Text(list[index][
+                                                                      "number_task"]
+                                                                  .toString()),
+                                                              Text(list[index]
+                                                                  ["name"]),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        Expanded(
+                                                          child: Text(list[
+                                                                      index]
                                                                   ["percent"]
                                                               .toString()),
-                                                        ],
-                                                      ),
+                                                        ),
+                                                        Expanded(
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Text("Статус"),
+                                                              Text(list[index]
+                                                                  ["status"]),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
-                                                    Expanded(
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Text("Статус"),
-                                                          Text(list[index]
-                                                              ["status"]),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ],
+                                                  ),
                                                 ),
                                               ),
                                             );
                                           },
                                         ),
                                       );
-                                    } else {
+                                    } else if (state is LoadingState) {
                                       return Center(
                                           child: CircularProgressIndicator());
+                                    } else {
+                                      return Center(child: Text('ReloadList'));
                                     }
                                   },
                                 ),
@@ -235,22 +239,9 @@ class _ScanningPgState extends State<ScanningPg> {
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                            'Группа: ${_selectedItem!["name"]}'),
-                                        Row(
-                                          children: [
-                                            IconButton(
-                                              onPressed: () {},
-                                              icon: Icon(Icons.edit),
-                                            ),
-                                            IconButton(
-                                              onPressed: () {},
-                                              icon: Icon(
-                                                Icons.delete,
-                                                color: Colors.redAccent,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
+                                            'Сканирование: ${_selectedItem!["name"]}'),
+                                        Text(
+                                            '${_selectedItem!["number_task"]}'),
                                         IconButton(
                                           onPressed: () {
                                             setState(() {
@@ -268,11 +259,7 @@ class _ScanningPgState extends State<ScanningPg> {
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
-                                        children: [
-                                          Text('Описание'),
-                                          Text(
-                                              '${_selectedItem!["description"]}'),
-                                        ],
+                                        children: [],
                                       ),
                                     ),
                                     Divider(),
