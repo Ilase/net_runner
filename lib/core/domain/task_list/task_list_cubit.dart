@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:net_runner/core/data/logger.dart';
 
 part 'task_list_state.dart';
 
@@ -14,6 +15,7 @@ class TaskListCubit extends Cubit<TaskListState> {
   }
 
   void updateElementInTaskList(Map<String, dynamic> updatedElement) {
+    ntLogger.i(updatedElement);
     emit(LoadingState());
 
     final index =

@@ -37,6 +37,12 @@ class ApiEndpoints {
         host: host,
         path: '$baseApiPath/ws',
       ),
+      "get-ping-list": Uri(
+        scheme: scheme,
+        port: port,
+        host: host,
+        path: '$baseApiPath/ping',
+      ),
     };
   }
 

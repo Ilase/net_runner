@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
 import 'package:net_runner/core/domain/group_list/group_list_cubit.dart';
 import 'package:net_runner/core/domain/host_list/host_list_cubit.dart';
+import 'package:net_runner/core/domain/ping_list/ping_list_cubit.dart';
 
 class HostsPg extends StatefulWidget {
   const HostsPg({super.key});
@@ -16,6 +17,7 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
   bool _isEditingGroupMode = false;
   Map<String, dynamic>? _selectedGroupItem;
   Map<String, dynamic>? _selectedHostItem;
+  List<dynamic> _selectedHostsRightList = [];
 
   String hostTabState = "default";
   String groupTabState = "default";
@@ -94,6 +96,7 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
                         ),
                         Expanded(
                           child: TextField(
+                            enabled: false,
                             decoration: InputDecoration(labelText: 'Поиск'),
                           ),
                         ),
@@ -277,15 +280,21 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
                           ),
                           Expanded(
                             child: TextField(
+                              enabled: false,
                               decoration: InputDecoration(labelText: 'Поиск'),
                             ),
                           ),
                           IconButton(
-                            onPressed: () {},
+                            onPressed: null,
                             icon: Icon(Icons.search),
                           ),
                           IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              context.read<ApiBloc>().add(GetPingListEvent());
+                              setState(() {
+                                hostTabState = "adding";
+                              });
+                            },
                             icon: Icon(Icons.add_circle_outline),
                           ),
                         ],
@@ -295,35 +304,82 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
                       SizedBox(height: 8),
                       Expanded(
                         child: BlocBuilder<HostListCubit, HostListState>(
-                            builder: (context, state) {
-                          if (state is FullState) {
-                            final List<dynamic> list = state.list["hostList"];
-                            return ListView.builder(
-                                itemCount: list.length,
-                                itemBuilder: (builder, index) {
-                                  return ListTile(
-                                    onTap: () {
-                                      setState(() {
-                                        _selectedHostItem = list[index];
-                                        hostTabState = "view";
-                                      });
-                                    },
-                                    title: Text(
-                                      '${list[index]["ip"]}',
-                                    ),
-                                    subtitle: Text(
-                                      '${list[index]["name"]}',
-                                    ),
-                                    trailing: Icon(Icons.arrow_forward),
-                                  );
-                                });
-                          } else {
-                            return Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                        }),
-                      )
+                          builder: (context, state) {
+                            if (hostTabState == "adding") {
+                              return BlocBuilder<PingListCubit, PingListState>(
+                                builder: (context, state) {
+                                  if (state is FilledPingState) {
+                                    return ListView.builder(
+                                      itemCount:
+                                          state.list["activeHosts"].length,
+                                      itemBuilder: (context, index) {
+                                        final ipAddress =
+                                            state.list["activeHosts"][index];
+                                        final isAdded = _selectedHostsRightList
+                                            .any((host) =>
+                                                host["ip"] == ipAddress);
+
+                                        return ListTile(
+                                          title: Text(index.toString()),
+                                          subtitle: Text(ipAddress),
+                                          trailing: isAdded
+                                              ? Icon(Icons.check,
+                                                  color: Colors.grey)
+                                              : null,
+                                          onTap: isAdded
+                                              ? null
+                                              : () {
+                                                  setState(() {
+                                                    _selectedHostsRightList
+                                                        .add({
+                                                      "ip": ipAddress,
+                                                      "name": "",
+                                                      "description": ""
+                                                    });
+                                                  });
+                                                },
+                                        );
+                                      },
+                                    );
+                                  } else {
+                                    return Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }
+                                },
+                              );
+                            } else {
+                              if (state is FullState) {
+                                final List<dynamic> list =
+                                    state.list["hostList"];
+                                return ListView.builder(
+                                    itemCount: list.length,
+                                    itemBuilder: (builder, index) {
+                                      return ListTile(
+                                        onTap: () {
+                                          setState(() {
+                                            _selectedHostItem = list[index];
+                                            hostTabState = "view";
+                                          });
+                                        },
+                                        title: Text(
+                                          '${list[index]["ip"]}',
+                                        ),
+                                        subtitle: Text(
+                                          '${list[index]["name"]}',
+                                        ),
+                                        trailing: Icon(Icons.arrow_forward),
+                                      );
+                                    });
+                              } else {
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
+                            }
+                          },
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -355,7 +411,7 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
                       if (hostTabState == "view") {
                         return _buildHostDetails();
                       } else if (hostTabState == "adding") {
-                        return Placeholder();
+                        return _buildAddHost();
                       } else {
                         return Center(
                           child: Text('Выберите хост для просмотра'),
@@ -372,6 +428,93 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
     );
   }
 
+  Widget _buildAddHost() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Добавить хосты",
+              style: TextStyle(
+                fontSize: 38,
+              ),
+            ),
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  hostTabState = "default";
+                });
+              },
+              icon: Icon(Icons.close),
+            )
+          ],
+        ),
+        Divider(),
+        Expanded(
+          child: ListView.builder(
+            itemCount: _selectedHostsRightList.length,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8.0,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "${_selectedHostsRightList[index]["ip"]}",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: IconButton(
+                            icon: Icon(Icons.delete, color: Colors.red),
+                            onPressed: () {
+                              setState(() {
+                                _selectedHostsRightList.removeAt(index);
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 6),
+                    TextField(
+                      decoration: InputDecoration(labelText: "Имя"),
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedHostsRightList[index]["name"] = value;
+                        });
+                      },
+                    ),
+                    SizedBox(height: 10),
+                    TextField(
+                      decoration: InputDecoration(labelText: "Описание"),
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedHostsRightList[index]["description"] = value;
+                        });
+                      },
+                    ),
+                    SizedBox(height: 10), // Пространство перед кнопкой
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+        ElevatedButton(
+          onPressed: () {},
+          child: Text('Добваить'),
+        ),
+      ],
+    );
+  }
+
   Widget _buildAddGroup() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -382,12 +525,13 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
             children: [
               Text('Добавить группу'),
               IconButton(
-                  onPressed: () {
-                    setState(() {
-                      groupTabState = "default";
-                    });
-                  },
-                  icon: Icon(Icons.close))
+                onPressed: () {
+                  setState(() {
+                    groupTabState = "default";
+                  });
+                },
+                icon: Icon(Icons.close),
+              ),
             ],
           )
         ],

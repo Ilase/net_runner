@@ -21,3 +21,5 @@ class GetPentestReportEvent extends ApiEvent {
 class ClosePentestReportEvent extends ApiEvent {}
 
 class GetHostListEvent extends ApiEvent {}
+
+class GetPingListEvent extends ApiEvent {}
