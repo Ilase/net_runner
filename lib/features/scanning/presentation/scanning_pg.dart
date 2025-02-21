@@ -65,7 +65,9 @@ class _ScanningPgState extends State<ScanningPg> {
                 children: [
                   /// Левая панель (сканирования)
                   Expanded(
-                    flex: _selectedItem == null ? 7 : 10, // Расширяется, если нет выбранного элемента
+                    flex: _selectedItem == null
+                        ? 7
+                        : 10, // Расширяется, если нет выбранного элемента
                     child: Padding(
                       padding: const EdgeInsets.only(
                         top: 16.0,
@@ -75,7 +77,8 @@ class _ScanningPgState extends State<ScanningPg> {
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(15)),
                           boxShadow: [
                             BoxShadow(
                               offset: Offset(3, 3),
@@ -94,14 +97,18 @@ class _ScanningPgState extends State<ScanningPg> {
                               Divider(),
                               SizedBox(height: 8),
                               Expanded(
-                                child: BlocBuilder<TaskListCubit, TaskListState>(
+                                child:
+                                    BlocBuilder<TaskListCubit, TaskListState>(
                                   builder: (context, state) {
                                     if (state is FilledState) {
-                                      final List<dynamic> list = state.list["taskList"];
+                                      final List<dynamic> list =
+                                          state.list["taskList"];
                                       return Center(
                                         child: AnimatedList(
+                                          reverse: true,
                                           initialItemCount: list.length,
-                                          itemBuilder: (context, index, animation) {
+                                          itemBuilder:
+                                              (context, index, animation) {
                                             // Поправить ***
                                             // return ListTile(
                                             //   onTap: () {
@@ -114,18 +121,69 @@ class _ScanningPgState extends State<ScanningPg> {
                                             //   subtitle: Text(list[index]["name"]),
                                             //   trailing: Icon(Icons.arrow_forward),
                                             // );
-                                            return Container(
-                                              height: 5,
-                                              decoration: BoxDecoration(
-                                                color: Colors.blue,
+                                            return SizedBox(
+                                              width: double
+                                                  .infinity, // Контейнер занимает всю ширину
+                                              child: Container(
+                                                padding: EdgeInsets.all(16),
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                ),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween, // Разместить элементы равномерно
+                                                  children: [
+                                                    Expanded(
+                                                      // Растягиваем колонку по ширине
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                              list[index]["ID"].toString()),
+                                                          Text(list[index]
+                                                              ["name"]),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    Expanded(
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text('Проценты'),
+                                                          Text(list[index]
+                                                                  ["percent"]
+                                                              .toString()),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    Expanded(
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text("Статус"),
+                                                          Text(list[index]
+                                                              ["status"]),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
-                                              child: null,
                                             );
                                           },
                                         ),
                                       );
                                     } else {
-                                      return Center(child: CircularProgressIndicator());
+                                      return Center(
+                                          child: CircularProgressIndicator());
                                     }
                                   },
                                 ),
@@ -137,100 +195,111 @@ class _ScanningPgState extends State<ScanningPg> {
                     ),
                   ),
 
-
                   /// Правая панель (подробности)
                   AnimatedContainer(
                     height: double.infinity,
                     duration: Duration(milliseconds: 300),
                     curve: Curves.easeInOut,
-                    width: _selectedItem == null ? 0 : MediaQuery.of(context).size.width * 0.7,
+                    width: _selectedItem == null
+                        ? 0
+                        : MediaQuery.of(context).size.width * 0.7,
                     child: _selectedItem == null
                         ? SizedBox()
                         : Padding(
-                      padding: const EdgeInsets.only(
-                        top: 16.0,
-                        left: 16.0,
-                        right: 16.0,
-                        bottom: 16.0,
-                      ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(15)),
-                          boxShadow: [
-                            BoxShadow(
-                              offset: Offset(3, 3),
-                              blurRadius: 10,
-                              color: Colors.grey,
+                            padding: const EdgeInsets.only(
+                              top: 16.0,
+                              left: 16.0,
+                              right: 16.0,
+                              bottom: 16.0,
                             ),
-                          ],
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text('Группа: ${_selectedItem!["name"]}'),
-                                  Row(
-                                    children: [
-                                      IconButton(
-                                        onPressed: () {},
-                                        icon: Icon(Icons.edit),
-                                      ),
-                                      IconButton(
-                                        onPressed: () {},
-                                        icon: Icon(
-                                          Icons.delete,
-                                          color: Colors.redAccent,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        _selectedItem = null;
-                                        _selectedItemHosts = null;
-                                      });
-                                    },
-                                    icon: Icon(Icons.close),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15)),
+                                boxShadow: [
+                                  BoxShadow(
+                                    offset: Offset(3, 3),
+                                    blurRadius: 10,
+                                    color: Colors.grey,
                                   ),
                                 ],
                               ),
-                              Divider(),
-                              Align(
-                                alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
                                 child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Text('Описание'),
-                                    Text('${_selectedItem!["description"]}'),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                            'Группа: ${_selectedItem!["name"]}'),
+                                        Row(
+                                          children: [
+                                            IconButton(
+                                              onPressed: () {},
+                                              icon: Icon(Icons.edit),
+                                            ),
+                                            IconButton(
+                                              onPressed: () {},
+                                              icon: Icon(
+                                                Icons.delete,
+                                                color: Colors.redAccent,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        IconButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              _selectedItem = null;
+                                              _selectedItemHosts = null;
+                                            });
+                                          },
+                                          icon: Icon(Icons.close),
+                                        ),
+                                      ],
+                                    ),
+                                    Divider(),
+                                    Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text('Описание'),
+                                          Text(
+                                              '${_selectedItem!["description"]}'),
+                                        ],
+                                      ),
+                                    ),
+                                    Divider(),
+                                    Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Text('Хосты'),
+                                    ),
+                                    if (_selectedItemHosts != null &&
+                                        _selectedItemHosts!.isNotEmpty)
+                                      ..._selectedItemHosts!
+                                          .map((host) => ListTile(
+                                                title: Text(host["name"]),
+                                                subtitle: Text(host["ip"]),
+                                              )),
+                                    if (_selectedItemHosts == null ||
+                                        _selectedItemHosts!.isEmpty)
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text('Хостов нет',
+                                            style:
+                                                TextStyle(color: Colors.grey)),
+                                      ),
                                   ],
                                 ),
                               ),
-                              Divider(),
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text('Хосты'),
-                              ),
-                              if (_selectedItemHosts != null && _selectedItemHosts!.isNotEmpty)
-                                ..._selectedItemHosts!.map((host) => ListTile(
-                                  title: Text(host["name"]),
-                                  subtitle: Text(host["ip"]),
-                                )),
-                              if (_selectedItemHosts == null || _selectedItemHosts!.isEmpty)
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text('Хостов нет', style: TextStyle(color: Colors.grey)),
-                                ),
-                            ],
+                            ),
                           ),
-                        ),
-                      ),
-                    ),
                   ),
                 ],
               ),
