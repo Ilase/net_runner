@@ -31,35 +31,43 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     on<ConnectToServerEvent>(_connectToServer);
     on<GetGroupListEvent>(_getGroupList);
     on<FetchTaskListEvent>(_fetchTasKListEvent);
+    on<GetHostListEvent>(_getHostList);
   }
 
   Future<void> _connectToServer(
     ConnectToServerEvent event,
     Emitter emit,
   ) async {
-    apiEndpoints = event.endpoints;
-    emit(ConnectLoadState()); // Отправка стейта загрузки
-    bool isConnected = await _checkConnectionToServer();
-    if (isConnected) {
-      try {
-        webSocketChannel = WebSocketChannel.connect(apiEndpoints.getUri("ws"));
-        _webSocketSubscription = webSocketChannel.stream.listen(
-          (message) async {
-            try {
-              final Map<String, dynamic> decodedMessage = jsonDecode(message);
-              ntLogger.w('Message from web socket: \n $decodedMessage');
-              taskListCubit.updateElementInTaskList(decodedMessage);
-            } catch (e) {} //add error stack
-          },
-        );
-        emit(ConnectedState());
-      } catch (e) {
-        ntLogger.e(e.toString());
+    try {
+      apiEndpoints = event.endpoints;
+      emit(ConnectLoadState());
+      bool isConnected = await _checkConnectionToServer();
+      if (isConnected) {
+        try {
+          webSocketChannel =
+              WebSocketChannel.connect(apiEndpoints.getUri("ws"));
+          _webSocketSubscription = webSocketChannel.stream.listen(
+            (message) async {
+              try {
+                final Map<String, dynamic> decodedMessage = jsonDecode(message);
+                ntLogger.w('Message from web socket: \n $decodedMessage');
+                taskListCubit.updateElementInTaskList(decodedMessage);
+              } catch (e) {} //add error stack
+            },
+          );
+          emit(ConnectedState());
+        } catch (e) {
+          ntLogger.e(e.toString());
+        }
       }
-
-      // Отправка стейта удачного подключения
-    } else {
-      emit(ConnectErrorState()); // Отправка стейта ошибки подключения
+    } catch (e) {
+      emit(
+        ErrorState(
+          //TODO: rewrite ot message cubitik
+          messageTitle: "Connection error",
+          messageBody: e.toString(),
+        ),
+      );
     }
   }
 
@@ -84,28 +92,15 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     return false;
   }
 
-  Future<void> _connectToWs() async {}
-
   /// Функция для обновления листа стейта в ApiListCubit и проверки ответа от сервера
   /// GET .../host
-  Future<void> _getHostList(GetGroupListEvent event, Emitter emit) async {
+
+  Future<void> _getHostList(GetHostListEvent event, Emitter emit) async {
     final response = await http.get(apiEndpoints.getUri("get-host-list"));
-    if (response.statusCode == 200) {
-      List hostList = jsonDecode(response.body);
-
-      /// Обновление списка
-      // hostListCubit.updateState({"hostList": hostList});
-    } else {
-      ntLogger.e('Error occured while parsing data');
-    }
-  }
-
-  Future<void> _getTaskList() async {
-    final response = await http.get(apiEndpoints.getUri("get-task-list"));
 
     if (response.statusCode == 200) {
       /// Обновление списка
-      //apiListCubit.updateState({"taskList": jsonDecode(response.body)});
+      hostListCubit.updateState({"hostList": jsonDecode(response.body)});
     }
   }
 

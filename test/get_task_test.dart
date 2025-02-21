@@ -16,7 +16,7 @@ void main() {
         hostListCubit: HostListCubit(),
         groupListCubit: GroupListCubit(),
         taskListCubit: TaskListCubit(),
-        pentestReportControllerCubit: pentestReportControllerCubit,
+        //pentestReportControllerCubit: pentestReportControllerCubit,
       ),
       child: MaterialApp(
         home: HomePage(),

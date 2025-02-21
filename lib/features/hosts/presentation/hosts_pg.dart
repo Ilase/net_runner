@@ -49,8 +49,8 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
           child: TabBarView(
             controller: _tabController,
             children: [
-              _buildGroupsView(context),
-              _buildHostsView(context),
+              _buildGroupsView(),
+              _buildHostsView(),
             ],
           ),
         ),
@@ -58,7 +58,7 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
     );
   }
 
-  Widget _buildGroupsView(BuildContext context) {
+  Widget _buildGroupsView() {
     return Row(
       children: [
         Expanded(
@@ -240,7 +240,7 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
     );
   }
 
-  Widget _buildHostsView(BuildContext context) {
+  Widget _buildHostsView() {
     return Center(
       child: Row(
         children: [
@@ -270,7 +270,9 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
                       Row(
                         children: [
                           IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              context.read<ApiBloc>().add(GetHostListEvent());
+                            },
                             icon: Icon(Icons.refresh),
                           ),
                           Expanded(
@@ -291,6 +293,37 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
                       SizedBox(height: 8),
                       Divider(),
                       SizedBox(height: 8),
+                      Expanded(
+                        child: BlocBuilder<HostListCubit, HostListState>(
+                            builder: (context, state) {
+                          if (state is FullState) {
+                            final List<dynamic> list = state.list["hostList"];
+                            return ListView.builder(
+                                itemCount: list.length,
+                                itemBuilder: (builder, index) {
+                                  return ListTile(
+                                    onTap: () {
+                                      setState(() {
+                                        _selectedHostItem = list[index];
+                                        hostTabState = "view";
+                                      });
+                                    },
+                                    title: Text(
+                                      '${list[index]["ip"]}',
+                                    ),
+                                    subtitle: Text(
+                                      '${list[index]["name"]}',
+                                    ),
+                                    trailing: Icon(Icons.arrow_forward),
+                                  );
+                                });
+                          } else {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                        }),
+                      )
                     ],
                   ),
                 ),
@@ -298,18 +331,40 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
             ),
           ),
           Expanded(
-            child: Builder(
-              builder: (builder) {
-                if (hostTabState == "view") {
-                  return Placeholder();
-                } else if (hostTabState == "adding") {
-                  return Placeholder();
-                } else {
-                  return Center(
-                    child: Text('Выберите хост для просмотра'),
-                  );
-                }
-              },
+            child: Padding(
+              padding: const EdgeInsets.only(
+                top: 16,
+                left: 16,
+                right: 16,
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+                  boxShadow: [
+                    BoxShadow(
+                        offset: Offset(3, 3),
+                        color: Colors.grey,
+                        blurRadius: 15),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Builder(
+                    builder: (builder) {
+                      if (hostTabState == "view") {
+                        return _buildHostDetails();
+                      } else if (hostTabState == "adding") {
+                        return Placeholder();
+                      } else {
+                        return Center(
+                          child: Text('Выберите хост для просмотра'),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ),
             ),
           ),
         ],
@@ -341,6 +396,29 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
   }
 
   Widget _buildHostDetails() {
-    return Placeholder();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('Хост: ${_selectedHostItem!["name"]}'),
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  hostTabState = "default";
+                });
+              },
+              icon: Icon(Icons.close),
+            )
+          ],
+        ),
+        Divider(),
+        Text('IP: ${_selectedHostItem!["ip"]}'),
+        Divider(),
+        Text('Описание'),
+        Text('${_selectedHostItem!["description"]}')
+      ],
+    );
   }
 }

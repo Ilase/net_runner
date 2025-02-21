@@ -29,9 +29,12 @@ class _ConnectionPageState extends State<ConnectionPage> {
             NotificationManager().showAnimatedNotification(
                 context, 'Connected', 'Connection successful');
             Navigator.of(context).pushNamed('/head');
-          } else if (state is ConnectErrorState) {
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text('Error')));
+          } else if (state is ErrorState) {
+            NotificationManager().showAnimatedNotification(
+              context,
+              state.messageTitle,
+              state.messageBody,
+            );
           }
         },
         child: Center(
