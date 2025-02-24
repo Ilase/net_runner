@@ -147,6 +147,8 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
       pentestReportControllerCubit.getTask(jsonDecode(response.body));
     } else {
       ntLogger.e('Error occurred while parsing data');
+
+      ///TODO: throw to opposite bloc
     }
   }
 }

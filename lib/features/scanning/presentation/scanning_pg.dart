@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/data/logger.dart';
+import 'package:net_runner/core/data/task_report_serial/pentest_report_serial.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
 import 'package:net_runner/core/domain/pentest_report_controller/pentest_report_controller_cubit.dart';
 import 'package:net_runner/core/domain/task_list/task_list_cubit.dart';
@@ -13,9 +14,23 @@ class ScanningPg extends StatefulWidget {
   State<ScanningPg> createState() => _ScanningPgState();
 }
 
-class _ScanningPgState extends State<ScanningPg> {
+class _ScanningPgState extends State<ScanningPg>
+    with SingleTickerProviderStateMixin {
   Map<String, dynamic>? _selectedItem;
   List<dynamic>? _selectedItemHosts;
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -245,12 +260,168 @@ class _ScanningPgState extends State<ScanningPg> {
                                       child: CircularProgressIndicator(),
                                     );
                                   } else if (state is GetTaskState) {
+                                    final taskInfo = state.task;
                                     return Center(
-                                      child: Text('GOOD'),
+                                      child: Column(
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                  'Сканирование: ${taskInfo.general_info.task_name}'),
+                                              IconButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    _selectedItem = null;
+                                                    _selectedItemHosts = null;
+                                                  });
+                                                },
+                                                icon: Icon(Icons.close),
+                                              ),
+                                            ],
+                                          ),
+                                          TabBar(
+                                            tabs: [
+                                              Tab(
+                                                text: 'Информация',
+                                                icon: Icon(Icons.info_outline),
+                                              ),
+                                              Tab(
+                                                text: 'Отчёт по сканированию',
+                                                icon: Icon(Icons.file_present),
+                                              )
+                                            ],
+                                            controller: _tabController,
+                                          ),
+                                          Expanded(
+                                            child: TabBarView(
+                                                controller: _tabController,
+                                                children: [
+                                                  Column(
+                                                    children: [
+                                                      SizedBox(
+                                                        height: 16,
+                                                      ),
+                                                      Container(
+                                                        padding:
+                                                            EdgeInsetsDirectional
+                                                                .all(16),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(15),
+                                                          border: Border.all(
+                                                            width: 2,
+                                                            color: Colors.blue,
+                                                          ),
+                                                        ),
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Text(
+                                                              'Краткая информация: ${taskInfo.general_info.summary}',
+                                                            ),
+                                                            Divider(),
+                                                            Text(
+                                                              'Время сканирования (сек): ${taskInfo.general_info.elapsed}',
+                                                            ),
+                                                            Text(
+                                                              'Время начала: ${taskInfo.general_info.start}',
+                                                            ),
+                                                            Text(
+                                                              'Время окончания: ${taskInfo.general_info.end}',
+                                                            ),
+                                                            Divider(),
+                                                            Text(
+                                                              'Всего просканировано целей: ${taskInfo.general_info.total},',
+                                                            ),
+                                                            Text(
+                                                              'Целей доступно: ${taskInfo.general_info.up}',
+                                                            ),
+                                                            Text(
+                                                              'Целей недоступно: ${taskInfo.general_info.down}',
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+
+                                                  ///FirstTAb
+                                                  Expanded(
+                                                    child:
+                                                        SingleChildScrollView(
+                                                      child: Column(
+                                                        children: [
+                                                          SizedBox(
+                                                            height: 16,
+                                                          ),
+                                                          Column(
+                                                            children: taskInfo
+                                                                .hosts.entries
+                                                                .map((entry) {
+                                                              return Container(
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  border: Border
+                                                                      .all(
+                                                                    width: 2,
+                                                                    color: Colors
+                                                                        .blue,
+                                                                  ),
+                                                                ),
+                                                                child: Row(
+                                                                  children: [
+                                                                    Column(
+                                                                      children: [
+                                                                        Text(
+                                                                          'Хост: ${entry.value.ip}',
+                                                                        ),
+                                                                        Text(
+                                                                          'Статус: ${entry.value.status}',
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              );
+                                                            }).toList(),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ]),
+                                          ),
+                                        ],
+                                      ),
                                     );
                                   } else {
                                     return Center(
-                                      child: Text('OOPS'),
+                                      child: Column(
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text('Scan:'),
+                                              IconButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    _selectedItem = null;
+                                                    _selectedItemHosts = null;
+                                                  });
+                                                },
+                                                icon: Icon(Icons.close),
+                                              ),
+                                            ],
+                                          ),
+                                          Divider(),
+                                          Text('Error'),
+                                        ],
+                                      ),
                                     );
                                   }
                                 }),
