@@ -4,6 +4,7 @@ import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
 import 'package:net_runner/core/domain/group_list/group_list_cubit.dart';
 import 'package:net_runner/core/domain/host_list/host_list_cubit.dart';
+import 'package:net_runner/core/domain/notificatioon_controller/notification_controller_cubit.dart';
 import 'package:net_runner/core/domain/pentest_report_controller/pentest_report_controller_cubit.dart';
 import 'package:net_runner/core/domain/ping_list/ping_list_cubit.dart';
 import 'package:net_runner/core/domain/task_list/task_list_cubit.dart';
@@ -29,12 +30,14 @@ void main() async {
   TaskListCubit taskListCubit = TaskListCubit();
   PentestReportControllerCubit pentestReportControllerCubit =
       PentestReportControllerCubit();
-
+  NotificationControllerCubit notificationControllerCubit =
+      NotificationControllerCubit();
   PingListCubit pingListCubit = PingListCubit();
 
   runApp(MultiBlocProvider(
     providers: [
       BlocProvider(create: (context) => ThemeControllerCubit()),
+      BlocProvider.value(value: notificationControllerCubit),
       BlocProvider.value(value: pentestReportControllerCubit),
       BlocProvider.value(value: pingListCubit),
       BlocProvider.value(value: groupListCubit),
@@ -42,6 +45,7 @@ void main() async {
       BlocProvider.value(value: taskListCubit),
       BlocProvider(
         create: (context) => ApiBloc(
+          notificationControllerCubit: notificationControllerCubit,
           pingListCubit: pingListCubit,
           taskListCubit: taskListCubit,
           hostListCubit: hostListCubit,

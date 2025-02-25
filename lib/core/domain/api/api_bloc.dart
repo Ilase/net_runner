@@ -7,6 +7,7 @@ import 'package:net_runner/core/data/task_report_serial/pentest_report_serial.da
 import 'package:net_runner/core/domain/api/api_endpoints.dart';
 import 'package:net_runner/core/domain/group_list/group_list_cubit.dart';
 import 'package:net_runner/core/domain/host_list/host_list_cubit.dart';
+import 'package:net_runner/core/domain/notificatioon_controller/notification_controller_cubit.dart';
 import 'package:net_runner/core/domain/pentest_report_controller/pentest_report_controller_cubit.dart';
 import 'package:net_runner/core/domain/ping_list/ping_list_cubit.dart';
 import 'package:net_runner/core/domain/task_list/task_list_cubit.dart';
@@ -20,6 +21,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
   GroupListCubit groupListCubit;
   TaskListCubit taskListCubit;
   PingListCubit pingListCubit;
+  NotificationControllerCubit notificationControllerCubit;
   PentestReportControllerCubit pentestReportControllerCubit;
 
   ///
@@ -33,6 +35,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     required this.groupListCubit,
     required this.taskListCubit,
     required this.pingListCubit,
+    required this.notificationControllerCubit,
     required this.pentestReportControllerCubit,
   }) : super(ApiInitial()) {
     on<ConnectToServerEvent>(_connectToServer);
@@ -61,22 +64,23 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
                 final Map<String, dynamic> decodedMessage = jsonDecode(message);
                 ntLogger.w('Message from web socket: \n $decodedMessage');
                 taskListCubit.updateElementInTaskList(decodedMessage);
-              } catch (e) {} //add error stack
+              } catch (e) {
+                notificationControllerCubit.addNotification(
+                    "Ошибка подключения",
+                    "Подключение к серверу завершилось ошибкой: ${e.toString()}");
+              } //add error stack
             },
           );
+          notificationControllerCubit.addNotification("Подключено", "");
           emit(ConnectedState());
         } catch (e) {
-          ntLogger.e(e.toString());
+          notificationControllerCubit.addNotification("Ошибка подключения",
+              "Подключение к серверу завершилось ошибкой: ${e.toString()}");
         }
       }
     } catch (e) {
-      emit(
-        ErrorState(
-          //TODO: rewrite ot message cubitik
-          messageTitle: "Connection error",
-          messageBody: e.toString(),
-        ),
-      );
+      notificationControllerCubit.addNotification("Ошибка подключения",
+          "Подключение к серверу завершилось ошибкой: ${e.toString()}");
     }
   }
 
@@ -100,6 +104,8 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
         jsonDecode(response.body)["netrunnerStatus"] == "up") {
       return true;
     }
+    notificationControllerCubit.addNotification(
+        "Ошибка данных", "Статус: ${response.statusCode}. ${response.body}");
     return false;
   }
 
@@ -110,9 +116,12 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     final response = await http.get(apiEndpoints.getUri("get-host-list"));
 
     if (response.statusCode == 200) {
-      /// Обновление списка
       hostListCubit.updateState({"hostList": jsonDecode(response.body)});
+      return;
     }
+    notificationControllerCubit.addNotification(
+        "Ошибка данных", "Статус: ${response.statusCode}. ${response.body}");
+    return;
   }
 
   Future<void> _getGroupList(GetGroupListEvent event, Emitter emit) async {
@@ -123,7 +132,8 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
       /// Обновление списка
       groupListCubit.updateState({"groupList": groupList});
     } else {
-      ntLogger.e('Error occurred while parsing data');
+      notificationControllerCubit.addNotification(
+          "Ошибка данных", "Статус: ${response.statusCode}. ${response.body}");
     }
   }
 
@@ -133,7 +143,8 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     if (response.statusCode == 200) {
       pingListCubit.updateState(jsonDecode(response.body));
     } else {
-      ntLogger.e('Error occurred while parsing data');
+      notificationControllerCubit.addNotification(
+          "Ошибка данных", "Статус: ${response.statusCode}. ${response.body}");
     }
   }
 
@@ -142,13 +153,11 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
         .getUri("get-task-list", extraPaths: [event.task_number]).path);
     final response = await http.get(
         apiEndpoints.getUri("pentest-report", extraPaths: [event.task_number]));
-    ntLogger.w(response.body);
     if (response.statusCode == 200) {
       pentestReportControllerCubit.getTask(jsonDecode(response.body));
     } else {
-      ntLogger.e('Error occurred while parsing data');
-
-      ///TODO: throw to opposite bloc
+      notificationControllerCubit.addNotification(
+          "Ошибка данных", "Статус: ${response.statusCode}. ${response.body}");
     }
   }
 }

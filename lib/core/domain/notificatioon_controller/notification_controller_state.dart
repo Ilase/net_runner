@@ -1,21 +1,10 @@
 part of 'notification_controller_cubit.dart';
 
-sealed class NotificationControllerState extends Equatable {
-  const NotificationControllerState();
-}
-
-final class NotificationControllerInitial extends NotificationControllerState {
-  @override
-  List<Object> get props => [];
-}
-
-class NotificationReceived extends NotificationControllerState {
-  final String messageTitle;
-  final String messageBody;
-
-  const NotificationReceived(
-      {required this.messageBody, required this.messageTitle});
+class NotificationControllerState extends Equatable {
+  final List<NotificationModel> notifications;
+  const NotificationControllerState({required this.notifications});
 
   @override
-  List<Object?> get props => [messageBody, messageTitle];
+  // TODO: implement props
+  List<Object?> get props => [notifications];
 }

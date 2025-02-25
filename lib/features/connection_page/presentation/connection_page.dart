@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/data/ip_input_formatter.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
 import 'package:net_runner/core/domain/api/api_endpoints.dart';
+import 'package:net_runner/core/domain/notificatioon_controller/notification_controller_cubit.dart';
 import 'package:net_runner/core/presentation/widgets/notification_manager.dart';
 
 import 'package:net_runner/utils/constants/themes/text_styles.dart';
@@ -23,20 +24,26 @@ class _ConnectionPageState extends State<ConnectionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocListener<ApiBloc, ApiState>(
-        listener: (context, state) {
-          if (state is ConnectedState) {
-            NotificationManager().showAnimatedNotification(
-                context, 'Connected', 'Connection successful');
-            Navigator.of(context).pushNamed('/head');
-          } else if (state is ErrorState) {
-            NotificationManager().showAnimatedNotification(
-              context,
-              state.messageTitle,
-              state.messageBody,
-            );
-          }
-        },
+      body: MultiBlocListener(
+        listeners: [
+          BlocListener<NotificationControllerCubit,
+              NotificationControllerState>(
+            listener: (context, state) {
+              if (state is NotificationControllerState) {
+                final lastNotification = state.notifications.last;
+                NotificationManager().showAnimatedNotification(
+                    context, lastNotification.title, lastNotification.body);
+              }
+            },
+          ),
+          BlocListener<ApiBloc, ApiState>(
+            listener: (context, state) {
+              if (state is ConnectedState) {
+                Navigator.of(context).pushNamed('/head');
+              }
+            },
+          ),
+        ],
         child: Center(
           child: SizedBox(
             width: 500,
