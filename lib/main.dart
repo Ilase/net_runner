@@ -7,6 +7,7 @@ import 'package:net_runner/core/domain/host_list/host_list_cubit.dart';
 import 'package:net_runner/core/domain/pentest_report_controller/pentest_report_controller_cubit.dart';
 import 'package:net_runner/core/domain/ping_list/ping_list_cubit.dart';
 import 'package:net_runner/core/domain/task_list/task_list_cubit.dart';
+import 'package:net_runner/core/domain/theme_controller/theme_controller_cubit.dart';
 import 'package:net_runner/features/connection_page/presentation/connection_page.dart';
 import 'package:net_runner/features/head_page/head_page.dart';
 import 'package:net_runner/features/hosts/presentation/add_host_page.dart';
@@ -33,6 +34,7 @@ void main() async {
 
   runApp(MultiBlocProvider(
     providers: [
+      BlocProvider(create: (context) => ThemeControllerCubit()),
       BlocProvider.value(value: pentestReportControllerCubit),
       BlocProvider.value(value: pingListCubit),
       BlocProvider.value(value: groupListCubit),
@@ -69,7 +71,7 @@ class StartPoint extends StatelessWidget {
     ntLogger.i('enter point of app');
     return MaterialApp(
       debugShowCheckedModeBanner: true,
-      theme: AppTheme.lightTheme,
+      theme: context.watch<ThemeControllerCubit>().state,
       //locales
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,

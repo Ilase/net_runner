@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:net_runner/core/domain/theme_controller/theme_controller_cubit.dart';
 import 'package:net_runner/core/presentation/widgets/notification_manager.dart';
 import 'package:net_runner/features/graph/graph_pg.dart';
 import 'package:net_runner/features/hosts/presentation/hosts_pg.dart';
@@ -21,6 +23,8 @@ class _HeadPageState extends State<HeadPage> {
 
   bool isDrawerExpanded = false;
   int selectedPageIndex = 0;
+
+  bool _isDarkTheme = false;
 
   final List<Widget> pages = [
     Center(child: Icon(Icons.home, size: 100)),
@@ -89,7 +93,7 @@ class _HeadPageState extends State<HeadPage> {
                       firstChild: Center(
                         child: Text('NetRunner'),
                       ),
-                      secondChild: Icon(Icons.access_time_filled_sharp),
+                      secondChild: Text('NT'),
                       crossFadeState: isDrawerExpanded
                           ? CrossFadeState.showFirst
                           : CrossFadeState.showSecond,
@@ -110,6 +114,15 @@ class _HeadPageState extends State<HeadPage> {
                         IconButton(
                           onPressed: () {},
                           icon: Icon(Icons.person_2_outlined),
+                        ),
+                        Switch(
+                          value: _isDarkTheme,
+                          onChanged: (value) {
+                            setState(() {
+                              _isDarkTheme = value;
+                            });
+                            context.read<ThemeControllerCubit>().toggleTheme();
+                          },
                         ),
                       ],
                     )

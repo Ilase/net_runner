@@ -3,12 +3,12 @@ import 'package:net_runner/utils/constants/themes/buttons_themes.dart';
 import 'package:net_runner/utils/constants/themes/text_styles.dart';
 
 class AppTheme {
-  static ThemeData get lightTheme{
+  static ThemeData get lightTheme {
     return ThemeData(
-      //colors
-      // primaryColor: Colors.white,
-      // scaffoldBackgroundColor: Colors.white,
-      colorScheme: const ColorScheme(
+        //colors
+        // primaryColor: Colors.white,
+        // scaffoldBackgroundColor: Colors.white,
+        colorScheme: const ColorScheme(
           brightness: Brightness.light,
           primary: Colors.blue, //scaffold color
           onPrimary: Colors.white,
@@ -18,21 +18,34 @@ class AppTheme {
           onError: Colors.white,
           surface: Colors.white,
           onSurface: Colors.blue,
-          ),
-      //appbar theme
-      appBarTheme: const AppBarTheme(
+        ),
+        //appbar theme
+        appBarTheme: const AppBarTheme(
           backgroundColor: Colors.blue,
           foregroundColor: Colors.white,
-      ),
-      //text styles
-      textTheme: AppTextStyle.lightTextTheme,
-      elevatedButtonTheme: AppButtonStyle.modalWindowButtonTheme,
-     // popupMenuTheme: AppButtonStyle.actionsButtonsTheme,
-      inputDecorationTheme: const InputDecorationTheme(
-        border: OutlineInputBorder(),
-      )
+        ),
+        //text styles
+        textTheme: AppTextStyle.lightTextTheme,
+        elevatedButtonTheme: AppButtonStyle.modalWindowButtonTheme,
+        // popupMenuTheme: AppButtonStyle.actionsButtonsTheme,
+        inputDecorationTheme: const InputDecorationTheme(
+          border: OutlineInputBorder(),
+        ));
+  }
 
+  static ThemeData get darkTheme {
+    return ThemeData(
+      colorScheme: const ColorScheme(
+        brightness: Brightness.dark,
+        primary: Colors.white, //scaffold color
+        onPrimary: Colors.black12,
+        secondary: Colors.white12, //color for shapes
+        onSecondary: Colors.black,
+        error: Colors.red,
+        onError: Colors.white,
+        surface: Colors.blueGrey,
+        onSurface: Colors.black45,
+      ),
     );
   }
 }
-
