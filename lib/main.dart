@@ -16,6 +16,7 @@ import 'package:net_runner/features/scanning/presentation/create_scan_page.dart'
 import 'package:net_runner/locale/netrunner_localizations.dart';
 import 'package:net_runner/core/data/data_loader.dart';
 import 'package:net_runner/features/splash_screen/splash_screen.dart';
+import 'package:net_runner/utils/routes/router.dart';
 import 'package:net_runner/utils/routes/routes.dart';
 import 'package:platform_detector/widgets/platform_type_widget.dart';
 import 'package:net_runner/utils/constants/themes/app_themes.dart';

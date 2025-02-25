@@ -6,6 +6,8 @@ import 'package:net_runner/core/domain/api/api_bloc.dart';
 import 'package:net_runner/core/domain/pentest_report_controller/pentest_report_controller_cubit.dart';
 import 'package:net_runner/core/domain/task_list/task_list_cubit.dart';
 import 'package:net_runner/core/presentation/widgets/notification_manager.dart';
+import 'package:net_runner/features/scanning/presentation/create_scan_page.dart';
+import 'package:net_runner/utils/routes/router.dart';
 
 class ScanningPg extends StatefulWidget {
   const ScanningPg({super.key});
@@ -97,6 +99,12 @@ class _ScanningPgState extends State<ScanningPg>
                                   onPressed: () {},
                                   icon: Icon(Icons.search),
                                 ),
+                                IconButton(
+                                    onPressed: () {
+                                      Navigator.of(context)
+                                          .push(createRoute(CreateScanPage()));
+                                    },
+                                    icon: Icon(Icons.add_circle_outline)),
                               ],
                             ),
                             SizedBox(height: 8),
