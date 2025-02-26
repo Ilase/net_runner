@@ -45,12 +45,12 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     on<GetPingListEvent>(_getPingList);
     on<GetReport>(_getReport);
     on<PostTask>(_postTask);
+    on<EditHost>(_editHost);
+    on<PostHost>(_postHost);
   }
 
-  Future<void> _connectToServer(
-    ConnectToServerEvent event,
-    Emitter emit,
-  ) async {
+  Future<void> _connectToServer(ConnectToServerEvent event,
+      Emitter emit,) async {
     try {
       apiEndpoints = event.endpoints;
       emit(ConnectLoadState());
@@ -60,7 +60,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
           webSocketChannel =
               WebSocketChannel.connect(apiEndpoints.getUri("ws"));
           _webSocketSubscription = webSocketChannel.stream.listen(
-            (message) async {
+                (message) async {
               try {
                 final Map<String, dynamic> decodedMessage = jsonDecode(message);
                 ntLogger.w('Message from web socket: \n $decodedMessage');
@@ -68,7 +68,8 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
               } catch (e) {
                 notificationControllerCubit.addNotification(
                     "Ошибка подключения",
-                    "Подключение к серверу завершилось ошибкой: ${e.toString()}");
+                    "Подключение к серверу завершилось ошибкой: ${e
+                        .toString()}");
               } //add error stack
             },
           );
@@ -85,8 +86,8 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     }
   }
 
-  Future<void> _fetchTasKListEvent(
-      FetchTaskListEvent event, Emitter emit) async {
+  Future<void> _fetchTasKListEvent(FetchTaskListEvent event,
+      Emitter emit) async {
     // Показывает индикатор загрузки перед обновлением
     taskListCubit.clearList(); // Очистить список перед запросом
 
@@ -178,6 +179,39 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
       notificationControllerCubit.addNotification(
           "Упс...", "Ошибка: ${e.toString()}");
       ntLogger.e(e.toString());
+    }
+  }
+
+  Future<void> _editHost(EditHost event, Emitter emit) async {
+    final response = await http.put(
+        apiEndpoints.getUri("get-host-list", extraPaths: ["${event.taskId}"]),
+        body: event.body);
+
+    if (response.statusCode == 200) {
+      int taskId = jsonDecode(response.body)["task_id"];
+      notificationControllerCubit.addNotification(
+          "Успешно", "Изменения применены");
+      return;
+    } else {
+      notificationControllerCubit.addNotification(
+          "Ошибка", "${jsonDecode(response.body)}");
+      return;
+    }
+  }
+
+  Future<void> _postHost(PostHost event, Emitter emit) async {
+    final response = await http.post(
+        apiEndpoints.getUri("get-host-list"), body: jsonEncode(event.body));
+
+    if (response.statusCode == 200) {
+      notificationControllerCubit.addNotification(
+          "Создано", "Хост успешно создан");
+      return;
+    } else {
+      notificationControllerCubit.addNotification(
+          "Ошибка", "${jsonDecode(response.body)}");
+
+      return;
     }
   }
 }

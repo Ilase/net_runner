@@ -33,3 +33,14 @@ class PostTask extends ApiEvent {
   final Map<String, dynamic> body;
   PostTask({required this.body});
 }
+
+class EditHost extends ApiEvent{
+  final taskId;
+  final Map<String, dynamic> body;
+  EditHost({required this.taskId, required this.body});
+}
+
+class PostHost extends ApiEvent {
+  final Map<String, dynamic> body;
+  PostHost({required this.body});
+}

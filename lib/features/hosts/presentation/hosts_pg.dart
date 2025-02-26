@@ -513,8 +513,16 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
         ElevatedButton(
           onPressed: () {
             for (dynamic item in _selectedHostsRightList) {
-              context.read<ApiBloc>();
+              context.read<ApiBloc>().add(PostHost(body: {
+                "ip" : item["ip"],
+                "name" : item["name"],
+                "description" : item["description"],
+              },),);
             }
+            setState(() {
+              _selectedHostsRightList.clear();
+            });
+
           },
           child: Text('Добваить'),
         ),
