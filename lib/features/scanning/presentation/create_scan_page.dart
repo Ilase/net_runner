@@ -23,6 +23,10 @@ class _CreateScanPageState extends State<CreateScanPage> {
     "pentest": "pentest",
     "networkscan": "networkscan"
   };
+
+  List<dynamic> _groupList = [];
+  List<dynamic> _hostList = [];
+
   double currentSliderValue = 1;
 
   List<String> portList = [];
@@ -87,7 +91,7 @@ class _CreateScanPageState extends State<CreateScanPage> {
                             dropdownMenuEntries: [
                               DropdownMenuEntry(
                                 value: _scanTypeValues["pentest"],
-                                label: 'Пентест',
+                                label: 'pentest',
                               ),
                               DropdownMenuEntry(
                                 value: _scanTypeValues["networkscan"],
@@ -123,15 +127,30 @@ class _CreateScanPageState extends State<CreateScanPage> {
                         if (_selectedScanType == _scanTypeValues["pentest"]) {
                           final String joinedPorts = portList.join(",");
 
+
+                          List<String> _hostListIp = [];
+                          for(final host in _hostList){
+                            _hostListIp.add(host["ip"]);
+                          }
+                          List<String> _groupListIp = [];
+                          for(final group in _groupList){
+                            for(final host in group["hosts"]){
+                              _groupListIp.add(host["ip"]);
+                            }
+                          }
+
+                          List<String> _listIp = (_groupListIp + _hostListIp).toSet().toList();
+
+
                           context.read<ApiBloc>().add(
                                 PostTask(
                                   body: {
                                     "name": _nameController.text,
-                                    "hosts": ["192.168.20.218"],
+                                    "hosts": _listIp,
                                     "type": _scanTypeValues["pentest"],
                                     "params": {
                                       "ports": joinedPorts,
-                                      "speed": currentSliderValue.toInt(),
+                                      "speed": currentSliderValue.toInt().toString(),
                                     }
                                   },
                                 ),
@@ -148,96 +167,6 @@ class _CreateScanPageState extends State<CreateScanPage> {
             ),
           ),
           const SizedBox(width: 8),
-          // Expanded(
-          //   child: Padding(
-          //     padding: const EdgeInsets.only(top: 16, left: 8, right: 16),
-          //     child: Container(
-          //       padding: const EdgeInsets.all(16.0),
-          //       decoration: BoxDecoration(
-          //         borderRadius: BorderRadius.circular(15),
-          //         color: Colors.white,
-          //         boxShadow: [
-          //           const BoxShadow(
-          //             offset: Offset(3, 3),
-          //             color: Colors.grey,
-          //             blurRadius: 15,
-          //           )
-          //         ],
-          //       ),
-          //       child: Column(
-          //         children: [
-          //           Row(
-          //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //             children: [
-          //               const Text('Цели сканирования'),
-          //               IconButton(
-          //                 onPressed: () {
-          //                   context.read<ApiBloc>().add(GetHostListEvent());
-          //                   context.read<ApiBloc>().add(GetGroupListEvent());
-          //                 },
-          //                 icon: const Icon(Icons.refresh),
-          //               ),
-          //             ],
-          //           ),
-          //           Divider(),
-          //           Row(
-          //             children: [
-          //               Padding(
-          //                 padding: const EdgeInsets.all(8.0),
-          //                 child: Column(
-          //                   children: [
-          //                     BlocBuilder<HostListCubit, HostListState>(
-          //                       builder: (context, state) {
-          //                         if (state is FullState) {
-          //                           return ListView.builder(
-          //                               itemCount: state.list.length,
-          //                               itemBuilder: (builder, index) {
-          //                                 return ListTile(
-          //                                   subtitle: Text(index.toString()),
-          //                                 );
-          //                               });
-          //                         } else {
-          //                           return Center(
-          //                             child: Icon(Icons.error),
-          //                           );
-          //                         }
-          //                       },
-          //                     ),
-          //                   ],
-          //                 ),
-          //               ),
-          //               // Padding(
-          //               //   padding: const EdgeInsets.all(8.0),
-          //               //   child: Column(
-          //               //     children: [
-          //               //       BlocBuilder<GroupListCubit, GroupListState>(
-          //               //         builder: (context, state) {
-          //               //           if (state is FilledState) {
-          //               //             return ListView.builder(
-          //               //               itemCount: state.list.length,
-          //               //               itemBuilder: (builder, index) {
-          //               //                 return ListTile(
-          //               //                   subtitle: Text(index.toString()),
-          //               //                 );
-          //               //               },
-          //               //             );
-          //               //           } else {
-          //               //             return Center(
-          //               //               child: Icon(Icons.error),
-          //               //             );
-          //               //           }
-          //               //         },
-          //               //       ),
-          //               //     ],
-          //               //   ),
-          //               // )
-          //             ],
-          //           )
-          //         ],
-          //       ),
-          //     ),
-          //   ),
-          // ),
 
           Expanded(
             flex: 1,
@@ -279,11 +208,26 @@ class _CreateScanPageState extends State<CreateScanPage> {
                             return ListView.builder(
                                 itemCount: list.length,
                                 itemBuilder: (builder, index) {
+                                  final item = list[index];
+                                  final isSelected = _groupList.contains(item);
                                   return ListTile(
+                                    onTap: (){
+                                      setState(() {
+                                        if (isSelected) {
+                                          _groupList.remove(item);
+                                        } else {
+                                          _groupList.add(item);
+                                        }
+                                      });
+                                    },
                                     title: Text(
                                         'Кол-во хостов: ${list[index]["hosts"].length}'),
                                     leading: Text(index.toString()),
                                     subtitle: Text(list[index]["name"]),
+                                    trailing: Icon(
+                                      isSelected ?  Icons.check : Icons.arrow_forward,
+                                      color: isSelected ?  Colors.green : Colors.blue ,
+                                    ),
                                   );
                                 });
                           } else {
@@ -322,9 +266,49 @@ class _CreateScanPageState extends State<CreateScanPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text('Хосты'),
-                        IconButton(onPressed: () {}, icon: Icon(Icons.refresh)),
+                        IconButton(onPressed: () {
+                          context.read<ApiBloc>().add(GetHostListEvent());
+                        }, icon: Icon(Icons.refresh)),
                       ],
-                    )
+                    ),
+                    Divider(),
+                    Expanded(
+                      child: BlocBuilder<HostListCubit, HostListState>(
+                        builder: (context, state) {
+                          if (state is FullState) {
+                            final List<dynamic> list = state.list["hostList"];
+                            return ListView.builder(
+                                itemCount: list.length,
+                                itemBuilder: (builder, index) {
+                                  final item = list[index];
+                                  final bool isSelected = _hostList.contains(item);
+                                  return ListTile(
+                                    onTap: (){
+                                      setState(() {
+                                        if (isSelected) {
+                                          _hostList.remove(item);
+                                        } else {
+                                          _hostList.add(item);
+                                        }
+                                      });
+                                    },
+                                    leading: Text(index.toString()),
+                                    title: Text(list[index]["ip"]),
+                                    subtitle: Text(list[index]["name"]),
+                                    trailing: Icon(
+                                      isSelected ?  Icons.check : Icons.arrow_forward,
+                                      color: isSelected ? Colors.green : Colors.blue ,
+                                    ),
+                                  );
+                                });
+                          } else {
+                            return Center(
+                              child: Icon(Icons.error_outline),
+                            );
+                          }
+                        },
+                      ),
+                    ),
                   ],
                 ),
               ),
