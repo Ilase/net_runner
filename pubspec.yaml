@@ -43,6 +43,7 @@ dependencies:
   freezed: ^2.5.8
   mask_text_input_formatter: ^2.9.0
   graphview: ^1.2.0
+  graphic: ^2.5.1
 
 dev_dependencies:
   flutter_test:

@@ -28,3 +28,8 @@ class GetReport extends ApiEvent {
   final String task_number;
   GetReport({required this.task_number});
 }
+
+class PostTask extends ApiEvent {
+  final Map<String, dynamic> body;
+  PostTask({required this.body});
+}

@@ -1,5 +1,10 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:graphic/graphic.dart';
 import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/data/task_report_serial/pentest_report_serial.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
@@ -18,6 +23,7 @@ class ScanningPg extends StatefulWidget {
 
 class _ScanningPgState extends State<ScanningPg>
     with SingleTickerProviderStateMixin {
+  final heatmapChannel = StreamController<Selected?>.broadcast();
   Map<String, dynamic>? _selectedItem;
   List<dynamic>? _selectedItemHosts;
   late TabController _tabController;
@@ -483,52 +489,11 @@ class _ScanningPgState extends State<ScanningPg>
                                               controller: _tabController,
                                               children: [
                                                 _buildGeneralInfo(
-                                                    taskInfo.general_info),
+                                                    taskInfo.general_info,
+                                                    taskInfo.hosts),
 
                                                 ///SecondTab
                                                 _buildHosts(taskInfo.hosts),
-                                                // Expanded(
-                                                //   child: SingleChildScrollView(
-                                                //     child: Column(
-                                                //       children: [
-                                                //         SizedBox(
-                                                //           height: 16,
-                                                //         ),
-                                                //         Column(
-                                                //           children: taskInfo
-                                                //               .hosts.entries
-                                                //               .map((entry) {
-                                                //             return Container(
-                                                //               decoration:
-                                                //                   BoxDecoration(
-                                                //                 border:
-                                                //                     Border.all(
-                                                //                   width: 2,
-                                                //                   color: Colors
-                                                //                       .blue,
-                                                //                 ),
-                                                //               ),
-                                                //               child: Row(
-                                                //                 children: [
-                                                //                   Column(
-                                                //                     children: [
-                                                //                       Text(
-                                                //                         'Хост: ${entry.value.ip}',
-                                                //                       ),
-                                                //                       Text(
-                                                //                         'Статус: ${entry.value.status}',
-                                                //                       ),
-                                                //                     ],
-                                                //                   ),
-                                                //                 ],
-                                                //               ),
-                                                //             );
-                                                //           }).toList(),
-                                                //         ),
-                                                //       ],
-                                                //     ),
-                                                //   ),
-                                                // ),
 
                                                 ///ThirdTab
                                                 _buildDiff(taskInfo.diff),
@@ -576,51 +541,68 @@ class _ScanningPgState extends State<ScanningPg>
     );
   }
 
-  Widget _buildGeneralInfo(GeneralInfo generalInfo) {
-    return Column(
-      children: [
-        SizedBox(
-          height: 16,
-        ),
-        Container(
-          padding: EdgeInsetsDirectional.all(16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(
-              width: 2,
-              color: Colors.blue,
+  Widget _buildGeneralInfo(
+      GeneralInfo generalInfo, Map<String, PentestHost> hosts) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          SizedBox(
+            height: 16,
+          ),
+          Container(
+            padding: EdgeInsetsDirectional.all(16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(
+                width: 2,
+                color: Colors.blue,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Краткая информация: ${generalInfo.summary}',
+                ),
+                Divider(),
+                Text(
+                  'Время сканирования (сек): ${generalInfo.elapsed}',
+                ),
+                Text(
+                  'Время начала: ${generalInfo.start}',
+                ),
+                Text(
+                  'Время окончания: ${generalInfo.end}',
+                ),
+                Divider(),
+                Text(
+                  'Всего просканировано целей: ${generalInfo.total},',
+                ),
+                Text(
+                  'Целей доступно: ${generalInfo.up}',
+                ),
+                Text(
+                  'Целей недоступно: ${generalInfo.down}',
+                ),
+              ],
             ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Краткая информация: ${generalInfo.summary}',
-              ),
-              Divider(),
-              Text(
-                'Время сканирования (сек): ${generalInfo.elapsed}',
-              ),
-              Text(
-                'Время начала: ${generalInfo.start}',
-              ),
-              Text(
-                'Время окончания: ${generalInfo.end}',
-              ),
-              Divider(),
-              Text(
-                'Всего просканировано целей: ${generalInfo.total},',
-              ),
-              Text(
-                'Целей доступно: ${generalInfo.up}',
-              ),
-              Text(
-                'Целей недоступно: ${generalInfo.down}',
-              ),
-            ],
+          SizedBox(
+            height: 16,
           ),
-        ),
-      ],
+          Container(
+            padding: EdgeInsetsDirectional.all(16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(
+                width: 2,
+                color: Colors.blue,
+              ),
+            ),
+            child: Text(''),
+          ),
+        ],
+      ),
     );
   }
 

@@ -44,6 +44,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     on<GetHostListEvent>(_getHostList);
     on<GetPingListEvent>(_getPingList);
     on<GetReport>(_getReport);
+    on<PostTask>(_postTask);
   }
 
   Future<void> _connectToServer(
@@ -149,8 +150,6 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
   }
 
   Future<void> _getReport(GetReport event, Emitter emit) async {
-    ntLogger.t(apiEndpoints
-        .getUri("get-task-list", extraPaths: [event.task_number]).path);
     final response = await http.get(
         apiEndpoints.getUri("pentest-report", extraPaths: [event.task_number]));
     if (response.statusCode == 200) {
@@ -158,6 +157,27 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     } else {
       notificationControllerCubit.addNotification(
           "Ошибка данных", "Статус: ${response.statusCode}. ${response.body}");
+    }
+  }
+
+  Future<void> _postTask(PostTask event, Emitter emit) async {
+    try {
+      final response = await http.post(apiEndpoints.getUri("get-task-list"),
+          body: jsonEncode(event.body));
+      if (response.statusCode == 200) {
+        int taskId = jsonDecode(response.body)["task_id"];
+        notificationControllerCubit.addNotification(
+            "Успешно", "Задача $taskId создана.");
+        return;
+      } else {
+        notificationControllerCubit.addNotification(
+            "Ошибка заполниения", "Неправильно заполнены данные.");
+        return;
+      }
+    } catch (e) {
+      notificationControllerCubit.addNotification(
+          "Упс...", "Ошибка: ${e.toString()}");
+      ntLogger.e(e.toString());
     }
   }
 }
