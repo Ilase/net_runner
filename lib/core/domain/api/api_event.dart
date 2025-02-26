@@ -44,3 +44,8 @@ class PostHost extends ApiEvent {
   final Map<String, dynamic> body;
   PostHost({required this.body});
 }
+
+class DownloadPdf extends ApiEvent {
+  final String taskNumber;
+  DownloadPdf({required this.taskNumber});
+}

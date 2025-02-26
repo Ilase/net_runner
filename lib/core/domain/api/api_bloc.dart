@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:bloc/bloc.dart';
+import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/data/task_report_serial/pentest_report_serial.dart';
@@ -12,6 +14,7 @@ import 'package:net_runner/core/domain/pentest_report_controller/pentest_report_
 import 'package:net_runner/core/domain/ping_list/ping_list_cubit.dart';
 import 'package:net_runner/core/domain/task_list/task_list_cubit.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:path_provider/path_provider.dart';
 part 'api_event.dart';
 part 'api_state.dart';
 
@@ -47,6 +50,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     on<PostTask>(_postTask);
     on<EditHost>(_editHost);
     on<PostHost>(_postHost);
+    on<DownloadPdf>(_downloadReportPdf);
   }
 
   Future<void> _connectToServer(ConnectToServerEvent event,
@@ -212,6 +216,31 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
           "Ошибка", "${jsonDecode(response.body)}");
 
       return;
+    }
+  }
+
+  Future<void> _downloadReportPdf(DownloadPdf event, Emitter emit) async {
+    Dio dio = Dio();
+    Directory? downloadDir;
+    if (Platform.isLinux || Platform.isWindows) {
+      downloadDir = await getDownloadsDirectory();
+    } else {
+      throw UnsupportedError("Поддерживаются только Windows и Linux");
+    }
+
+    if (downloadDir == null) throw Exception("Не удалось получить папку загрузок");
+
+    String fileName = event.taskNumber;
+    String savePath = '${downloadDir.path}/$fileName';
+    try{
+      await dio.download(
+          apiEndpoints.getUri("pentest-report",
+              extraPaths: ["${event.taskNumber}", "pdf"]).toString(),
+          savePath);
+      notificationControllerCubit.addNotification(
+          "Успешно", "Проверьте папку Загрузок на вышем устройстве");
+    } catch (e){
+      ntLogger.e(e.toString());
     }
   }
 }

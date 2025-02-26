@@ -455,6 +455,9 @@ class _ScanningPgState extends State<ScanningPg>
                                             children: [
                                               Text(
                                                   'Сканирование: ${taskInfo.general_info.task_name}'),
+                                              ElevatedButton(onPressed: (){
+                                                context.read<ApiBloc>().add(DownloadPdf(taskNumber: taskInfo.general_info.task_number));
+                                              }, child: Text("Скачать PDF отчёт"),),
                                               IconButton(
                                                 onPressed: () {
                                                   setState(() {
