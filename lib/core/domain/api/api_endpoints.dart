@@ -52,12 +52,14 @@ class ApiEndpoints {
     };
   }
 
-  Uri getUri(String key, {List<String> extraPaths = const []}) {
+  Uri getUri(String key,
+      {List<String> extraPaths = const [], Map<String, String>? queryParams}) {
     final baseUri = endpoints[key];
     if (baseUri == null) {
-      throw ArgumentError("Endpoing '$key is missing");
+      throw ArgumentError("Endpoint '$key' is missing");
     }
+
     final newPath = [baseUri.path, ...extraPaths].join('/');
-    return baseUri.replace(path: newPath);
+    return baseUri.replace(path: newPath, queryParameters: queryParams);
   }
 }

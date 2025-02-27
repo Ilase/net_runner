@@ -6,6 +6,7 @@ import 'package:net_runner/core/presentation/widgets/notification_manager.dart';
 import 'package:net_runner/features/graph/graph_pg.dart';
 import 'package:net_runner/features/hosts/presentation/hosts_pg.dart';
 import 'package:net_runner/features/scanning/presentation/scanning_pg.dart';
+import 'package:net_runner/features/title_page/presentation/title_pg.dart';
 
 class HeadPage extends StatefulWidget {
   static const String route = '/head';
@@ -27,7 +28,7 @@ class _HeadPageState extends State<HeadPage> {
   bool _isDarkTheme = false;
 
   final List<Widget> pages = [
-    Center(child: Icon(Icons.home, size: 100)),
+    TitlePg(),
     HostsPg(),
     ScanningPg(),
     GraphPg()

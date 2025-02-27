@@ -9,7 +9,10 @@ class ConnectToServerEvent extends ApiEvent {
 
 class GetGroupListEvent extends ApiEvent {}
 
-class FetchTaskListEvent extends ApiEvent {}
+class FetchTaskListEvent extends ApiEvent {
+  final Map<String, String>? queryParams;
+  FetchTaskListEvent({this.queryParams});
+}
 
 class GetPentestReportEvent extends ApiEvent {
   final String taskName;
@@ -31,10 +34,11 @@ class GetReport extends ApiEvent {
 
 class PostTask extends ApiEvent {
   final Map<String, dynamic> body;
-  PostTask({required this.body});
+  final String type;
+  PostTask({required this.body, required this.type});
 }
 
-class EditHost extends ApiEvent{
+class EditHost extends ApiEvent {
   final taskId;
   final Map<String, dynamic> body;
   EditHost({required this.taskId, required this.body});

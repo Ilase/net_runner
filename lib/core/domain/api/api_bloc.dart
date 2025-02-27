@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:net_runner/core/data/logger.dart';
-import 'package:net_runner/core/data/task_report_serial/pentest_report_serial.dart';
 import 'package:net_runner/core/domain/api/api_endpoints.dart';
 import 'package:net_runner/core/domain/group_list/group_list_cubit.dart';
 import 'package:net_runner/core/domain/host_list/host_list_cubit.dart';
@@ -13,8 +13,9 @@ import 'package:net_runner/core/domain/notificatioon_controller/notification_con
 import 'package:net_runner/core/domain/pentest_report_controller/pentest_report_controller_cubit.dart';
 import 'package:net_runner/core/domain/ping_list/ping_list_cubit.dart';
 import 'package:net_runner/core/domain/task_list/task_list_cubit.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+
 part 'api_event.dart';
 part 'api_state.dart';
 
@@ -53,8 +54,10 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     on<DownloadPdf>(_downloadReportPdf);
   }
 
-  Future<void> _connectToServer(ConnectToServerEvent event,
-      Emitter emit,) async {
+  Future<void> _connectToServer(
+    ConnectToServerEvent event,
+    Emitter emit,
+  ) async {
     try {
       apiEndpoints = event.endpoints;
       emit(ConnectLoadState());
@@ -64,7 +67,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
           webSocketChannel =
               WebSocketChannel.connect(apiEndpoints.getUri("ws"));
           _webSocketSubscription = webSocketChannel.stream.listen(
-                (message) async {
+            (message) async {
               try {
                 final Map<String, dynamic> decodedMessage = jsonDecode(message);
                 ntLogger.w('Message from web socket: \n $decodedMessage');
@@ -72,8 +75,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
               } catch (e) {
                 notificationControllerCubit.addNotification(
                     "Ошибка подключения",
-                    "Подключение к серверу завершилось ошибкой: ${e
-                        .toString()}");
+                    "Подключение к серверу завершилось ошибкой: ${e.toString()}");
               } //add error stack
             },
           );
@@ -90,12 +92,13 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     }
   }
 
-  Future<void> _fetchTasKListEvent(FetchTaskListEvent event,
-      Emitter emit) async {
+  Future<void> _fetchTasKListEvent(
+      FetchTaskListEvent event, Emitter emit) async {
     // Показывает индикатор загрузки перед обновлением
     taskListCubit.clearList(); // Очистить список перед запросом
 
-    final response = await http.get(apiEndpoints.getUri("get-task-list"));
+    final response = await http.get(
+        apiEndpoints.getUri("get-task-list", queryParams: event.queryParams));
     ntLogger.t(response.body);
     if (response.statusCode == 200) {
       taskListCubit.fillTaskListFromGet(jsonDecode(response.body));
@@ -166,6 +169,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
   }
 
   Future<void> _postTask(PostTask event, Emitter emit) async {
+    print(event.type);
     try {
       final response = await http.post(apiEndpoints.getUri("get-task-list"),
           body: jsonEncode(event.body));
@@ -175,6 +179,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
             "Успешно", "Задача $taskId создана.");
         return;
       } else {
+        ntLogger.e(jsonDecode(response.body));
         notificationControllerCubit.addNotification(
             "Ошибка заполниения", "Неправильно заполнены данные.");
         return;
@@ -204,8 +209,8 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
   }
 
   Future<void> _postHost(PostHost event, Emitter emit) async {
-    final response = await http.post(
-        apiEndpoints.getUri("get-host-list"), body: jsonEncode(event.body));
+    final response = await http.post(apiEndpoints.getUri("get-host-list"),
+        body: jsonEncode(event.body));
 
     if (response.statusCode == 200) {
       notificationControllerCubit.addNotification(
@@ -228,18 +233,19 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
       throw UnsupportedError("Поддерживаются только Windows и Linux");
     }
 
-    if (downloadDir == null) throw Exception("Не удалось получить папку загрузок");
+    if (downloadDir == null)
+      throw Exception("Не удалось получить папку загрузок");
 
     String fileName = event.taskNumber;
     String savePath = '${downloadDir.path}/$fileName';
-    try{
+    try {
       await dio.download(
           apiEndpoints.getUri("pentest-report",
               extraPaths: ["${event.taskNumber}", "pdf"]).toString(),
           savePath);
       notificationControllerCubit.addNotification(
-          "Успешно", "Проверьте папку Загрузок на вышем устройстве");
-    } catch (e){
+          "Успешно ", "Проверьте папку Загрузок на вышем устройстве");
+    } catch (e) {
       ntLogger.e(e.toString());
     }
   }
