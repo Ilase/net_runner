@@ -1,0 +1,33 @@
+display_name: Net Runner
+package_name: netrunner
+
+maintainer:
+  name: Ashita Prasad
+  email: ashita@xyz.com
+
+priority: optional
+
+section: x11
+
+installed_size: 15700
+
+dependencies:
+  - neofetch
+
+essential: false
+
+
+postuninstall_scripts:
+  - echo "Sorry to see you go."
+
+keywords:
+  - API
+  - API Client
+
+generic_name: API Client
+
+categories:
+  - Development
+  - Utility
+
+startup_notify: true
