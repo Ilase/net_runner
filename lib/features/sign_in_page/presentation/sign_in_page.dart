@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:net_runner/features/head_page/head_page.dart';
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
-import 'package:auto_size_text/auto_size_text.dart';
-import 'package:net_runner/locale/netrunner_localizations.dart';
 
 class MtSignIn extends StatelessWidget {
   const MtSignIn({super.key});
@@ -10,15 +8,6 @@ class MtSignIn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   centerTitle: false,
-      //   title: AutoSizeText(
-      //     AppLocalizations.of(context)!.appBarAppTitle,
-      //     minFontSize: 36,
-      //     maxFontSize: 48,
-      //     overflow: TextOverflow.ellipsis,
-      //   ),
-      // ),
       body: Center(
         child: Stack(
           children: [

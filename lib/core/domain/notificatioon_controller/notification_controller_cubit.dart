@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:net_runner/core/data/notification_model.dart';
+import 'package:net_runner/core/data/notification/notification_model.dart';
 
 part 'notification_controller_state.dart';
 
