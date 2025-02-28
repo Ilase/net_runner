@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graphic/graphic.dart';
 import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
+import 'package:net_runner/core/domain/api/models/task_report_serial/general_info.dart';
 import 'package:net_runner/core/domain/api/models/task_report_serial/pentest/pentest_report_serial.dart';
 import 'package:net_runner/core/domain/pentest_report_controller/pentest_report_controller_cubit.dart';
 import 'package:net_runner/core/domain/task_list/task_list_cubit.dart';
