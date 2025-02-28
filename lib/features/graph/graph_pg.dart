@@ -1,9 +1,5 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graphview/GraphView.dart';
-import 'package:net_runner/core/data/logger.dart';
-import 'package:net_runner/core/domain/graph_request/graph_request_bloc.dart';
 
 class GraphPg extends StatefulWidget {
   const GraphPg({super.key});
@@ -43,8 +39,6 @@ class _GraphPgState extends State<GraphPg> {
 
   @override
   Widget build(BuildContext context) {
-    context.read<GraphRequestBloc>().add(GraphRequestGetNetwork(taskName: "TASK-00044"));
-
     return Stack(
       children: [
         Center(
@@ -57,79 +51,15 @@ class _GraphPgState extends State<GraphPg> {
                   children: [
                     Text("Network"),
                     IconButton(
-                      onPressed: () {
-                        context.read<GraphRequestBloc>().add(GraphRequestGetNetwork(taskName: "TASK-00044"));
-                      },
+                      onPressed: () {},
                       icon: Icon(Icons.refresh),
                     ),
                   ],
-                ),
-                Expanded(
-                  child: BlocConsumer<GraphRequestBloc, GraphRequestState>(
-                    builder: (context, state) {
-                      if (state is GraphRequestSuccess) {
-                        try {
-                          List<dynamic> hosts = state.graphJson["hosts"];
-                          List<String> ips = hosts.map((host) => host['ip'].toString()).toList();
-
-                          String subnetMask = ips.isNotEmpty
-                              ? ips.first.split('.').sublist(0, 3).join('.') + ".0/24"
-                              : "0.0.0.0/24";
-
-                          Node subnetNode = Node.Id(subnetMask);
-                          graph.addNode(subnetNode);
-
-                          List<Node> nodes = hosts.map((host) {
-                            Node node = Node.Id(host['ip']);
-                            graph.addNode(node);
-                            graph.addEdge(subnetNode, node);
-                            return node;
-                          }).toList();
-
-                          return InteractiveViewer(
-                            minScale: 0.1,
-                            maxScale: 10,
-                            constrained: false,
-                            child: GraphView(
-                              graph: graph,
-                              algorithm: FruchtermanReingoldAlgorithm(
-                                attractionRate: 0.01,
-                                repulsionPercentage: 0.1,
-                                iterations: 3000,
-                              ),
-                              paint: Paint()
-                                ..color = Colors.blue
-                                ..strokeWidth = 2
-                                ..strokeCap = StrokeCap.round,
-                              builder: (Node node) {
-                                var nodeData = hosts.firstWhere(
-                                        (h) => h['ip'] == node.key!.value,
-                                    orElse: () => <String, dynamic>{}
-                                ).map<String, dynamic>((key, value) => MapEntry(key.toString(), value));
-
-
-                                return _buildNode(nodeData);
-                              },
-                            ),
-                          );
-                        } catch (e) {
-                          ntLogger.e(e);
-                        }
-                      } else if (state is GraphRequestInProgress) {
-                        return Center(child: CircularProgressIndicator());
-                      } else {
-                        return Center(child: Text('FAIL'));
-                      }
-                      return Container();
-                    },
-                    listener: (context, state) {},
-                  ),
                 ),
               ],
             ),
           ),
         ),
-
         if (selectedNodeData != null)
           Positioned(
             bottom: 20,
@@ -141,17 +71,22 @@ class _GraphPgState extends State<GraphPg> {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
-                  BoxShadow(color: Colors.black26, blurRadius: 10, spreadRadius: 2),
+                  BoxShadow(
+                      color: Colors.black26, blurRadius: 10, spreadRadius: 2),
                 ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text("IP: ${selectedNodeData!['ip']}", style: TextStyle(fontWeight: FontWeight.bold)),
-                  Text("MAC: ${selectedNodeData!['mac']}", style: TextStyle(fontSize: 14)),
-                  Text("OS: ${selectedNodeData!['os']}", style: TextStyle(fontSize: 14)),
-                  Text("CPE: ${selectedNodeData!['cpe']}", style: TextStyle(fontSize: 14)),
+                  Text("IP: ${selectedNodeData!['ip']}",
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text("MAC: ${selectedNodeData!['mac']}",
+                      style: TextStyle(fontSize: 14)),
+                  Text("OS: ${selectedNodeData!['os']}",
+                      style: TextStyle(fontSize: 14)),
+                  Text("CPE: ${selectedNodeData!['cpe']}",
+                      style: TextStyle(fontSize: 14)),
                   Align(
                     alignment: Alignment.centerRight,
                     child: IconButton(

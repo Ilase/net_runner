@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:net_runner/core/data/ip_input_formatter.dart';
-import 'package:net_runner/core/domain/api/ping_list/ping_list_cubit.dart';
-import 'package:net_runner/core/domain/api_data_controller/api_data_controller_bloc.dart';
-import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
 
 class AddHostPage extends StatefulWidget {
   const AddHostPage({super.key});
@@ -18,7 +14,7 @@ class _AddHostPageState extends State<AddHostPage> {
   final TextEditingController _customIpController = TextEditingController();
   final _ipInputFormater = MaskTextInputFormatter(
     mask: '###.###.###.###',
-    filter: { "#": RegExp(r'[0-9]') },
+    filter: {"#": RegExp(r'[0-9]')},
     type: MaskAutoCompletionType.lazy,
   );
   List<String> leftResponseList = [];
@@ -51,11 +47,7 @@ class _AddHostPageState extends State<AddHostPage> {
                           children: [
                             Text('Available hosts'),
                             IconButton(
-                              onPressed: () {
-                                context.read<ApiDataControllerBloc>().add(GetRequestEvent(endpoint: '/ping'));
-                                //context.read<PostRequestBloc>().add(PostRequestGetSingleTaskEvent(endpoint: '/ping'));
-                                leftResponseList.clear();
-                              },
+                              onPressed: () {},
                               icon: Icon(Icons.refresh),
                             ),
                           ],
@@ -75,53 +67,25 @@ class _AddHostPageState extends State<AddHostPage> {
                                   ),
                                 ),
                               ),
-                              SizedBox(width: 10,),
-                              IconButton(onPressed: (){
-                                setState(() {
-                                  rightResponseList.add(_customIpController.text);
-                                  hostNameControllers[_customIpController.text] = TextEditingController();
-                                });
-                              }, icon: Icon(Icons.accessible))
+                              SizedBox(
+                                width: 10,
+                              ),
+                              IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      rightResponseList
+                                          .add(_customIpController.text);
+                                      hostNameControllers[_customIpController
+                                          .text] = TextEditingController();
+                                    });
+                                  },
+                                  icon: Icon(Icons.accessible))
                             ],
                           ),
                         ),
-                        Expanded(
-                          child: BlocBuilder<PingListCubit, PingListState>(
-                            builder: (context, state) {
-                              if (state is FullState) {
-                                leftResponseList.clear();
-                                for (dynamic field in state.pingMap["activeHosts"]) {
-                                  leftResponseList.add(field);
-                                }
-                                return ListView.builder(
-                                  itemCount: leftResponseList.length,
-                                  itemBuilder: (builder, index) {
-                                    final isAdded = rightResponseList.contains(leftResponseList[index]);
-                                    return ListTile(
-                                      enabled: !isAdded,
-                                      onTap: isAdded
-                                          ? null
-                                          : () {
-                                        setState(() {
-                                          rightResponseList.add(leftResponseList[index]);
-                                          hostNameControllers[leftResponseList[index]] = TextEditingController();
-                                        });
-                                      },
-                                      title: Text(leftResponseList[index]),
-                                      trailing: Icon(isAdded ? Icons.check : Icons.arrow_forward),
-                                    );
-                                  },
-                                );
-                              } else {
-                                return Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              }
-                            },
-                          ),
+                        SizedBox(
+                          height: 10,
                         ),
-                        SizedBox(height: 10,),
-
                       ],
                     ),
                   ),
@@ -146,7 +110,8 @@ class _AddHostPageState extends State<AddHostPage> {
                                     ),
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.0),
-                                      borderSide: BorderSide(color: Colors.blue),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue),
                                     ),
                                   ),
                                 ),
@@ -162,7 +127,6 @@ class _AddHostPageState extends State<AddHostPage> {
                             },
                           ),
                         ),
-
                       ],
                     ),
                   ),
@@ -174,7 +138,6 @@ class _AddHostPageState extends State<AddHostPage> {
             ),
             ElevatedButton(
               onPressed: () {
-
                 _sendHostNames();
                 setState(() {
                   rightResponseList.clear();
@@ -200,14 +163,6 @@ class _AddHostPageState extends State<AddHostPage> {
         'name': hostName,
       });
     }
-    for(Map<String,dynamic> mail in hostData){
-      context.read<PostRequestBloc>().add(PostRequestSendEvent(
-            endpoint: '/host', // Замените на ваш endpoint
-            body: {
-              "ip" : mail["ip"],
-              "name" : mail["name"],
-            },
-          ));
-    }
+    for (Map<String, dynamic> mail in hostData) {}
   }
 }

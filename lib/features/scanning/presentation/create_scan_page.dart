@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:net_runner/core/data/logger.dart';
-import 'package:net_runner/core/domain/api/host_list/host_list_cubit.dart';
-import 'package:net_runner/core/domain/api_data_controller/api_data_controller_bloc.dart';
-import 'package:net_runner/core/domain/post_request/post_request_bloc.dart';
+import 'package:net_runner/core/domain/api/api_bloc.dart';
+import 'package:net_runner/core/domain/group_list/group_list_cubit.dart';
+import 'package:net_runner/core/domain/host_list/host_list_cubit.dart';
+import 'package:net_runner/core/presentation/widgets/notification_manager.dart';
 
 class CreateScanPage extends StatefulWidget {
   const CreateScanPage({super.key});
@@ -17,9 +17,20 @@ class _CreateScanPageState extends State<CreateScanPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _portsController = TextEditingController();
   final TextEditingController _scanTypeController = TextEditingController();
-  final Map<String, dynamic> _scanTypeValues = {"pentest": "pentest"};
+  final TextEditingController _networkMaskController = TextEditingController();
+  String? _selectedScanType;
+  final Map<String, String> _scanTypeValues = {
+    "pentest": "pentest",
+    "networkscan": "networkscan",
+    "agentInventory": "agentInventory"
+  };
+
+  List<dynamic> _groupList = [];
+  List<dynamic> _hostList = [];
+
   double currentSliderValue = 1;
 
+  List<String> portList = [];
   // List to keep track of selected IPs
   List<String> selectedIPs = [];
 
@@ -27,7 +38,7 @@ class _CreateScanPageState extends State<CreateScanPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('New scan'),
+        title: const Text('Новое задание'),
         leading: IconButton(
           onPressed: () {
             Navigator.of(context).pop();
@@ -35,158 +46,451 @@ class _CreateScanPageState extends State<CreateScanPage> {
           icon: const Icon(Icons.arrow_back),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                children: [
-                  const Text('Settings'),
-                  TextField(
-                    controller: _nameController,
-                    decoration: const InputDecoration(
-                      suffixIcon: Icon(Icons.accessible_forward_sharp),
-                      labelText: 'Name',
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Scan type: '),
-                      Expanded(
-                        child: DropdownMenu(
-                          controller: _scanTypeController,
-                          dropdownMenuEntries: [
-                            DropdownMenuEntry(
-                              value: _scanTypeValues["pentest"],
-                              label: 'pentest',
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  const Text('Speed'),
-                  Slider(
-                    label: '${currentSliderValue.toInt()}',
-                    value: currentSliderValue,
-                    min: 1,
-                    max: 5,
-                    divisions: 4,
-                    onChanged: (double value) {
-                      setState(() {
-                        currentSliderValue = value;
-                      },);
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: _portsController,
-                    decoration: const InputDecoration(labelText: 'Ports'),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      // You can use the selectedIPs list here
-                      ntLogger.t('Selected IPs: $selectedIPs');
-                      context.read<PostRequestBloc>().add(PostRequestSendEvent(
-                        endpoint: '/task',
-                        body: {
-                          "name": _nameController.text,
-                          "hosts": selectedIPs,
-                          "type": _scanTypeController.text,
-                          "params": {
-                            "ports": _portsController.text,
-                            "speed": currentSliderValue.toInt().toString()
-
-                          },
-                          },
-                        ),
-                      );
-                      _portsController.clear();
-                      _scanTypeController.clear();
-                      _nameController.clear();
-
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('Confirm'),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
+      body: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 16, left: 16, right: 8),
               child: Container(
+                padding: const EdgeInsets.all(16.0),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
                   color: Colors.white,
                   boxShadow: [
                     const BoxShadow(
-                      offset: Offset(0, 2),
-                      color: Colors.black,
+                      offset: Offset(3, 3),
+                      color: Colors.grey,
+                      blurRadius: 15,
                     )
                   ],
                 ),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const Text('Настройки'),
+                    TextField(
+                      controller: _nameController,
+                      decoration: const InputDecoration(
+                        suffixIcon: Icon(Icons.title),
+                        labelText: 'Название',
+                      ),
+                    ),
+                    const SizedBox(height: 16),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Scan targets'),
-                        IconButton(
-                          onPressed: () {
-                            // context.read<PostRequestBloc>().add(const PostRequestGetEvent(endpoint: '/host'));
-                            context.read<ApiDataControllerBloc>().add(GetRequestEvent(endpoint: '/host'));
-                          },
-                          icon: const Icon(Icons.refresh),
+                        const Text('Тип сканирования: '),
+                        Expanded(
+                          child: DropdownMenu(
+                            onSelected: (value) {
+                              setState(() {
+                                _selectedScanType = value;
+                              });
+                            },
+                            controller: _scanTypeController,
+                            dropdownMenuEntries: [
+                              DropdownMenuEntry(
+                                value: _scanTypeValues["pentest"],
+                                label: 'Пентест',
+                              ),
+                              DropdownMenuEntry(
+                                value: _scanTypeValues["networkscan"],
+                                label: 'Просмотр сети',
+                              ),
+                              DropdownMenuEntry(
+                                  value: _scanTypeValues["agentInventory"],
+                                  label: "Инвентаризация хостов"),
+                            ],
+                          ),
                         ),
                       ],
                     ),
+                    const SizedBox(height: 16),
+                    Divider(),
                     Expanded(
-                      child: BlocBuilder<HostListCubit, HostListState>(
-                        builder: (context, state) {
-                          if (state is EmptyState) {
-                            return const Center(child: CircularProgressIndicator());
-                          } else if (state is FullState) {
-                            return ListView.builder(
-                              itemCount: state.hostList.length,
-                              itemBuilder: (context, index) {
-                                final item = state.hostList[index];
-                                final ip = item['ip'];
-                                final isChecked = selectedIPs.contains(ip);
-                                return ListTile(
-                                  title: Text(ip ?? 'No IP'),
-                                  subtitle: Text(item['name'] ?? 'No Name'),
-                                  trailing: Checkbox(
-                                    value: isChecked,
-                                    onChanged: (bool? value) {
-                                      setState(() {
-                                        if (value != null && value) {
-                                          selectedIPs.add(ip);
-                                        } else {
-                                          selectedIPs.remove(ip);
-                                        }
-                                      });
-                                    },
-                                  ),
-                                );
-                              },
+                      child: Builder(
+                        builder: (context) {
+                          if (_selectedScanType == _scanTypeValues["pentest"]) {
+                            return _buildPentestVariant();
+                          } else if (_selectedScanType ==
+                              _scanTypeValues["networkscan"]) {
+                            return _buildNetworkScan();
+                          } else if (_selectedScanType ==
+                              _scanTypeValues["agentInventory"]) {
+                            return Placeholder();
+                          } else if (_selectedScanType == null) {
+                            return Center(
+                              child: Text('Выберите тип сканирования'),
                             );
                           } else {
-                            return const Center(child: Text('oops'),);
+                            return Center(
+                              child: Text('В разработке'),
+                            );
                           }
                         },
                       ),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (_selectedScanType == _scanTypeValues["pentest"]) {
+                          final String joinedPorts = portList.join(",");
+
+                          List<String> _hostListIp = [];
+                          for (final host in _hostList) {
+                            _hostListIp.add(host["ip"]);
+                          }
+                          List<String> _groupListIp = [];
+                          for (final group in _groupList) {
+                            for (final host in group["hosts"]) {
+                              _groupListIp.add(host["ip"]);
+                            }
+                          }
+
+                          List<String> _listIp =
+                              (_groupListIp + _hostListIp).toSet().toList();
+
+                          context.read<ApiBloc>().add(
+                                PostTask(
+                                  type: _selectedScanType!,
+                                  body: {
+                                    "name": _nameController.text,
+                                    "hosts": _listIp,
+                                    "type": _scanTypeValues["pentest"],
+                                    "params": {
+                                      "ports": joinedPorts,
+                                      "speed":
+                                          currentSliderValue.toInt().toString(),
+                                    }
+                                  },
+                                ),
+                              );
+                        } else if (_selectedScanType ==
+                            _scanTypeValues["networkscan"]) {
+                          context.read<ApiBloc>().add(
+                                PostTask(body: {
+                                  "name": _nameController.text,
+                                  "hosts": [],
+                                  "type": _scanTypeValues["networkscan"],
+                                  "params": {
+                                    "networkAddress":
+                                        _networkMaskController.text,
+                                    "speed":
+                                        currentSliderValue.toInt().toString(),
+                                  }
+                                }, type: _selectedScanType!),
+                              );
+                        }
+                        NotificationManager().showAnimatedNotification(context,
+                            "Предупреждение", "Выберите тип сканирования");
+                      },
+                      child: const Text('Подтвердить'),
                     ),
                   ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(width: 8),
+          AnimatedContainer(
+            duration: Duration(milliseconds: 100),
+            curve: Curves.easeInOut,
+            width: _selectedScanType == _scanTypeValues["pentest"] ||
+                    _selectedScanType == _scanTypeValues["agentInventory"]
+                ? MediaQuery.of(context).size.width / 2
+                : 0,
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 16, left: 8, right: 8),
+                    child: Container(
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.white,
+                        boxShadow: [
+                          const BoxShadow(
+                            offset: Offset(3, 3),
+                            color: Colors.grey,
+                            blurRadius: 15,
+                          )
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Группы'),
+                              IconButton(
+                                onPressed: () {
+                                  context
+                                      .read<ApiBloc>()
+                                      .add(GetGroupListEvent());
+                                },
+                                icon: Icon(Icons.refresh),
+                              )
+                            ],
+                          ),
+                          Divider(),
+                          Expanded(
+                            child: BlocBuilder<GroupListCubit, GroupListState>(
+                              builder: (context, state) {
+                                if (state is FilledState) {
+                                  final List<dynamic> list =
+                                      state.list["groupList"];
+                                  return ListView.builder(
+                                      itemCount: list.length,
+                                      itemBuilder: (builder, index) {
+                                        final item = list[index];
+                                        final isSelected =
+                                            _groupList.contains(item);
+                                        return ListTile(
+                                          onTap: () {
+                                            setState(() {
+                                              if (isSelected) {
+                                                _groupList.remove(item);
+                                              } else {
+                                                _groupList.add(item);
+                                              }
+                                            });
+                                          },
+                                          title: Text(
+                                              'Кол-во хостов: ${list[index]["hosts"].length}'),
+                                          leading: Text(index.toString()),
+                                          subtitle: Text(list[index]["name"]),
+                                          trailing: Icon(
+                                            isSelected
+                                                ? Icons.check
+                                                : Icons.arrow_forward,
+                                            color: isSelected
+                                                ? Colors.green
+                                                : Colors.blue,
+                                          ),
+                                        );
+                                      });
+                                } else {
+                                  return Center(
+                                    child: Icon(Icons.error_outline),
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.only(top: 16, left: 16, right: 16),
+                    child: Container(
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.white,
+                        boxShadow: [
+                          const BoxShadow(
+                            offset: Offset(3, 3),
+                            color: Colors.grey,
+                            blurRadius: 15,
+                          )
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Хосты'),
+                              IconButton(
+                                  onPressed: () {
+                                    context
+                                        .read<ApiBloc>()
+                                        .add(GetHostListEvent());
+                                  },
+                                  icon: Icon(Icons.refresh)),
+                            ],
+                          ),
+                          Divider(),
+                          Expanded(
+                            child: BlocBuilder<HostListCubit, HostListState>(
+                              builder: (context, state) {
+                                if (state is FullState) {
+                                  final List<dynamic> list =
+                                      state.list["hostList"];
+                                  return ListView.builder(
+                                      itemCount: list.length,
+                                      itemBuilder: (builder, index) {
+                                        final item = list[index];
+                                        final bool isSelected =
+                                            _hostList.contains(item);
+                                        return ListTile(
+                                          onTap: () {
+                                            setState(() {
+                                              if (isSelected) {
+                                                _hostList.remove(item);
+                                              } else {
+                                                _hostList.add(item);
+                                              }
+                                            });
+                                          },
+                                          leading: Text(index.toString()),
+                                          title: Text(list[index]["ip"]),
+                                          subtitle: Text(list[index]["name"]),
+                                          trailing: Icon(
+                                            isSelected
+                                                ? Icons.check
+                                                : Icons.arrow_forward,
+                                            color: isSelected
+                                                ? Colors.green
+                                                : Colors.blue,
+                                          ),
+                                        );
+                                      });
+                                } else {
+                                  return Center(
+                                    child: Icon(Icons.error_outline),
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildNetworkScan() {
+    return Column(
+      children: [
+        const Text(
+            'Скорость сканирования (переместить на нужный уровень скорости [1-5])'),
+        Slider(
+          label: '${currentSliderValue.toInt()}',
+          value: currentSliderValue,
+          min: 1,
+          max: 5,
+          divisions: 4,
+          onChanged: (double value) {
+            setState(
+              () {
+                currentSliderValue = value;
+              },
+            );
+          },
+        ),
+        TextField(
+          controller: _networkMaskController,
+          decoration: InputDecoration(
+            label: Text("Маска сети"),
+            hintText: "Например: 192.168.0.0/24",
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPentestVariant() {
+    return Column(
+      children: [
+        const Text(
+            'Скорость сканирования (переместить на нужный уровень скорости [1-5])'),
+        Slider(
+          label: '${currentSliderValue.toInt()}',
+          value: currentSliderValue,
+          min: 1,
+          max: 5,
+          divisions: 4,
+          onChanged: (double value) {
+            setState(
+              () {
+                currentSliderValue = value;
+              },
+            );
+          },
+        ),
+        const SizedBox(height: 16),
+        Expanded(
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        setState(() {
+                          portList.clear();
+                        });
+                      },
+                      icon: Icon(Icons.clear_all)),
+                  Expanded(
+                    child: TextField(
+                      controller: _portsController,
+                      decoration: const InputDecoration(
+                          labelText: 'Порты',
+                          hintText:
+                              'Вводятся либо цельным числом либо через\'-\''),
+                    ),
+                  ),
+                  IconButton(
+                      onPressed: () {
+                        setState(() {
+                          portList.add(_portsController.text);
+                        });
+                      },
+                      icon: Icon(Icons.add_circle_outline))
+                ],
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(color: Colors.grey),
+                        BoxShadow(
+                          spreadRadius: -1,
+                          color: Colors.white,
+                          blurRadius: 20,
+                        ),
+                      ]),
+                  child: ListView.builder(
+                    itemCount: portList.length,
+                    itemBuilder: (builder, index) {
+                      return ListTile(
+                        subtitle: Text(portList[index]),
+                        trailing: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                portList.removeAt(index);
+                              });
+                            },
+                            icon: Icon(Icons.close)),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

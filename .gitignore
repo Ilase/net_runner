@@ -55,3 +55,4 @@ app.*.map.json
 #/ios/Podfile
 
 
+/run_gen_build.sh
