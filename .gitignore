@@ -32,10 +32,11 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
-
+# Generated files
+*.g.dart
 # Symbolication related
 app.*.symbols
-
+pubspec.lock
 # Obfuscation related
 app.*.map.json
 

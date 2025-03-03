@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:net_runner/core/data/data_loader.dart';
 import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
 import 'package:net_runner/core/domain/group_list/group_list_cubit.dart';
@@ -13,14 +14,10 @@ import 'package:net_runner/features/connection_page/presentation/connection_page
 import 'package:net_runner/features/head_page/head_page.dart';
 import 'package:net_runner/features/hosts/presentation/add_host_page.dart';
 import 'package:net_runner/features/scanning/presentation/create_scan_page.dart';
-import 'package:net_runner/locale/netrunner_localizations.dart';
-import 'package:net_runner/core/data/data_loader.dart';
 import 'package:net_runner/features/splash_screen/splash_screen.dart';
+import 'package:net_runner/locale/netrunner_localizations.dart';
 import 'package:net_runner/utils/routes/router.dart';
-import 'package:net_runner/utils/routes/routes.dart';
 import 'package:platform_detector/widgets/platform_type_widget.dart';
-import 'package:net_runner/utils/constants/themes/app_themes.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
