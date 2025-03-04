@@ -11,14 +11,16 @@ class ModelTask {
   int percent;
   String name;
   String type;
+  List<ModelTaskHost> hosts;
   String status;
-  ModelPentestParams params;
+  Map<String, dynamic> params;
 
   ModelTask({
     required this.ID,
     required this.CreatedAt,
     required this.UpdatedAt,
     required this.number_task,
+    required this.hosts,
     required this.percent,
     required this.name,
     required this.type,
@@ -31,23 +33,41 @@ class ModelTask {
 }
 
 @JsonSerializable()
-class ModelPentestParams {
-  String networkAddress;
-  String speed;
-  ModelPentestParams({required this.networkAddress, required this.speed});
+class ModelTaskHost {
+  int ID;
+  String name;
+  String description;
+  String ip;
 
-  factory ModelPentestParams.fromJson(Map<String, dynamic> json) =>
-      _$ModelPentestParamsFromJson(json);
-  Map<String, dynamic> toJson() => _$ModelPentestParamsToJson(this);
+  ModelTaskHost({
+    required this.ID,
+    required this.name,
+    required this.description,
+    required this.ip,
+  });
+  factory ModelTaskHost.fromJson(Map<String, dynamic> json) =>
+      _$ModelTaskHostFromJson(json);
+  Map<String, dynamic> toJson() => _$ModelTaskHostToJson(this);
 }
 
-@JsonSerializable()
-class ModelNetworkScanParams {
-  String ports;
-  String speed;
-  ModelNetworkScanParams({required this.ports, required this.speed});
-
-  factory ModelNetworkScanParams.fromJson(Map<String, dynamic> json) =>
-      _$ModelNetworkScanParamsFromJson(json);
-  Map<String, dynamic> toJson() => _$ModelNetworkScanParamsToJson(this);
-}
+// @JsonSerializable()
+// class ModelPentestParams {
+//   String networkAddress;
+//   String speed;
+//   ModelPentestParams({required this.networkAddress, required this.speed});
+//
+//   factory ModelPentestParams.fromJson(Map<String, dynamic> json) =>
+//       _$ModelPentestParamsFromJson(json);
+//   Map<String, dynamic> toJson() => _$ModelPentestParamsToJson(this);
+// }
+//
+// @JsonSerializable()
+// class ModelNetworkScanParams {
+//   String ports;
+//   String speed;
+//   ModelNetworkScanParams({required this.ports, required this.speed});
+//
+//   factory ModelNetworkScanParams.fromJson(Map<String, dynamic> json) =>
+//       _$ModelNetworkScanParamsFromJson(json);
+//   Map<String, dynamic> toJson() => _$ModelNetworkScanParamsToJson(this);
+// }

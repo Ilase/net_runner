@@ -60,6 +60,7 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
     );
   }
 
+  /// Tab for groups
   Widget _buildGroupsView() {
     return Row(
       children: [

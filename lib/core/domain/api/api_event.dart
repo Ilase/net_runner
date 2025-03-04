@@ -7,6 +7,8 @@ class ConnectToServerEvent extends ApiEvent {
   ConnectToServerEvent({required this.endpoints});
 }
 
+class DisconnectFromServerEvent extends ApiEvent {}
+
 class GetGroupListEvent extends ApiEvent {}
 
 class FetchTaskListEvent extends ApiEvent {

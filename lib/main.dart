@@ -13,6 +13,7 @@ import 'package:net_runner/core/domain/theme_controller/theme_controller_cubit.d
 import 'package:net_runner/features/connection_page/presentation/connection_page.dart';
 import 'package:net_runner/features/head_page/head_page.dart';
 import 'package:net_runner/features/hosts/presentation/add_host_page.dart';
+import 'package:net_runner/features/login_page/presentation/sign_in_page.dart';
 import 'package:net_runner/features/scanning/presentation/create_scan_page.dart';
 import 'package:net_runner/features/splash_screen/splash_screen.dart';
 import 'package:net_runner/locale/netrunner_localizations.dart';
@@ -26,8 +27,7 @@ void main() async {
   HostListCubit hostListCubit = HostListCubit();
   GroupListCubit groupListCubit = GroupListCubit();
   TaskListCubit taskListCubit = TaskListCubit();
-  PentestReportControllerCubit pentestReportControllerCubit =
-      PentestReportControllerCubit();
+  ReportControllerCubit pentestReportControllerCubit = ReportControllerCubit();
   NotificationControllerCubit notificationControllerCubit =
       NotificationControllerCubit();
   PingListCubit pingListCubit = PingListCubit();
@@ -48,7 +48,7 @@ void main() async {
           taskListCubit: taskListCubit,
           hostListCubit: hostListCubit,
           groupListCubit: groupListCubit,
-          pentestReportControllerCubit: pentestReportControllerCubit,
+          reportControllerCubit: pentestReportControllerCubit,
         ),
       ),
     ],
@@ -94,7 +94,8 @@ class StartPoint extends StatelessWidget {
         ConnectionPage.route: (context) => const ConnectionPage(),
         HeadPage.route: (context) => HeadPage(),
         AddHostPage.route: (context) => const AddHostPage(),
-        CreateScanPage.route: (context) => const CreateScanPage()
+        CreateScanPage.route: (context) => const CreateScanPage(),
+        LoginPage.route: (context) => const LoginPage(),
       },
     );
   }

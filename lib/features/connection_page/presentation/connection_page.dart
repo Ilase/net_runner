@@ -28,7 +28,7 @@ class _ConnectionPageState extends State<ConnectionPage> {
           BlocListener<NotificationControllerCubit,
               NotificationControllerState>(
             listener: (context, state) {
-              if (state is NotificationControllerState) {
+              if (state.notifications.isNotEmpty) {
                 final lastNotification = state.notifications.last;
                 NotificationManager().showAnimatedNotification(
                   context,
@@ -42,7 +42,7 @@ class _ConnectionPageState extends State<ConnectionPage> {
           BlocListener<ApiBloc, ApiState>(
             listener: (context, state) {
               if (state is ConnectedState) {
-                Navigator.of(context).pushNamed('/head');
+                Navigator.of(context).pushNamed('/login');
               }
             },
           ),

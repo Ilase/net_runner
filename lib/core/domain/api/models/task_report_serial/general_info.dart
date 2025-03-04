@@ -11,6 +11,7 @@ class GeneralInfo {
   String version;
   String elapsed;
   String summary;
+  // String? type;
   int up;
   int down;
   int total;
@@ -20,6 +21,7 @@ class GeneralInfo {
     required this.task_number,
     required this.start,
     required this.end,
+    // required this.type,
     required this.version,
     required this.elapsed,
     required this.summary,
