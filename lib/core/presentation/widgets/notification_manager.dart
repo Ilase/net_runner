@@ -1,4 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:net_runner/utils/constants/themes/notification_status.dart'
+    show getNotificationTypeColor;
+
+enum NotificationType {
+  success,
+  error,
+  warning,
+}
 
 class NotificationManager {
   static final NotificationManager _instance = NotificationManager._internal();
@@ -7,8 +15,8 @@ class NotificationManager {
 
   final List<OverlayEntry> _snackbars = [];
 
-  void showNotification(
-      BuildContext context, String messageTitle, String messageBody) {
+  void showNotification(BuildContext context, String messageTitle,
+      String messageBody, NotificationType notificationType) {
     final overlay = Overlay.of(context);
 
     late OverlayEntry overlayEntry;
@@ -21,6 +29,7 @@ class NotificationManager {
           child: Notification(
             messageTitle: messageTitle,
             messageBody: messageBody,
+            notificationType: notificationType,
             onClose: () {
               _removeSnackbar(overlayEntry);
             },
@@ -33,8 +42,8 @@ class NotificationManager {
     overlay.insert(overlayEntry);
   }
 
-  void showAnimatedNotification(
-      BuildContext context, String messageTitle, String messageBody) {
+  void showAnimatedNotification(BuildContext context, String messageTitle,
+      String messageBody, NotificationType notificationType) {
     final overlay = Overlay.of(context);
 
     late OverlayEntry overlayEntry;
@@ -44,6 +53,7 @@ class NotificationManager {
         return AnimatedNotification(
           messageTitle: messageTitle,
           messageBody: messageBody,
+          notificationType: notificationType,
           index: index,
           onClose: () => _removeSnackbar(overlayEntry),
         );
@@ -65,13 +75,16 @@ class NotificationManager {
 class Notification extends StatefulWidget {
   final String messageTitle;
   final String messageBody;
+  final NotificationType notificationType;
   final VoidCallback onClose;
 
-  const Notification(
-      {super.key,
-      required this.messageTitle,
-      required this.onClose,
-      required this.messageBody});
+  const Notification({
+    super.key,
+    required this.messageTitle,
+    required this.notificationType,
+    required this.onClose,
+    required this.messageBody,
+  });
 
   @override
   _NotificationState createState() => _NotificationState();
@@ -121,13 +134,16 @@ class _NotificationState extends State<Notification>
       child: Material(
         color: Colors.transparent,
         child: Container(
-          height: 80,
-          width: 500,
+          // height: 80,
+          // width: double.minPositive,
           margin: EdgeInsets.only(bottom: 10, right: 20),
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+                width: 2,
+                color: getNotificationTypeColor(widget.notificationType)),
             boxShadow: [
               BoxShadow(
                 color: Colors.black26,
@@ -186,6 +202,7 @@ class _NotificationState extends State<Notification>
 class AnimatedNotification extends StatefulWidget {
   final String messageTitle;
   final String messageBody;
+  final NotificationType notificationType;
   final int index;
   final VoidCallback onClose;
 
@@ -193,6 +210,7 @@ class AnimatedNotification extends StatefulWidget {
     Key? key,
     required this.messageTitle,
     required this.messageBody,
+    required this.notificationType,
     required this.index,
     required this.onClose,
   }) : super(key: key);
@@ -222,7 +240,6 @@ class _AnimatedNotificationState extends State<AnimatedNotification>
 
     _animationController.forward();
 
-    // Автоматическое закрытие через 5 секунд
     Future.delayed(Duration(seconds: 5), _hideNotification);
   }
 
@@ -252,6 +269,7 @@ class _AnimatedNotificationState extends State<AnimatedNotification>
       child: Notification(
         messageTitle: widget.messageTitle,
         messageBody: widget.messageBody,
+        notificationType: widget.notificationType,
         onClose: _hideNotification,
       ),
     );

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:net_runner/core/domain/api/api_bloc.dart';
 import 'package:net_runner/core/domain/theme_controller/theme_controller_cubit.dart';
-import 'package:net_runner/core/presentation/widgets/notification_manager.dart';
+import 'package:net_runner/features/connection_page/presentation/connection_page.dart';
 import 'package:net_runner/features/graph/graph_pg.dart';
 import 'package:net_runner/features/hosts/presentation/hosts_pg.dart';
 import 'package:net_runner/features/scanning/presentation/scanning_pg.dart';
@@ -27,12 +27,7 @@ class _HeadPageState extends State<HeadPage> {
 
   bool _isDarkTheme = false;
 
-  final List<Widget> pages = [
-    TitlePg(),
-    HostsPg(),
-    ScanningPg(),
-    GraphPg()
-  ];
+  final List<Widget> pages = [TitlePg(), HostsPg(), ScanningPg(), GraphPg()];
 
   void _setOpenDrawerState(PointerEvent event) {
     setState(() {
@@ -105,10 +100,11 @@ class _HeadPageState extends State<HeadPage> {
                       children: [
                         IconButton(
                           onPressed: () {
-                            NotificationManager().showAnimatedNotification(
-                                context,
-                                'ERROR',
-                                'Error accurred while something');
+                            Navigator.of(context)
+                                .popAndPushNamed(ConnectionPage.route);
+                            context
+                                .read<ApiBloc>()
+                                .add(DisconnectFromServerEvent());
                           },
                           icon: Icon(Icons.exit_to_app),
                         ),

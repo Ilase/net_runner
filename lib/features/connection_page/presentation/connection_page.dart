@@ -5,7 +5,6 @@ import 'package:net_runner/core/domain/api/api_bloc.dart';
 import 'package:net_runner/core/domain/api/api_endpoints.dart';
 import 'package:net_runner/core/domain/notificatioon_controller/notification_controller_cubit.dart';
 import 'package:net_runner/core/presentation/widgets/notification_manager.dart';
-
 import 'package:net_runner/utils/constants/themes/text_styles.dart';
 
 class ConnectionPage extends StatefulWidget {
@@ -29,17 +28,21 @@ class _ConnectionPageState extends State<ConnectionPage> {
           BlocListener<NotificationControllerCubit,
               NotificationControllerState>(
             listener: (context, state) {
-              if (state is NotificationControllerState) {
+              if (state.notifications.isNotEmpty) {
                 final lastNotification = state.notifications.last;
                 NotificationManager().showAnimatedNotification(
-                    context, lastNotification.title, lastNotification.body);
+                  context,
+                  lastNotification.title,
+                  lastNotification.body,
+                  lastNotification.notificationType,
+                );
               }
             },
           ),
           BlocListener<ApiBloc, ApiState>(
             listener: (context, state) {
               if (state is ConnectedState) {
-                Navigator.of(context).pushNamed('/head');
+                Navigator.of(context).pushNamed('/login');
               }
             },
           ),

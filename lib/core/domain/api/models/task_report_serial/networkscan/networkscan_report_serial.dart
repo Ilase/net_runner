@@ -5,11 +5,11 @@ part 'networkscan_report_serial.g.dart';
 
 @JsonSerializable()
 class NetworkScanReport {
-  GeneralInfo generalInfo;
+  GeneralInfo general_info;
   List<NetworkScanHost> hosts;
 
   NetworkScanReport({
-    required this.generalInfo,
+    required this.general_info,
     required this.hosts,
   });
 

@@ -5,11 +5,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graphic/graphic.dart';
 import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
+import 'package:net_runner/core/domain/api/models/task/task_serial.dart';
 import 'package:net_runner/core/domain/api/models/task_report_serial/general_info.dart';
+import 'package:net_runner/core/domain/api/models/task_report_serial/networkscan/networkscan_report_serial.dart';
 import 'package:net_runner/core/domain/api/models/task_report_serial/pentest/pentest_report_serial.dart';
 import 'package:net_runner/core/domain/pentest_report_controller/pentest_report_controller_cubit.dart';
 import 'package:net_runner/core/domain/task_list/task_list_cubit.dart';
 import 'package:net_runner/features/scanning/presentation/create_scan_page.dart';
+import 'package:net_runner/utils/constants/themes/task_status_color.dart';
 import 'package:net_runner/utils/routes/router.dart';
 
 class ScanningPg extends StatefulWidget {
@@ -19,12 +22,12 @@ class ScanningPg extends StatefulWidget {
   State<ScanningPg> createState() => _ScanningPgState();
 }
 
-class _ScanningPgState extends State<ScanningPg>
-    with SingleTickerProviderStateMixin {
+class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
   final heatmapChannel = StreamController<Selected?>.broadcast();
-  Map<String, dynamic>? _selectedItem;
+  ModelTask? _selectedItem;
   List<dynamic>? _selectedItemHosts;
-  late TabController _tabController;
+  late TabController _pentestTabController;
+  late TabController _networkScanTabController;
   bool _showFilter = false;
 
   ///
@@ -38,12 +41,13 @@ class _ScanningPgState extends State<ScanningPg>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _pentestTabController = TabController(length: 3, vsync: this);
+    _networkScanTabController = TabController(length: 2, vsync: this);
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
+    _pentestTabController.dispose();
     super.dispose();
   }
 
@@ -135,8 +139,8 @@ class _ScanningPgState extends State<ScanningPg>
                         child: BlocBuilder<TaskListCubit, TaskListState>(
                           builder: (context, state) {
                             if (state is FilledState) {
-                              final List<dynamic> list = state.list["taskList"];
-                              ntLogger.t(state.list["taskList"].length + 1);
+                              final List<ModelTask> list = state.list;
+                              ntLogger.t(state.list.length + 1);
                               return Center(
                                 child: ListView.builder(
                                   reverse: true,
@@ -147,9 +151,12 @@ class _ScanningPgState extends State<ScanningPg>
                                       child: GestureDetector(
                                         onTap: () {
                                           context.read<ApiBloc>().add(GetReport(
-                                              task_number: list[index]
-                                                  ["number_task"]));
+                                                task_number:
+                                                    list[index].number_task,
+                                                task_type: list[index].type,
+                                              ));
                                           setState(() {
+                                            // if();
                                             _selectedItem = list[index];
                                           });
                                         },
@@ -158,6 +165,13 @@ class _ScanningPgState extends State<ScanningPg>
                                             if (constraints.maxWidth > 400) {
                                               return Container(
                                                 decoration: BoxDecoration(
+                                                  border: Border.symmetric(
+                                                      vertical: BorderSide(
+                                                          color:
+                                                              getTaskStatusColor(
+                                                                  list[index]
+                                                                      .status),
+                                                          width: 5)),
                                                   borderRadius:
                                                       BorderRadius.circular(15),
                                                   color: Colors.white,
@@ -180,24 +194,23 @@ class _ScanningPgState extends State<ScanningPg>
                                                         MainAxisAlignment
                                                             .spaceBetween, // Разместить элементы равномерно
                                                     children: [
-                                                      Text(list[index]["ID"]
-                                                          .toString()),
+                                                      Expanded(
+                                                        child: Text(list[index]
+                                                            .number_task
+                                                            .toString()),
+                                                      ),
                                                       Expanded(
                                                         // Растягиваем колонку по ширине
-                                                        child: Column(
-                                                          children: [
-                                                            Text(list[index][
-                                                                    "number_task"]
-                                                                .toString()),
-                                                            Text(list[index]
-                                                                ["name"]),
-                                                          ],
+                                                        child: Text(
+                                                          list[index].name,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
                                                         ),
                                                       ),
                                                       Expanded(
-                                                        child: Text(list[index]
-                                                                ["percent"]
-                                                            .toString()),
+                                                        child: Text(
+                                                            '${list[index].percent}%'
+                                                                .toString()),
                                                       ),
                                                       Expanded(
                                                         child: Column(
@@ -206,8 +219,14 @@ class _ScanningPgState extends State<ScanningPg>
                                                                   .start,
                                                           children: [
                                                             Text("Статус"),
-                                                            Text(list[index]
-                                                                ["status"]),
+                                                            Text(
+                                                              list[index]
+                                                                  .status,
+                                                              style: TextStyle(
+                                                                  color: getTaskStatusColor(
+                                                                      list[index]
+                                                                          .status)),
+                                                            ),
                                                           ],
                                                         ),
                                                       ),
@@ -219,7 +238,7 @@ class _ScanningPgState extends State<ScanningPg>
                                                           children: [
                                                             Text("Тип"),
                                                             Text(list[index]
-                                                                ["type"]),
+                                                                .type),
                                                           ],
                                                         ),
                                                       ),
@@ -231,6 +250,13 @@ class _ScanningPgState extends State<ScanningPg>
                                                 350) {
                                               return Container(
                                                 decoration: BoxDecoration(
+                                                  border: Border.symmetric(
+                                                      vertical: BorderSide(
+                                                          color:
+                                                              getTaskStatusColor(
+                                                                  list[index]
+                                                                      .status),
+                                                          width: 5)),
                                                   borderRadius:
                                                       BorderRadius.circular(15),
                                                   color: Colors.white,
@@ -239,7 +265,7 @@ class _ScanningPgState extends State<ScanningPg>
                                                       offset: Offset(3, 3),
                                                       color: Colors.grey,
                                                       blurRadius: 15,
-                                                    )
+                                                    ),
                                                   ],
                                                 ),
                                                 width: double
@@ -257,11 +283,15 @@ class _ScanningPgState extends State<ScanningPg>
                                                         // Растягиваем колонку по ширине
                                                         child: Column(
                                                           children: [
-                                                            Text(list[index][
-                                                                    "number_task"]
-                                                                .toString()),
                                                             Text(list[index]
-                                                                ["name"]),
+                                                                .number_task
+                                                                .toString()),
+                                                            Text(
+                                                              list[index].name,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                            ),
                                                           ],
                                                         ),
                                                       ),
@@ -272,6 +302,13 @@ class _ScanningPgState extends State<ScanningPg>
                                             } else {
                                               return Container(
                                                 decoration: BoxDecoration(
+                                                  border: Border.symmetric(
+                                                      vertical: BorderSide(
+                                                          color:
+                                                              getTaskStatusColor(
+                                                                  list[index]
+                                                                      .status),
+                                                          width: 5)),
                                                   borderRadius:
                                                       BorderRadius.circular(15),
                                                   color: Colors.white,
@@ -280,15 +317,13 @@ class _ScanningPgState extends State<ScanningPg>
                                                       offset: Offset(3, 3),
                                                       color: Colors.grey,
                                                       blurRadius: 15,
-                                                    )
+                                                    ),
                                                   ],
                                                 ),
                                                 width: double
                                                     .infinity, // Контейнер занимает всю ширину
                                                 child: Padding(
-                                                  padding: EdgeInsets.all(
-                                                    16.0,
-                                                  ),
+                                                  padding: EdgeInsets.all(16.0),
                                                   child: Row(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment
@@ -298,11 +333,15 @@ class _ScanningPgState extends State<ScanningPg>
                                                         // Растягиваем колонку по ширине
                                                         child: Column(
                                                           children: [
-                                                            Text(list[index][
-                                                                    "number_task"]
-                                                                .toString()),
                                                             Text(list[index]
-                                                                ["name"]),
+                                                                .number_task
+                                                                .toString()),
+                                                            Text(
+                                                              list[index].name,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                            ),
                                                           ],
                                                         ),
                                                       ),
@@ -317,7 +356,14 @@ class _ScanningPgState extends State<ScanningPg>
                                                             ),
                                                             Text(
                                                               list[index]
-                                                                  ["status"],
+                                                                  .status,
+                                                              style: TextStyle(
+                                                                color:
+                                                                    getTaskStatusColor(
+                                                                  list[index]
+                                                                      .status,
+                                                                ),
+                                                              ),
                                                             ),
                                                           ],
                                                         ),
@@ -325,7 +371,7 @@ class _ScanningPgState extends State<ScanningPg>
                                                       Expanded(
                                                           child: Text(
                                                               list[index]
-                                                                  ["status"])),
+                                                                  .status)),
                                                     ],
                                                   ),
                                                 ),
@@ -353,8 +399,21 @@ class _ScanningPgState extends State<ScanningPg>
             ),
           ),
 
+          BlocBuilder<ReportControllerCubit, ReportControllerState>(
+            builder: (builder, state) {
+              if (state is GetPentestTaskState) {
+                return _buildPentestReport();
+              } else if (state is GetNetworkScanTaskState) {
+                return _buildNetworkScanReport();
+              } else {
+                return Center(
+                  child: SizedBox(),
+                );
+              }
+            },
+          )
+
           /// Правая панель (подробности)
-          _buildPentestReport()
         ],
       ),
     );
@@ -409,17 +468,17 @@ class _ScanningPgState extends State<ScanningPg>
           SizedBox(
             height: 16,
           ),
-          Container(
-            padding: EdgeInsetsDirectional.all(16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(
-                width: 2,
-                color: Colors.blue,
-              ),
-            ),
-            child: Text(''),
-          ),
+          // Container(
+          //   padding: EdgeInsetsDirectional.all(16),
+          //   decoration: BoxDecoration(
+          //     borderRadius: BorderRadius.circular(15),
+          //     border: Border.all(
+          //       width: 2,
+          //       color: Colors.blue,
+          //     ),
+          //   ),
+          //   child: Text(''),
+          // ),
         ],
       ),
     );
@@ -682,15 +741,15 @@ class _ScanningPgState extends State<ScanningPg>
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: BlocBuilder<PentestReportControllerCubit,
-                      PentestReportControllerState>(
+                  child:
+                      BlocBuilder<ReportControllerCubit, ReportControllerState>(
                     builder: (context, state) {
                       if (state is LoadingTaskState) {
                         return Center(
                           child: CircularProgressIndicator(),
                         );
-                      } else if (state is GetTaskState) {
-                        final taskInfo = state.task;
+                      } else if (state is GetPentestTaskState) {
+                        final taskInfo = state.report;
                         return Center(
                           child: Column(
                             children: [
@@ -700,13 +759,26 @@ class _ScanningPgState extends State<ScanningPg>
                                 children: [
                                   Text(
                                       'Сканирование: ${taskInfo.general_info.task_name}'),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      context.read<ApiBloc>().add(DownloadPdf(
-                                          taskNumber: taskInfo
-                                              .general_info.task_number));
-                                    },
-                                    child: Text("Скачать PDF отчёт"),
+                                  Row(
+                                    children: [
+                                      OutlinedButton(
+                                        onPressed: () {
+                                          context.read<ApiBloc>().add(
+                                              DownloadPdf(
+                                                  type: _selectedItem!.type,
+                                                  taskNumber: taskInfo
+                                                      .general_info
+                                                      .task_number));
+                                        },
+                                        child: Text("Скачать PDF"),
+                                      ),
+                                      SizedBox(
+                                        width: 8,
+                                      ),
+                                      OutlinedButton(
+                                          onPressed: () {},
+                                          child: Text('Открыть в браузере'))
+                                    ],
                                   ),
                                   IconButton(
                                     onPressed: () {
@@ -735,11 +807,11 @@ class _ScanningPgState extends State<ScanningPg>
                                         Icons.swap_horizontal_circle_outlined),
                                   )
                                 ],
-                                controller: _tabController,
+                                controller: _pentestTabController,
                               ),
                               Expanded(
                                 child: TabBarView(
-                                  controller: _tabController,
+                                  controller: _pentestTabController,
                                   children: [
                                     _buildGeneralInfo(
                                         taskInfo.general_info, taskInfo.hosts),
@@ -773,8 +845,26 @@ class _ScanningPgState extends State<ScanningPg>
                                   ),
                                 ],
                               ),
+                              Row(
+                                children: [
+                                  OutlinedButton(
+                                    onPressed: () {
+                                      // context.read<ApiBloc>().add(
+                                      //     DownloadPdf(
+                                      //         type: _selectedItem!.type,
+                                      //         taskNumber: tas
+                                      //             .general_info
+                                      //             .task_number));
+                                    },
+                                    child: Text("Скачать PDF"),
+                                  ),
+                                  OutlinedButton(
+                                      onPressed: () {},
+                                      child: Text('Открыть в браузере'))
+                                ],
+                              ),
                               Divider(),
-                              Text('Error'),
+                              Center(child: Text('Error')),
                             ],
                           ),
                         );
@@ -787,7 +877,183 @@ class _ScanningPgState extends State<ScanningPg>
     );
   }
 
+  Widget _buildHostListNetworkScanReport(List<NetworkScanHost> hosts) {
+    return Padding(
+      padding: EdgeInsets.all(16),
+      child: GridView.builder(
+        itemCount: hosts.length,
+        itemBuilder: (builder, index) {
+          return Padding(
+            padding: EdgeInsets.all(8),
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(width: 2, color: Colors.blue),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Хост: $index'),
+                    Icon(
+                      _getIconForCPE(hosts[index].cpe),
+                      size: 50,
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('IP: ${hosts[index].ip}'),
+                        Text('MAC: ${hosts[index].mac}'),
+                        Text('OS: ${hosts[index].os}'),
+                        Text('CPE: ${hosts[index].cpe}'),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+        gridDelegate:
+            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
+      ),
+    );
+  }
+
+  IconData _getIconForCPE(String cpe) {
+    if (cpe.contains("windows")) {
+      return Icons.window;
+    } else if (cpe.contains("linux")) {
+      return Icons.developer_mode; // Можно заменить на иконку для Linux
+    } else if (cpe.contains("apple")) {
+      return Icons.apple;
+    } else {
+      return Icons.device_unknown; // Иконка по умолчанию
+    }
+  }
+
   Widget _buildNetworkScanReport() {
-    return Placeholder();
+    final TabController networkScanTabController =
+        TabController(vsync: this, length: 2);
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 300),
+      height: double.infinity,
+      width:
+          _selectedItem == null ? 0 : MediaQuery.of(context).size.width * 0.7,
+      child: _selectedItem == null
+          ? SizedBox()
+          : Padding(
+              padding: const EdgeInsets.only(
+                top: 16.0,
+                left: 16.0,
+                right: 16.0,
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(15)),
+                  boxShadow: [
+                    BoxShadow(
+                      offset: Offset(3, 3),
+                      blurRadius: 10,
+                      color: Colors.grey,
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child:
+                      BlocBuilder<ReportControllerCubit, ReportControllerState>(
+                    builder: (context, state) {
+                      if (state is LoadingTaskState) {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else if (state is GetNetworkScanTaskState) {
+                        final taskInfo = state.report;
+                        return Center(
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                      'Сканирование: ${taskInfo.general_info.task_name}'),
+                                  IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _selectedItem = null;
+                                        _selectedItemHosts = null;
+                                      });
+                                    },
+                                    icon: Icon(Icons.close),
+                                  ),
+                                ],
+                              ),
+                              TabBar(
+                                  controller: _networkScanTabController,
+                                  tabs: [
+                                    Tab(
+                                      text: "Информация",
+                                      icon: Icon(Icons.info_outline),
+                                    ),
+                                    Tab(
+                                      text: "Хосты",
+                                      icon: Icon(Icons.group_outlined),
+                                    )
+                                  ]),
+                              Expanded(
+                                child: TabBarView(
+                                  controller: _networkScanTabController,
+                                  children: [
+                                    _buildGeneralInfo(
+                                      state.report.general_info,
+                                      {},
+                                    ),
+                                    _buildHostListNetworkScanReport(
+                                        state.report.hosts),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        );
+                      } else {
+                        ntLogger.e("${state.toString()}");
+                        return Center(
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text('Сканирование: ERROR'),
+                                  IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _selectedItem = null;
+                                        _selectedItemHosts = null;
+                                      });
+                                    },
+                                    icon: Icon(Icons.close),
+                                  ),
+                                ],
+                              ),
+                              Divider(),
+                              Center(
+                                child: Text('Error'),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ),
+            ),
+    );
   }
 }

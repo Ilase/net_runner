@@ -12,4 +12,6 @@ class ErrorState extends ApiState {
   ErrorState({required this.messageTitle, required this.messageBody});
 }
 
+class DisconnectedState extends ApiState {}
+
 class ConnectLoadState extends ApiState {}

@@ -10,7 +10,7 @@ final class TaskListInitial extends TaskListState {
 }
 
 class FilledState extends TaskListState {
-  final Map<String, dynamic> list;
+  final List<ModelTask> list;
   FilledState({required this.list});
   @override
   // TODO: implement props
