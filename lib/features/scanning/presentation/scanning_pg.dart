@@ -5,11 +5,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graphic/graphic.dart';
 import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
+import 'package:net_runner/core/domain/api/models/task/task_serial.dart';
 import 'package:net_runner/core/domain/api/models/task_report_serial/general_info.dart';
 import 'package:net_runner/core/domain/api/models/task_report_serial/pentest/pentest_report_serial.dart';
 import 'package:net_runner/core/domain/pentest_report_controller/pentest_report_controller_cubit.dart';
 import 'package:net_runner/core/domain/task_list/task_list_cubit.dart';
 import 'package:net_runner/features/scanning/presentation/create_scan_page.dart';
+import 'package:net_runner/utils/constants/themes/task_status_color.dart';
 import 'package:net_runner/utils/routes/router.dart';
 
 class ScanningPg extends StatefulWidget {
@@ -135,8 +137,8 @@ class _ScanningPgState extends State<ScanningPg>
                         child: BlocBuilder<TaskListCubit, TaskListState>(
                           builder: (context, state) {
                             if (state is FilledState) {
-                              final List<dynamic> list = state.list["taskList"];
-                              ntLogger.t(state.list["taskList"].length + 1);
+                              final List<ModelTask> list = state.list;
+                              ntLogger.t(state.list.length + 1);
                               return Center(
                                 child: ListView.builder(
                                   reverse: true,
@@ -147,10 +149,13 @@ class _ScanningPgState extends State<ScanningPg>
                                       child: GestureDetector(
                                         onTap: () {
                                           context.read<ApiBloc>().add(GetReport(
-                                              task_number: list[index]
-                                                  ["number_task"]));
+                                                task_number:
+                                                    list[index].number_task,
+                                                task_type: list[index].type,
+                                              ));
                                           setState(() {
-                                            _selectedItem = list[index];
+                                            _selectedItem =
+                                                list[index].toJson();
                                           });
                                         },
                                         child: LayoutBuilder(
@@ -158,6 +163,13 @@ class _ScanningPgState extends State<ScanningPg>
                                             if (constraints.maxWidth > 400) {
                                               return Container(
                                                 decoration: BoxDecoration(
+                                                  border: Border.symmetric(
+                                                      vertical: BorderSide(
+                                                          color:
+                                                              getTaskStatusColor(
+                                                                  list[index]
+                                                                      .status),
+                                                          width: 5)),
                                                   borderRadius:
                                                       BorderRadius.circular(15),
                                                   color: Colors.white,
@@ -180,24 +192,20 @@ class _ScanningPgState extends State<ScanningPg>
                                                         MainAxisAlignment
                                                             .spaceBetween, // Разместить элементы равномерно
                                                     children: [
-                                                      Text(list[index]["ID"]
-                                                          .toString()),
-                                                      Expanded(
-                                                        // Растягиваем колонку по ширине
-                                                        child: Column(
-                                                          children: [
-                                                            Text(list[index][
-                                                                    "number_task"]
-                                                                .toString()),
-                                                            Text(list[index]
-                                                                ["name"]),
-                                                          ],
-                                                        ),
-                                                      ),
                                                       Expanded(
                                                         child: Text(list[index]
-                                                                ["percent"]
+                                                            .number_task
                                                             .toString()),
+                                                      ),
+                                                      Expanded(
+                                                        // Растягиваем колонку по ширине
+                                                        child: Text(
+                                                            list[index].name),
+                                                      ),
+                                                      Expanded(
+                                                        child: Text(
+                                                            '${list[index].percent}%'
+                                                                .toString()),
                                                       ),
                                                       Expanded(
                                                         child: Column(
@@ -206,8 +214,14 @@ class _ScanningPgState extends State<ScanningPg>
                                                                   .start,
                                                           children: [
                                                             Text("Статус"),
-                                                            Text(list[index]
-                                                                ["status"]),
+                                                            Text(
+                                                              list[index]
+                                                                  .status,
+                                                              style: TextStyle(
+                                                                  color: getTaskStatusColor(
+                                                                      list[index]
+                                                                          .status)),
+                                                            ),
                                                           ],
                                                         ),
                                                       ),
@@ -219,7 +233,7 @@ class _ScanningPgState extends State<ScanningPg>
                                                           children: [
                                                             Text("Тип"),
                                                             Text(list[index]
-                                                                ["type"]),
+                                                                .type),
                                                           ],
                                                         ),
                                                       ),
@@ -257,11 +271,11 @@ class _ScanningPgState extends State<ScanningPg>
                                                         // Растягиваем колонку по ширине
                                                         child: Column(
                                                           children: [
-                                                            Text(list[index][
-                                                                    "number_task"]
+                                                            Text(list[index]
+                                                                .number_task
                                                                 .toString()),
                                                             Text(list[index]
-                                                                ["name"]),
+                                                                .name),
                                                           ],
                                                         ),
                                                       ),
@@ -286,9 +300,7 @@ class _ScanningPgState extends State<ScanningPg>
                                                 width: double
                                                     .infinity, // Контейнер занимает всю ширину
                                                 child: Padding(
-                                                  padding: EdgeInsets.all(
-                                                    16.0,
-                                                  ),
+                                                  padding: EdgeInsets.all(16.0),
                                                   child: Row(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment
@@ -298,11 +310,11 @@ class _ScanningPgState extends State<ScanningPg>
                                                         // Растягиваем колонку по ширине
                                                         child: Column(
                                                           children: [
-                                                            Text(list[index][
-                                                                    "number_task"]
+                                                            Text(list[index]
+                                                                .number_task
                                                                 .toString()),
                                                             Text(list[index]
-                                                                ["name"]),
+                                                                .name),
                                                           ],
                                                         ),
                                                       ),
@@ -317,7 +329,14 @@ class _ScanningPgState extends State<ScanningPg>
                                                             ),
                                                             Text(
                                                               list[index]
-                                                                  ["status"],
+                                                                  .status,
+                                                              style: TextStyle(
+                                                                color:
+                                                                    getTaskStatusColor(
+                                                                  list[index]
+                                                                      .status,
+                                                                ),
+                                                              ),
                                                             ),
                                                           ],
                                                         ),
@@ -325,7 +344,7 @@ class _ScanningPgState extends State<ScanningPg>
                                                       Expanded(
                                                           child: Text(
                                                               list[index]
-                                                                  ["status"])),
+                                                                  .status)),
                                                     ],
                                                   ),
                                                 ),
@@ -353,8 +372,21 @@ class _ScanningPgState extends State<ScanningPg>
             ),
           ),
 
+          Builder(
+            builder: (builder) {
+              if (_selectedItem != null) {
+                if (_selectedItem!["general_info"]["pentest"]) {
+                  return _buildPentestReport();
+                } else {
+                  return _buildNetworkScanReport();
+                }
+              } else {
+                return SizedBox(); // Возвращаем пустой виджет, если _selectedItem == null
+              }
+            },
+          ),
+
           /// Правая панель (подробности)
-          _buildPentestReport()
         ],
       ),
     );
@@ -700,13 +732,23 @@ class _ScanningPgState extends State<ScanningPg>
                                 children: [
                                   Text(
                                       'Сканирование: ${taskInfo.general_info.task_name}'),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      context.read<ApiBloc>().add(DownloadPdf(
-                                          taskNumber: taskInfo
-                                              .general_info.task_number));
-                                    },
-                                    child: Text("Скачать PDF отчёт"),
+                                  Row(
+                                    children: [
+                                      OutlinedButton(
+                                        onPressed: () {
+                                          context.read<ApiBloc>().add(
+                                              DownloadPdf(
+                                                  type: _selectedItem!["type"],
+                                                  taskNumber: taskInfo
+                                                      .general_info
+                                                      .task_number));
+                                        },
+                                        child: Text("Скачать PDF"),
+                                      ),
+                                      OutlinedButton(
+                                          onPressed: () {},
+                                          child: Text('Открыть в браузере'))
+                                    ],
                                   ),
                                   IconButton(
                                     onPressed: () {

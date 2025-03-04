@@ -3,29 +3,31 @@ import 'package:json_annotation/json_annotation.dart';
 part 'task_serial.g.dart';
 
 @JsonSerializable()
-class ModelPentestTask {
+class ModelTask {
   int ID;
-
-  String CreatedAt;
-  String UpdatedAt;
-  String DeletedAt;
+  String? CreatedAt;
+  String? UpdatedAt;
   String number_task;
+  int percent;
   String name;
   String type;
   String status;
   ModelPentestParams params;
 
-  ModelPentestTask({
+  ModelTask({
     required this.ID,
     required this.CreatedAt,
     required this.UpdatedAt,
-    required this.DeletedAt,
     required this.number_task,
+    required this.percent,
     required this.name,
     required this.type,
     required this.status,
     required this.params,
   });
+  factory ModelTask.fromJson(Map<String, dynamic> json) =>
+      _$ModelTaskFromJson(json);
+  Map<String, dynamic> toJson() => _$ModelTaskToJson(this);
 }
 
 @JsonSerializable()

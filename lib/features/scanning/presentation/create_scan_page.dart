@@ -182,8 +182,11 @@ class _CreateScanPageState extends State<CreateScanPage> {
                                 }, type: _selectedScanType!),
                               );
                         }
-                        NotificationManager().showAnimatedNotification(context,
-                            "Предупреждение", "Выберите тип сканирования");
+                        NotificationManager().showAnimatedNotification(
+                            context,
+                            "Предупреждение",
+                            "Выберите тип сканирования",
+                            NotificationType.warning);
                       },
                       child: const Text('Подтвердить'),
                     ),

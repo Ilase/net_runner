@@ -45,6 +45,8 @@ dependencies:
   graphview: ^1.2.0
   graphic: ^2.5.1
   dio: ^5.8.0+1
+  url_launcher: ^6.3.1
+  universal_html: ^2.2.4
 
 dev_dependencies:
   flutter_test:

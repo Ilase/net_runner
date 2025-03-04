@@ -28,8 +28,9 @@ class GetHostListEvent extends ApiEvent {}
 class GetPingListEvent extends ApiEvent {}
 
 class GetReport extends ApiEvent {
+  final String task_type;
   final String task_number;
-  GetReport({required this.task_number});
+  GetReport({required this.task_number, required this.task_type});
 }
 
 class PostTask extends ApiEvent {
@@ -50,6 +51,23 @@ class PostHost extends ApiEvent {
 }
 
 class DownloadPdf extends ApiEvent {
+  final String type;
   final String taskNumber;
-  DownloadPdf({required this.taskNumber});
+  DownloadPdf({required this.taskNumber, required this.type});
+}
+
+class OpenReportInBrowser extends ApiEvent {
+  final String task_number;
+  final String type;
+  OpenReportInBrowser({required this.task_number, required this.type});
+}
+
+class DeleteHost extends ApiEvent {
+  final int id;
+  DeleteHost({required this.id});
+}
+
+class DeleteGroup extends ApiEvent {
+  final int id;
+  DeleteGroup({required this.id});
 }

@@ -96,7 +96,7 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
                         ),
                         Expanded(
                           child: TextField(
-                            enabled: false,
+                            enabled: true,
                             decoration: InputDecoration(labelText: 'Поиск'),
                           ),
                         ),
@@ -208,7 +208,11 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
                 children: [
                   IconButton(onPressed: () {}, icon: Icon(Icons.edit)),
                   IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        context
+                            .read<ApiBloc>()
+                            .add(DeleteGroup(id: _selectedGroupItem!["ID"]));
+                      },
                       icon: Icon(Icons.delete, color: Colors.redAccent)),
                   IconButton(
                     onPressed: () {
@@ -513,16 +517,19 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
         ElevatedButton(
           onPressed: () {
             for (dynamic item in _selectedHostsRightList) {
-              context.read<ApiBloc>().add(PostHost(body: {
-                "ip" : item["ip"],
-                "name" : item["name"],
-                "description" : item["description"],
-              },),);
+              context.read<ApiBloc>().add(
+                    PostHost(
+                      body: {
+                        "ip": item["ip"],
+                        "name": item["name"],
+                        "description": item["description"],
+                      },
+                    ),
+                  );
             }
             setState(() {
               _selectedHostsRightList.clear();
             });
-
           },
           child: Text('Добваить'),
         ),
@@ -562,14 +569,30 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text('Хост: ${_selectedHostItem!["name"]}'),
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  hostTabState = "default";
-                });
-              },
-              icon: Icon(Icons.close),
-            )
+            Row(
+              children: [
+                IconButton(
+                  onPressed: () {},
+                  icon: Icon(Icons.edit),
+                ),
+                IconButton(
+                  onPressed: () {
+                    context
+                        .read<ApiBloc>()
+                        .add(DeleteHost(id: _selectedHostItem!["ID"]));
+                  },
+                  icon: Icon(Icons.delete),
+                ),
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      hostTabState = "default";
+                    });
+                  },
+                  icon: Icon(Icons.close),
+                ),
+              ],
+            ),
           ],
         ),
         Divider(),

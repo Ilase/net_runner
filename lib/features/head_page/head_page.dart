@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/domain/theme_controller/theme_controller_cubit.dart';
 import 'package:net_runner/core/presentation/widgets/notification_manager.dart';
@@ -27,12 +26,7 @@ class _HeadPageState extends State<HeadPage> {
 
   bool _isDarkTheme = false;
 
-  final List<Widget> pages = [
-    TitlePg(),
-    HostsPg(),
-    ScanningPg(),
-    GraphPg()
-  ];
+  final List<Widget> pages = [TitlePg(), HostsPg(), ScanningPg(), GraphPg()];
 
   void _setOpenDrawerState(PointerEvent event) {
     setState(() {
@@ -108,7 +102,8 @@ class _HeadPageState extends State<HeadPage> {
                             NotificationManager().showAnimatedNotification(
                                 context,
                                 'ERROR',
-                                'Error accurred while something');
+                                'Error accurred while something',
+                                NotificationType.error);
                           },
                           icon: Icon(Icons.exit_to_app),
                         ),

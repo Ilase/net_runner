@@ -19,7 +19,13 @@ class ApiEndpoints {
         host: host,
         path: '$baseApiPath/task',
       ),
-      "pentest-report": Uri(
+      "networkscan": Uri(
+        scheme: scheme,
+        port: port,
+        host: host,
+        path: '$baseApiPath/networkscan',
+      ),
+      "pentest": Uri(
         scheme: scheme,
         port: port,
         host: host,
