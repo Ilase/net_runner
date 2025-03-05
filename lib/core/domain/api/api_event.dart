@@ -73,3 +73,9 @@ class DeleteGroup extends ApiEvent {
   final int id;
   DeleteGroup({required this.id});
 }
+
+class LoginToServer extends ApiEvent {
+  final String login;
+  final String password;
+  LoginToServer({required this.login, required this.password});
+}

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graphic/graphic.dart';
+import 'package:icons_flutter/icons_flutter.dart';
 import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
 import 'package:net_runner/core/domain/api/models/task/task_serial.dart';
@@ -11,6 +12,7 @@ import 'package:net_runner/core/domain/api/models/task_report_serial/networkscan
 import 'package:net_runner/core/domain/api/models/task_report_serial/pentest/pentest_report_serial.dart';
 import 'package:net_runner/core/domain/pentest_report_controller/pentest_report_controller_cubit.dart';
 import 'package:net_runner/core/domain/task_list/task_list_cubit.dart';
+import 'package:net_runner/features/graph/presentation/graph_page.dart';
 import 'package:net_runner/features/scanning/presentation/create_scan_page.dart';
 import 'package:net_runner/utils/constants/themes/task_status_color.dart';
 import 'package:net_runner/utils/routes/router.dart';
@@ -899,6 +901,7 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
                     Icon(
                       _getIconForCPE(hosts[index].cpe),
                       size: 50,
+                      color: Colors.blue,
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -923,14 +926,25 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
 
   IconData _getIconForCPE(String cpe) {
     if (cpe.contains("windows")) {
-      return Icons.window;
-    } else if (cpe.contains("linux")) {
-      return Icons.developer_mode; // Можно заменить на иконку для Linux
-    } else if (cpe.contains("apple")) {
-      return Icons.apple;
-    } else {
-      return Icons.device_unknown; // Иконка по умолчанию
+      return MaterialCommunityIcons.windows;
     }
+    if (cpe.contains("linux")) {
+      return MaterialCommunityIcons.linux;
+    }
+    if (cpe.contains("apple")) {
+      return MaterialCommunityIcons.apple;
+    }
+    if (cpe.contains("dlink")) {
+      return MaterialCommunityIcons.router_wireless;
+    }
+    if (cpe.contains("vmware")) {
+      return FontAwesome5Icon.window_maximize;
+    }
+    if (cpe.contains("axis")) {
+      return MaterialCommunityIcons.camera_gopro;
+    }
+
+    return Icons.device_unknown;
   }
 
   Widget _buildNetworkScanReport() {
@@ -981,6 +995,12 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
                                 children: [
                                   Text(
                                       'Сканирование: ${taskInfo.general_info.task_name}'),
+                                  OutlinedButton(
+                                      onPressed: () {
+                                        Navigator.of(context).push(createRoute(
+                                            GraphPage(report: state.report)));
+                                      },
+                                      child: Text('Посмотреть граф')),
                                   IconButton(
                                     onPressed: () {
                                       setState(() {

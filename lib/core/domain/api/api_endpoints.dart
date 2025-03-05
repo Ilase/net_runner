@@ -55,6 +55,12 @@ class ApiEndpoints {
         host: host,
         path: '$baseApiPath/ping',
       ),
+      "login": Uri(
+        scheme: scheme,
+        port: port,
+        host: host,
+        path: '$baseApiPath/login',
+      ),
     };
   }
 

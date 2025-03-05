@@ -8,8 +8,10 @@ import 'package:net_runner/core/domain/host_list/host_list_cubit.dart';
 import 'package:net_runner/core/domain/notificatioon_controller/notification_controller_cubit.dart';
 import 'package:net_runner/core/domain/pentest_report_controller/pentest_report_controller_cubit.dart';
 import 'package:net_runner/core/domain/ping_list/ping_list_cubit.dart';
+import 'package:net_runner/core/domain/profile_page/profile_page.dart';
 import 'package:net_runner/core/domain/task_list/task_list_cubit.dart';
 import 'package:net_runner/core/domain/theme_controller/theme_controller_cubit.dart';
+import 'package:net_runner/core/domain/user_repository/user_data_cubit.dart';
 import 'package:net_runner/features/connection_page/presentation/connection_page.dart';
 import 'package:net_runner/features/head_page/head_page.dart';
 import 'package:net_runner/features/hosts/presentation/add_host_page.dart';
@@ -31,7 +33,7 @@ void main() async {
   NotificationControllerCubit notificationControllerCubit =
       NotificationControllerCubit();
   PingListCubit pingListCubit = PingListCubit();
-
+  UserDataCubit userDataCubit = UserDataCubit();
   runApp(MultiBlocProvider(
     providers: [
       BlocProvider(create: (context) => ThemeControllerCubit()),
@@ -41,8 +43,10 @@ void main() async {
       BlocProvider.value(value: groupListCubit),
       BlocProvider.value(value: hostListCubit),
       BlocProvider.value(value: taskListCubit),
+      BlocProvider.value(value: userDataCubit),
       BlocProvider(
         create: (context) => ApiBloc(
+          userDataCubit: userDataCubit,
           notificationControllerCubit: notificationControllerCubit,
           pingListCubit: pingListCubit,
           taskListCubit: taskListCubit,
@@ -96,6 +100,7 @@ class StartPoint extends StatelessWidget {
         AddHostPage.route: (context) => const AddHostPage(),
         CreateScanPage.route: (context) => const CreateScanPage(),
         LoginPage.route: (context) => const LoginPage(),
+        ProfilePage.route: (context) => const ProfilePage(),
       },
     );
   }

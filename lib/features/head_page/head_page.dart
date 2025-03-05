@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
 import 'package:net_runner/core/domain/theme_controller/theme_controller_cubit.dart';
 import 'package:net_runner/features/connection_page/presentation/connection_page.dart';
-import 'package:net_runner/features/graph/graph_pg.dart';
 import 'package:net_runner/features/hosts/presentation/hosts_pg.dart';
 import 'package:net_runner/features/scanning/presentation/scanning_pg.dart';
 import 'package:net_runner/features/title_page/presentation/title_pg.dart';
@@ -27,7 +26,11 @@ class _HeadPageState extends State<HeadPage> {
 
   bool _isDarkTheme = false;
 
-  final List<Widget> pages = [TitlePg(), HostsPg(), ScanningPg(), GraphPg()];
+  final List<Widget> pages = [
+    TitlePg(),
+    HostsPg(),
+    ScanningPg(),
+  ];
 
   void _setOpenDrawerState(PointerEvent event) {
     setState(() {
@@ -109,7 +112,9 @@ class _HeadPageState extends State<HeadPage> {
                           icon: Icon(Icons.exit_to_app),
                         ),
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(context).pushNamed('/profile');
+                          },
                           icon: Icon(Icons.person_2_outlined),
                         ),
                         Switch(
@@ -182,16 +187,6 @@ class _HeadPageState extends State<HeadPage> {
                   },
                   child: Text('Сканирования')),
             ),
-            Padding(
-              padding: EdgeInsetsDirectional.all(4),
-              child: OutlinedButton(
-                  onPressed: () {
-                    _pageController.animateToPage(3,
-                        duration: Duration(milliseconds: 200),
-                        curve: Curves.easeInOut);
-                  },
-                  child: Text('Сеть')),
-            ),
           ],
         ),
       ),
@@ -211,10 +206,6 @@ class _HeadPageState extends State<HeadPage> {
             Padding(
               padding: EdgeInsetsDirectional.all(4),
               child: Icon(Icons.radar),
-            ),
-            Padding(
-              padding: EdgeInsetsDirectional.all(4),
-              child: Icon(Icons.graphic_eq_rounded),
             ),
           ],
         ),

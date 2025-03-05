@@ -15,6 +15,7 @@ import 'package:net_runner/core/domain/notificatioon_controller/notification_con
 import 'package:net_runner/core/domain/pentest_report_controller/pentest_report_controller_cubit.dart';
 import 'package:net_runner/core/domain/ping_list/ping_list_cubit.dart';
 import 'package:net_runner/core/domain/task_list/task_list_cubit.dart';
+import 'package:net_runner/core/domain/user_repository/user_data_cubit.dart';
 import 'package:net_runner/core/presentation/widgets/notification_manager.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:universal_html/html.dart' as html;
@@ -24,12 +25,10 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 part 'api_event.dart';
 part 'api_state.dart';
 
-const Map<String, dynamic> headers = {
-  "Authorization":
-      "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDExNzEwMDQsInJvbGUiOiJhZG1pbiIsInVzZXJuYW1lIjoiYWRtaW4ifQ.0lemd7vRmxjDuWHHFJsMYJV4MWiMj7tZ0Oy4hO7fBEY",
-};
-
 class ApiBloc extends Bloc<ApiEvent, ApiState> {
+  String? token =
+      "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDEyNTY5MDIsInJvbGUiOiJhZG1pbiIsInVzZXJuYW1lIjoiSWxhc2UifQ.ryqB-SqYYJw1rRIPQX1zhgkB7G8YQc83KFlpp3ylzak";
+  Map<String, String> headers = {"Authorization": ""};
   late ApiEndpoints apiEndpoints;
   HostListCubit hostListCubit;
   GroupListCubit groupListCubit;
@@ -37,6 +36,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
   PingListCubit pingListCubit;
   NotificationControllerCubit notificationControllerCubit;
   ReportControllerCubit reportControllerCubit;
+  UserDataCubit userDataCubit;
 
   ///
   late WebSocketChannel webSocketChannel;
@@ -51,9 +51,11 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     required this.pingListCubit,
     required this.notificationControllerCubit,
     required this.reportControllerCubit,
+    required this.userDataCubit,
   }) : super(ApiInitial()) {
     on<ConnectToServerEvent>(_connectToServer);
     on<DisconnectFromServerEvent>(_disconnectFromServer);
+    on<LoginToServer>(_loginToServer);
     on<GetGroupListEvent>(_getGroupList);
     on<FetchTaskListEvent>(_fetchTasKListEvent);
     on<GetHostListEvent>(_getHostList);
@@ -143,7 +145,37 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
 
     final response = await http.get(
         apiEndpoints.getUri("get-task-list", queryParams: event.queryParams),
-        headers: {});
+        headers: headers);
+    ntLogger.t(response.body);
+    if (response.statusCode == 200) {
+      // Decode the JSON response into a List<dynamic>
+      final List<dynamic> jsonList = jsonDecode(response.body);
+
+      // Convert List<dynamic> to List<ModelTask>
+      final List<ModelTask> tasks = jsonList
+          .map((taskJson) =>
+              ModelTask.fromJson(taskJson as Map<String, dynamic>))
+          .toList();
+
+      taskListCubit.fillTaskListFromGet(tasks);
+    } else {
+      ntLogger.e("Failed to fetch task list: ${response.statusCode}");
+      notificationControllerCubit.addNotification(
+        "Ошибка данных",
+        "Статус: ${response.statusCode}. ${response.body}",
+        NotificationType.error,
+      );
+    }
+  }
+
+  Future<void> _fetchNetworkScanTaskListEvent(
+      FetchTaskListEvent event, Emitter emit) async {
+    taskListCubit.clearList();
+
+    final response = await http.get(
+        apiEndpoints
+            .getUri("get-task-list", queryParams: {"type": "networkscan"}),
+        headers: headers);
     ntLogger.t(response.body);
     if (response.statusCode == 200) {
       // Decode the JSON response into a List<dynamic>
@@ -169,14 +201,15 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
   /// Функция для проверки подключения к серверу
   /// return bool true | false
   Future<bool> _checkConnectionToServer() async {
-    final response = await http.get(apiEndpoints.getUri("check-connection"));
+    final response = await http.get(apiEndpoints.getUri("check-connection"),
+        headers: headers);
     if (response.statusCode == 200 &&
         jsonDecode(response.body)["netrunnerStatus"] == "up") {
       return true;
     }
     notificationControllerCubit.addNotification(
         "Ошибка данных",
-        "Статус: ${response.statusCode}. ${response.body}",
+        "Статус: ${response.statusCode}. ${jsonDecode(response.body)["error"]}",
         NotificationType.error);
     return false;
   }
@@ -185,7 +218,8 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
   /// GET .../host
 
   Future<void> _getHostList(GetHostListEvent event, Emitter emit) async {
-    final response = await http.get(apiEndpoints.getUri("get-host-list"));
+    final response =
+        await http.get(apiEndpoints.getUri("get-host-list"), headers: headers);
 
     if (response.statusCode == 200) {
       hostListCubit.updateState({"hostList": jsonDecode(response.body)});
@@ -200,7 +234,8 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
   }
 
   Future<void> _getGroupList(GetGroupListEvent event, Emitter emit) async {
-    final response = await http.get(apiEndpoints.getUri("get-group-list"));
+    final response =
+        await http.get(apiEndpoints.getUri("get-group-list"), headers: headers);
     if (response.statusCode == 200) {
       List groupList = jsonDecode(response.body);
 
@@ -215,7 +250,8 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
   }
 
   Future<void> _getPingList(GetPingListEvent event, Emitter emit) async {
-    final response = await http.get(apiEndpoints.getUri("get-ping-list"));
+    final response =
+        await http.get(apiEndpoints.getUri("get-ping-list"), headers: headers);
     ntLogger.i(response.body);
     if (response.statusCode == 200) {
       pingListCubit.updateState(jsonDecode(response.body));
@@ -229,7 +265,8 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
 
   Future<void> _getReport(GetReport event, Emitter emit) async {
     final response = await http.get(
-        apiEndpoints.getUri(event.task_type, extraPaths: [event.task_number]));
+        apiEndpoints.getUri(event.task_type, extraPaths: [event.task_number]),
+        headers: headers);
     if (response.statusCode == 200) {
       reportControllerCubit.getTask(jsonDecode(response.body), event.task_type);
     } else {
@@ -245,7 +282,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
   Future<void> _postTask(PostTask event, Emitter emit) async {
     try {
       final response = await http.post(apiEndpoints.getUri("get-task-list"),
-          body: jsonEncode(event.body));
+          body: jsonEncode(event.body), headers: headers);
       if (response.statusCode == 200) {
         int taskId = jsonDecode(response.body)["task_id"];
         notificationControllerCubit.addNotification(
@@ -266,8 +303,12 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
 
   Future<void> _editHost(EditHost event, Emitter emit) async {
     final response = await http.put(
-        apiEndpoints.getUri("get-host-list", extraPaths: ["${event.taskId}"]),
-        body: event.body);
+        apiEndpoints.getUri(
+          "get-host-list",
+          extraPaths: ["${event.taskId}"],
+        ),
+        body: event.body,
+        headers: headers);
 
     if (response.statusCode == 200) {
       int taskId = jsonDecode(response.body)["task_id"];
@@ -283,7 +324,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
 
   Future<void> _postHost(PostHost event, Emitter emit) async {
     final response = await http.post(apiEndpoints.getUri("get-host-list"),
-        body: jsonEncode(event.body));
+        headers: headers, body: jsonEncode(event.body));
 
     if (response.statusCode == 200) {
       notificationControllerCubit.addNotification(
@@ -332,9 +373,10 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
       String fileName = event.taskNumber;
 
       final response = await dio.get(
-          apiEndpoints.getUri(event.type,
-              extraPaths: [event.taskNumber, "pdf"]).toString(),
-          options: Options(responseType: ResponseType.bytes));
+        apiEndpoints.getUri(event.type,
+            extraPaths: [event.taskNumber, "pdf"]).toString(),
+        options: Options(responseType: ResponseType.bytes),
+      );
       final blob = html.Blob([response.data], 'application/octet-stream');
       final anchor =
           html.AnchorElement(href: html.Url.createObjectUrlFromBlob(blob))
@@ -365,8 +407,10 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
   }
 
   Future<void> _deleteGroup(DeleteGroup event, Emitter emit) async {
-    final response = await http.delete(apiEndpoints
-        .getUri("get-group-list", extraPaths: [event.id.toString()]));
+    final response = await http.delete(
+        apiEndpoints
+            .getUri("get-group-list", extraPaths: [event.id.toString()]),
+        headers: headers);
     if (response.statusCode == 200) {
       notificationControllerCubit.addNotification(
           "Удалено", " Успешно удалён", NotificationType.success);
@@ -379,8 +423,9 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
   }
 
   Future<void> _deleteHost(DeleteHost event, Emitter emit) async {
-    final response = await http.delete(apiEndpoints
-        .getUri("get-host-list", extraPaths: [event.id.toString()]));
+    final response = await http.delete(
+        apiEndpoints.getUri("get-host-list", extraPaths: [event.id.toString()]),
+        headers: headers);
     if (response.statusCode == 200) {
       notificationControllerCubit.addNotification(
           "Удалено", " Успешно удалён", NotificationType.success);
@@ -389,6 +434,23 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
       notificationControllerCubit.addNotification("Ошибка удаления",
           "${jsonDecode(response.body)}", NotificationType.error);
       return;
+    }
+  }
+
+  Future<void> _loginToServer(LoginToServer event, Emitter emit) async {
+    final response = await http.post(
+      apiEndpoints.getUri("login"),
+      body: jsonEncode({
+        "login": event.login,
+        "password": event.password,
+      }),
+    );
+    if (response.statusCode == 200) {
+      headers["Authorization"] = 'Bearer ' + jsonDecode(response.body)["token"];
+      ntLogger.w(headers["Authorization"]);
+      userDataCubit.login();
+    } else {
+      ntLogger.e('Error login: ');
     }
   }
 }
