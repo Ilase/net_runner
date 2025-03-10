@@ -138,6 +138,7 @@ class _NotificationState extends State<Notification>
           // width: double.minPositive,
           margin: EdgeInsets.only(bottom: 10, right: 20),
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          // height: double.maxFinite,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(8),
@@ -182,7 +183,7 @@ class _NotificationState extends State<Notification>
                   widget.messageBody,
                   maxLines: null,
                   softWrap: true,
-                  overflow: TextOverflow.ellipsis,
+                  // overflow: TextOverflow.ellipsis,
 
                   ///message style
                   style: TextStyle(

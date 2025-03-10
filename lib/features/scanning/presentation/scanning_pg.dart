@@ -10,12 +10,15 @@ import 'package:net_runner/core/domain/api/models/task/task_serial.dart';
 import 'package:net_runner/core/domain/api/models/task_report_serial/general_info.dart';
 import 'package:net_runner/core/domain/api/models/task_report_serial/networkscan/networkscan_report_serial.dart';
 import 'package:net_runner/core/domain/api/models/task_report_serial/pentest/pentest_report_serial.dart';
+import 'package:net_runner/core/domain/notificatioon_controller/notification_controller_cubit.dart';
 import 'package:net_runner/core/domain/pentest_report_controller/pentest_report_controller_cubit.dart';
 import 'package:net_runner/core/domain/task_list/task_list_cubit.dart';
+import 'package:net_runner/core/presentation/widgets/notification_manager.dart';
 import 'package:net_runner/features/graph/presentation/graph_page.dart';
 import 'package:net_runner/features/scanning/presentation/create_scan_page.dart';
 import 'package:net_runner/utils/constants/themes/task_status_color.dart';
 import 'package:net_runner/utils/routes/router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ScanningPg extends StatefulWidget {
   const ScanningPg({super.key});
@@ -152,15 +155,29 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
                                       padding: const EdgeInsets.all(16.0),
                                       child: GestureDetector(
                                         onTap: () {
-                                          context.read<ApiBloc>().add(GetReport(
-                                                task_number:
-                                                    list[index].number_task,
-                                                task_type: list[index].type,
-                                              ));
                                           setState(() {
                                             // if();
                                             _selectedItem = list[index];
                                           });
+                                          if (list[index].type ==
+                                              "agentInventory") {
+                                            _selectedItem = null;
+                                            context
+                                                .read<
+                                                    NotificationControllerCubit>()
+                                                .addNotification(
+                                                    "Просмотр недоступен",
+                                                    "Посмотреть ивенторизацию можно на странице \'Хосты\'",
+                                                    NotificationType.warning);
+                                          } else {
+                                            context
+                                                .read<ApiBloc>()
+                                                .add(GetReport(
+                                                  task_number:
+                                                      list[index].number_task,
+                                                  task_type: list[index].type,
+                                                ));
+                                          }
                                         },
                                         child: LayoutBuilder(
                                           builder: (context, constraints) {
@@ -421,7 +438,263 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildGeneralInfo(
+  Widget _buildGeneralInfoPentest(
+    GeneralInfo generalInfo,
+    Map<String, PentestHost> hosts,
+  ) {
+    // List<Map<String, dynamic>> vulnsList = [];
+    final Map<String, int> severityCount = {
+      'Критический': 0,
+      'Высокий': 0,
+      'Средний': 0,
+      'Низкий': 0,
+      'Незначительный': 0
+    };
+    for (var host in hosts.values) {
+      for (var vuln in host.vulns.values) {
+        double cvssScore = double.tryParse(vuln.cvss) ?? 0.0;
+
+        if (cvssScore >= 9.0 && cvssScore >= 10) {
+          severityCount['Критический'] = severityCount['Критический']! + 1;
+        } else if (cvssScore >= 7.0 && cvssScore <= 8.9) {
+          severityCount['Высокий'] = severityCount['Высокий']! + 1;
+        } else if (cvssScore >= 4.0 && cvssScore <= 6.9) {
+          severityCount['Средний'] = severityCount['Средний']! + 1;
+        } else if (cvssScore >= 0.1 && cvssScore <= 3.9) {
+          severityCount['Низкий'] = severityCount['Низкий']! + 1;
+        } else {
+          severityCount['Незначительный'] =
+              severityCount['Незначительный']! + 1;
+        }
+      }
+    }
+    final chartData = severityCount.entries
+        .map((e) => {'severity': e.key, 'count': e.value})
+        .toList();
+
+    ntLogger.w(chartData);
+
+    return ListView(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Container(
+            padding: EdgeInsetsDirectional.all(16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(
+                width: 2,
+                color: Colors.blue,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Краткая информация: ${generalInfo.summary}',
+                ),
+                Divider(),
+                Text(
+                  'Время сканирования (сек): ${generalInfo.elapsed}',
+                ),
+                Text(
+                  'Время начала: ${generalInfo.start}',
+                ),
+                Text(
+                  'Время окончания: ${generalInfo.end}',
+                ),
+                Divider(),
+                Text(
+                  'Всего просканировано целей: ${generalInfo.total},',
+                ),
+                Text(
+                  'Целей доступно: ${generalInfo.up}',
+                ),
+                Text(
+                  'Целей недоступно: ${generalInfo.down}',
+                ),
+              ],
+            ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 8),
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(width: 2, color: Colors.blue),
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Краткая сводка'),
+                  Row(
+                    children: [
+                      ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: 300,
+                          maxHeight: 300,
+                          maxWidth: 500,
+                          minWidth: 400,
+                        ),
+                        // /height: double.maxFinite,
+                        child: Chart(
+                          data: chartData,
+                          variables: {
+                            'severity': Variable(
+                              accessor: (Map map) => map['severity'] as String,
+                            ),
+                            'count': Variable(
+                              accessor: (Map map) => map['count'] as num,
+                            ),
+                          },
+                          marks: [
+                            IntervalMark(
+                              position: Varset('count') / Varset('severity'),
+                              label: LabelEncode(
+                                encoder: (tuple) => Label(
+                                  tuple["severity"].toString(),
+                                  LabelStyle(
+                                    textStyle: TextStyle(color: Colors.blue),
+                                  ),
+                                ),
+                              ),
+                              color: ColorEncode(
+                                variable: 'severity',
+                                values: [
+                                  Colors.blue,
+                                  Colors.green,
+                                  Colors.orangeAccent,
+                                  Colors.redAccent,
+                                  Colors.red.shade700,
+                                ],
+                              ),
+                              modifiers: [
+                                StackModifier(),
+                              ],
+                            )
+                          ],
+                          coord: PolarCoord(
+                            transposed: true,
+                            dimCount: 1,
+                            dimFill: 1.01,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Кол-во уязвимостей по уровню угрозы (CVSS)'),
+                            Divider(),
+                            Text('Незначительный: ${chartData[0]["count"]}'),
+                            Text('Низкий: ${chartData[1]["count"]}'),
+                            Text('Средний: ${chartData[2]["count"]}'),
+                            Text('Высокий: ${chartData[3]["count"]}'),
+                            Text('Кристический: ${chartData[4]["count"]}'),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+
+                  ///example
+                  // Container(
+                  //   margin: const EdgeInsets.only(top: 10),
+                  //   width: 350,
+                  //   height: 300,
+                  //   child: Chart(
+                  //     data: basicData,
+                  //     variables: {
+                  //       'genre': Variable(
+                  //         accessor: (Map map) => map['genre'] as String,
+                  //       ),
+                  //       'sold': Variable(
+                  //         accessor: (Map map) => map['sold'] as num,
+                  //       ),
+                  //     },
+                  //     transforms: [
+                  //       Proportion(
+                  //         variable: 'sold',
+                  //         as: 'percent',
+                  //       )
+                  //     ],
+                  //     marks: [
+                  //       IntervalMark(
+                  //         position: Varset('percent') / Varset('genre'),
+                  //         label: LabelEncode(
+                  //             encoder: (tuple) => Label(
+                  //               tuple['sold'].toString(),
+                  //             )),
+                  //         color: ColorEncode(
+                  //             variable: 'genre', values: Defaults.colors10),
+                  //         modifiers: [StackModifier()],
+                  //       )
+                  //     ],
+                  //     coord: PolarCoord(transposed: true, dimCount: 1, dimFill: 1.05),
+                  //   ),
+                  // ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+    // return SingleChildScrollView(
+    //   child: Column(
+    //     children: [
+    //       Expanded(
+    //         child: Container(
+    //           padding: EdgeInsetsDirectional.all(16),
+    //           decoration: BoxDecoration(
+    //             borderRadius: BorderRadius.circular(15),
+    //             border: Border.all(
+    //               width: 2,
+    //               color: Colors.blue,
+    //             ),
+    //           ),
+    //           child: Column(
+    //             crossAxisAlignment: CrossAxisAlignment.start,
+    //             children: [
+    //               Text(
+    //                 'Краткая информация: ${generalInfo.summary}',
+    //               ),
+    //               Divider(),
+    //               Text(
+    //                 'Время сканирования (сек): ${generalInfo.elapsed}',
+    //               ),
+    //               Text(
+    //                 'Время начала: ${generalInfo.start}',
+    //               ),
+    //               Text(
+    //                 'Время окончания: ${generalInfo.end}',
+    //               ),
+    //               Divider(),
+    //               Text(
+    //                 'Всего просканировано целей: ${generalInfo.total},',
+    //               ),
+    //               Text(
+    //                 'Целей доступно: ${generalInfo.up}',
+    //               ),
+    //               Text(
+    //                 'Целей недоступно: ${generalInfo.down}',
+    //               ),
+    //             ],
+    //           ),
+    //         ),
+    //       ),
+    //       Expanded(child: Placeholder()),
+    //     ],
+    //   ),
+    // );
+  }
+
+  Widget _buildGeneralInfoNetworkScan(
       GeneralInfo generalInfo, Map<String, PentestHost> hosts) {
     return SingleChildScrollView(
       child: Column(
@@ -520,22 +793,87 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
   }
 
   Widget _buildCollapsibleVuln(PentestVulns vuln) {
+    Uri refVulnUri = Uri.parse(vuln.references);
+
     return ExpansionTile(
-      trailing: Text('${vuln.cvss}'),
-      title:
-          Text('ID: ${vuln.id}', style: TextStyle(fontWeight: FontWeight.bold)),
+      childrenPadding: EdgeInsets.all(8),
+      controlAffinity: ListTileControlAffinity.leading,
+      trailing: IntrinsicWidth(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Уровень угрозы: '),
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  width: 2,
+                  color: _getColorByCveCvss(vuln.cvss),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Text(
+                  '${vuln.cvss}',
+                  style: TextStyle(color: _getColorByCveCvss(vuln.cvss)),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      title: Text('${vuln.id}', style: TextStyle(fontWeight: FontWeight.bold)),
+      subtitle:
+          Text('${vuln.cpe}', style: TextStyle(fontWeight: FontWeight.bold)),
       children: [
-        Text('CPE: ${vuln.cpe}'),
-        Text('CVSS: ${vuln.cvss}'),
-        Text('CVSS Vector: ${vuln.cvss_vector}'),
-        Text('CWE: ${vuln.cwe.join(", ")}'),
-        Text('Description: ${vuln.description}'),
-        Text('Port: ${vuln.port}'),
-        Text('References: ${vuln.references}'),
-        Text('Solutions: ${vuln.solutions}'),
-        SizedBox(height: 10),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('CPE: ${vuln.cpe}'),
+            Text('CVSS: ${vuln.cvss}'),
+            Text('CVSS Vector: ${vuln.cvss_vector}'),
+            Text('CWE: ${vuln.cwe.join(", ")}'),
+            Text('Описание: ${vuln.description}'),
+            Text('Порт: ${vuln.port}'),
+            Row(
+              children: [
+                Text('Источник: '),
+                InkWell(
+                    onTap: () {
+                      launchUrl(refVulnUri);
+                    },
+                    child: Text('${refVulnUri.host}')),
+              ],
+            ),
+            Text('Решения: ${vuln.solutions}'),
+            SizedBox(height: 10),
+          ],
+        ),
       ],
     );
+  }
+
+  Color _getColorByCveCvss(String cvss) {
+    double? dCvss = double.tryParse(cvss);
+
+    if (dCvss != null) {
+      if (dCvss < 0.1) {
+        return Colors.grey;
+      }
+      if (dCvss > 0.1 && dCvss < 3.9) {
+        return Colors.lightGreen;
+      }
+      if (dCvss > 4.0 && dCvss < 6.9) {
+        return Colors.orangeAccent;
+      }
+      if (dCvss > 7.0 && dCvss < 8.9) {
+        return Colors.redAccent;
+      }
+      if (dCvss > 9.0 && dCvss < 10.0) {
+        return Colors.redAccent.shade700;
+      }
+    }
+    return Colors.grey;
   }
 
   Widget _buildVuln(PentestVulns vuln) {
@@ -778,7 +1116,16 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
                                         width: 8,
                                       ),
                                       OutlinedButton(
-                                          onPressed: () {},
+                                          onPressed: null,
+                                          // onPressed: () {
+                                          //   // context.read<ApiBloc>().add(
+                                          //   //       OpenReportInBrowser(
+                                          //   //         task_number: _selectedItem!
+                                          //   //             .number_task,
+                                          //   //         type: _selectedItem!.type,
+                                          //   //       ),
+                                          //   //     );
+                                          // },
                                           child: Text('Открыть в браузере'))
                                     ],
                                   ),
@@ -815,7 +1162,7 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
                                 child: TabBarView(
                                   controller: _pentestTabController,
                                   children: [
-                                    _buildGeneralInfo(
+                                    _buildGeneralInfoPentest(
                                         taskInfo.general_info, taskInfo.hosts),
 
                                     ///SecondTab
@@ -1028,7 +1375,7 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
                                 child: TabBarView(
                                   controller: _networkScanTabController,
                                   children: [
-                                    _buildGeneralInfo(
+                                    _buildGeneralInfoNetworkScan(
                                       state.report.general_info,
                                       {},
                                     ),

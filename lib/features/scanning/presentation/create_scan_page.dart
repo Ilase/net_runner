@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
+import 'package:net_runner/core/domain/api/models/group/group_serial.dart';
+import 'package:net_runner/core/domain/api/models/host/host_serial.dart';
 import 'package:net_runner/core/domain/group_list/group_list_cubit.dart';
 import 'package:net_runner/core/domain/host_list/host_list_cubit.dart';
 import 'package:net_runner/core/presentation/widgets/notification_manager.dart';
@@ -25,8 +28,8 @@ class _CreateScanPageState extends State<CreateScanPage> {
     "agentInventory": "agentInventory"
   };
 
-  List<dynamic> _groupList = [];
-  List<dynamic> _hostList = [];
+  List<ModelGroup> _groupList = [];
+  List<ModelHost> _hostList = [];
 
   double currentSliderValue = 1;
 
@@ -135,19 +138,22 @@ class _CreateScanPageState extends State<CreateScanPage> {
                     ElevatedButton(
                       onPressed: () {
                         if (_selectedScanType == _scanTypeValues["pentest"]) {
+                          if (portList.isEmpty) {
+                            portList.add("1-65535");
+                          }
                           final String joinedPorts = portList.join(",");
 
                           List<String> _hostListIp = [];
                           for (final host in _hostList) {
-                            _hostListIp.add(host["ip"]);
+                            _hostListIp.add(host.ip);
                           }
                           List<String> _groupListIp = [];
                           for (final group in _groupList) {
-                            for (final host in group["hosts"]) {
-                              _groupListIp.add(host["ip"]);
+                            for (final host in group.hosts) {
+                              _groupListIp.add(host.ip);
                             }
                           }
-
+                          ntLogger.w(joinedPorts);
                           List<String> _listIp =
                               (_groupListIp + _hostListIp).toSet().toList();
 
@@ -181,12 +187,15 @@ class _CreateScanPageState extends State<CreateScanPage> {
                                   }
                                 }, type: _selectedScanType!),
                               );
+                        } else if (_selectedScanType ==
+                            _scanTypeValues["agentInventory"]) {
+                        } else {
+                          NotificationManager().showAnimatedNotification(
+                              context,
+                              "Предупреждение",
+                              "Выберите тип сканирования",
+                              NotificationType.warning);
                         }
-                        NotificationManager().showAnimatedNotification(
-                            context,
-                            "Предупреждение",
-                            "Выберите тип сканирования",
-                            NotificationType.warning);
                       },
                       child: const Text('Подтвердить'),
                     ),
@@ -248,7 +257,7 @@ class _CreateScanPageState extends State<CreateScanPage> {
                                   return ListView.builder(
                                       itemCount: list.length,
                                       itemBuilder: (builder, index) {
-                                        final item = list[index];
+                                        final item = list[index].ip;
                                         final isSelected =
                                             _groupList.contains(item);
                                         return ListTile(
@@ -326,12 +335,11 @@ class _CreateScanPageState extends State<CreateScanPage> {
                             child: BlocBuilder<HostListCubit, HostListState>(
                               builder: (context, state) {
                                 if (state is FullState) {
-                                  final List<dynamic> list =
-                                      state.list["hostList"];
+                                  final List<ModelHost> hostList = state.list;
                                   return ListView.builder(
-                                      itemCount: list.length,
+                                      itemCount: hostList.length,
                                       itemBuilder: (builder, index) {
-                                        final item = list[index];
+                                        final item = hostList[index];
                                         final bool isSelected =
                                             _hostList.contains(item);
                                         return ListTile(
@@ -345,8 +353,8 @@ class _CreateScanPageState extends State<CreateScanPage> {
                                             });
                                           },
                                           leading: Text(index.toString()),
-                                          title: Text(list[index]["ip"]),
-                                          subtitle: Text(list[index]["name"]),
+                                          title: Text(hostList[index].ip),
+                                          subtitle: Text(hostList[index].name),
                                           trailing: Icon(
                                             isSelected
                                                 ? Icons.check

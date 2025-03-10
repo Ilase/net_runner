@@ -1,20 +1,22 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:net_runner/core/domain/api/models/group/group_serial.dart';
 
 part 'host_serial.g.dart';
 
 @JsonSerializable()
 class ModelHost {
+  int ID;
   String name;
-  String description;
+  String? description;
   String ip;
-  List<ModelGroup>? group_hosts;
+  String UpdatedAt;
+  // List<ModelGroup>? group_hosts;
   ModelHostInventory? inventory;
 
   ModelHost({
+    required this.UpdatedAt,
+    required this.ID,
     required this.ip,
-    required this.description,
-    required this.group_hosts,
+    this.description,
     required this.name,
   });
 
@@ -29,7 +31,7 @@ class ModelHostInventory {
   String os;
   String kernel_version;
   String os_version;
-  String full_os_version;
+  String full_os_name;
   int ram;
   int cpu_cores;
   String cpu_name;
@@ -40,7 +42,7 @@ class ModelHostInventory {
     required this.os,
     required this.kernel_version,
     required this.os_version,
-    required this.full_os_version,
+    required this.full_os_name,
     required this.ram,
     required this.cpu_cores,
     required this.cpu_name,

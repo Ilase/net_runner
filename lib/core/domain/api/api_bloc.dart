@@ -20,6 +20,7 @@ import 'package:net_runner/core/presentation/widgets/notification_manager.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 part 'api_event.dart';
@@ -70,6 +71,8 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     on<DeleteHost>(_deleteHost);
   }
 
+  Future<void> _loginWithWsConnect() async {}
+
   Future<void> _connectToServer(
     ConnectToServerEvent event,
     Emitter emit,
@@ -79,33 +82,40 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
       emit(ConnectLoadState());
       bool isConnected = await _checkConnectionToServer();
       if (isConnected) {
-        try {
-          webSocketChannel =
-              WebSocketChannel.connect(apiEndpoints.getUri("ws"));
-          _webSocketSubscription = webSocketChannel.stream.listen(
-            (message) async {
-              try {
-                final Map<String, dynamic> decodedMessage = jsonDecode(message);
-                ntLogger.w('Message from web socket: \n $decodedMessage');
-                final ModelTask newElement = ModelTask.fromJson(decodedMessage);
-                taskListCubit.updateElementInTaskList(newElement);
-              } catch (e) {
-                notificationControllerCubit.addNotification(
-                    "Ошибка подключения",
-                    "Подключение к серверу завершилось ошибкой: ${e.toString()}",
-                    NotificationType.error);
-              } //add error stack
-            },
-          );
-          notificationControllerCubit.addNotification(
-              "Подключено", "", NotificationType.success);
-          emit(ConnectedState());
-        } catch (e) {
-          notificationControllerCubit.addNotification(
-              "Ошибка подключения",
-              "Подключение к серверу завершилось ошибкой: ${e.toString()}",
-              NotificationType.error);
-        }
+        // try {
+        //   webSocketChannel = IOWebSocketChannel.connect(
+        //     apiEndpoints.getUri("ws"),
+        //     headers: {
+        //       "Sec-WebSocket-Protocol": headers["Authorization"],
+        //     },
+        //   );
+        //   _webSocketSubscription = webSocketChannel.stream.listen(
+        //     (message) async {
+        //       try {
+        //         final Map<String, dynamic> decodedMessage = jsonDecode(message);
+        //         ntLogger.w('Message from web socket: \n $decodedMessage');
+        //         final ModelTask newElement = ModelTask.fromJson(decodedMessage);
+        //         taskListCubit.updateElementInTaskList(newElement);
+        //       } catch (e) {
+        //         notificationControllerCubit.addNotification(
+        //             "Ошибка подключения",
+        //             "Подключение к серверу завершилось ошибкой: ${e.toString()}",
+        //             NotificationType.error);
+        //       } //add error stack
+        //     },
+        //   );
+        //   notificationControllerCubit.addNotification(
+        //       "Подключено", "", NotificationType.success);
+        //   emit(ConnectedState());
+        // } catch (e) {
+        //   notificationControllerCubit.addNotification(
+        //       "Ошибка подключения",
+        //       "Подключение к серверу завершилось ошибкой: ${e.toString()}",
+        //       NotificationType.error);
+        // }
+        notificationControllerCubit.addNotification(
+            "Успешно", "Сервер определён", NotificationType.success);
+        emit(ConnectedToServerState());
       }
     } catch (e) {
       notificationControllerCubit.addNotification(
@@ -222,7 +232,10 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
         await http.get(apiEndpoints.getUri("get-host-list"), headers: headers);
 
     if (response.statusCode == 200) {
-      hostListCubit.updateState({"hostList": jsonDecode(response.body)});
+      final List<dynamic> jsonList = jsonDecode(response.body);
+      final List<Map<String, dynamic>> jsonMapList =
+          jsonList.cast<Map<String, dynamic>>();
+      hostListCubit.updateState(jsonMapList);
       return;
     } else {
       notificationControllerCubit.addNotification(
@@ -326,7 +339,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     final response = await http.post(apiEndpoints.getUri("get-host-list"),
         headers: headers, body: jsonEncode(event.body));
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       notificationControllerCubit.addNotification(
           "Создано", "Хост успешно создан", NotificationType.success);
       return;
@@ -339,7 +352,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
   }
 
   Future<void> _downloadReportPdf(DownloadPdf event, Emitter emit) async {
-    Dio dio = Dio();
+    Dio dio = Dio(BaseOptions(headers: headers));
 
     if (!platform) {
       Directory? downloadDir;
@@ -356,12 +369,11 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
       String savePath = '${downloadDir.path}/$fileName';
       try {
         await dio.download(
-            apiEndpoints.getUri("check-connection", extraPaths: [
-              event.type,
-              "${event.taskNumber}",
-              "pdf"
-            ]).toString(),
-            savePath);
+          apiEndpoints.getUri("check-connection",
+              extraPaths: [event.type, event.taskNumber, "pdf"]).toString(),
+          savePath,
+        );
+        _openFileExplorer(downloadDir.path);
         notificationControllerCubit.addNotification(
             "Успешно ",
             "Проверьте папку Загрузок на вышем устройстве",
@@ -386,6 +398,14 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     }
   }
 
+  void _openFileExplorer(String directoryPath) {
+    if (Platform.isWindows) {
+      Process.run('explorer', [directoryPath]); // Windows
+    } else if (Platform.isLinux) {
+      Process.run('xdg-open', [directoryPath]); // Linux
+    }
+  }
+
   Future<void> _openTaskInBrowser(
       OpenReportInBrowser event, Emitter emit) async {
     final Uri taskUri = apiEndpoints.getUri(
@@ -396,8 +416,20 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
         "html",
       ],
     );
-
-    if (!await launchUrl(taskUri)) {
+    final webController = WebViewConfiguration(
+      enableJavaScript: true,
+      headers: headers,
+    );
+    // final _webController = WebViewController()
+    //   ..setJavaScriptMode(JavaScriptMode.unrestricted)
+    //   ..loadRequest(
+    //     Uri.parse("https://example.com"),
+    //     headers: {"Authorization": "Bearer YOUR_TOKEN"},
+    //   );
+    if (!await launchUrl(
+      taskUri,
+      webViewConfiguration: webController,
+    )) {
       notificationControllerCubit.addNotification(
         "Ошибка",
         "Невозможно открыть отчёт",
@@ -449,6 +481,38 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
       headers["Authorization"] = 'Bearer ' + jsonDecode(response.body)["token"];
       ntLogger.w(headers["Authorization"]);
       userDataCubit.login();
+
+      try {
+        webSocketChannel = IOWebSocketChannel.connect(
+          apiEndpoints.getUri("ws"),
+          headers: {
+            "Sec-WebSocket-Protocol": headers["Authorization"],
+          },
+        );
+        _webSocketSubscription = webSocketChannel.stream.listen(
+          (message) async {
+            try {
+              final Map<String, dynamic> decodedMessage = jsonDecode(message);
+              ntLogger.w('Message from web socket: \n $decodedMessage');
+              final ModelTask newElement = ModelTask.fromJson(decodedMessage);
+              taskListCubit.updateElementInTaskList(newElement);
+            } catch (e) {
+              notificationControllerCubit.addNotification(
+                  "Ошибка подключения",
+                  "Подключение к серверу завершилось ошибкой: ${e.toString()}",
+                  NotificationType.error);
+            } //add error stack
+          },
+        );
+        notificationControllerCubit.addNotification(
+            "Подключено", "", NotificationType.success);
+        emit(ConnectedToServerState());
+      } catch (e) {
+        notificationControllerCubit.addNotification(
+            "Ошибка подключения",
+            "Подключение к серверу завершилось ошибкой: ${e.toString()}",
+            NotificationType.error);
+      }
     } else {
       ntLogger.e('Error login: ');
     }

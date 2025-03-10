@@ -4,7 +4,9 @@ abstract class ApiState {}
 
 final class ApiInitial extends ApiState {}
 
-class ConnectedState extends ApiState {}
+class ConnectedToServerState extends ApiState {}
+
+class ConnectedToSystemState extends ApiState {}
 
 class ErrorState extends ApiState {
   final String messageTitle;

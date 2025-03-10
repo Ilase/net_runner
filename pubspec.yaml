@@ -50,6 +50,9 @@ dependencies:
   icons_flutter: ^0.0.5
   font_awesome_flutter: ^10.8.0
   flutter_svg: ^2.0.17
+  file_picker: ^9.0.2
+  webview_flutter: ^4.10.0
+  flutter_graph_view: ^1.1.4
 
 dev_dependencies:
   flutter_test:

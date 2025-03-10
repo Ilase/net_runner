@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
+import 'package:net_runner/core/domain/api/models/host/host_serial.dart';
 import 'package:net_runner/core/domain/group_list/group_list_cubit.dart';
 import 'package:net_runner/core/domain/host_list/host_list_cubit.dart';
 import 'package:net_runner/core/domain/ping_list/ping_list_cubit.dart';
@@ -14,10 +15,11 @@ class HostsPg extends StatefulWidget {
 
 class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final TextEditingController _customIpController = TextEditingController();
   bool _isEditingGroupMode = false;
   Map<String, dynamic>? _selectedGroupItem;
-  Map<String, dynamic>? _selectedHostItem;
-  List<dynamic> _selectedHostsRightList = [];
+  ModelHost? _selectedHostItem;
+  List<Map<String, String>> _selectedHostsRightList = [];
 
   String hostTabState = "default";
   String groupTabState = "default";
@@ -317,37 +319,83 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
                               return BlocBuilder<PingListCubit, PingListState>(
                                 builder: (context, state) {
                                   if (state is FilledPingState) {
-                                    return ListView.builder(
-                                      itemCount:
-                                          state.list["activeHosts"].length,
-                                      itemBuilder: (context, index) {
-                                        final ipAddress =
-                                            state.list["activeHosts"][index];
-                                        final isAdded = _selectedHostsRightList
-                                            .any((host) =>
-                                                host["ip"] == ipAddress);
-
-                                        return ListTile(
-                                          leading: Text(index.toString()),
-                                          subtitle: Text(ipAddress),
-                                          trailing: isAdded
-                                              ? Icon(Icons.check,
-                                                  color: Colors.grey)
-                                              : null,
-                                          onTap: isAdded
-                                              ? null
-                                              : () {
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: TextField(
+                                                controller: _customIpController,
+                                                decoration: InputDecoration(
+                                                    label: Text(
+                                                        'Добавить вручную')),
+                                              ),
+                                            ),
+                                            IconButton(
+                                                onPressed: () {
                                                   setState(() {
                                                     _selectedHostsRightList
                                                         .add({
-                                                      "ip": ipAddress,
+                                                      "ip": _customIpController
+                                                          .text,
                                                       "name": "",
                                                       "description": ""
                                                     });
                                                   });
                                                 },
-                                        );
-                                      },
+                                                icon:
+                                                    Icon(Icons.arrow_forward)),
+                                          ],
+                                        ),
+                                        Divider(),
+                                        Expanded(
+                                          child: ListView.builder(
+                                            itemCount: state
+                                                .list["activeHosts"].length,
+                                            itemBuilder: (context, index) {
+                                              final ipAddress = state
+                                                  .list["activeHosts"][index];
+                                              final isAdded =
+                                                  _selectedHostsRightList.any(
+                                                      (host) =>
+                                                          host["ip"] ==
+                                                          ipAddress);
+
+                                              return ListTile(
+                                                leading: Text(index.toString()),
+                                                subtitle: Text(ipAddress),
+                                                trailing: isAdded
+                                                    ? Icon(Icons.check,
+                                                        color: Colors.green)
+                                                    : Icon(Icons.arrow_forward),
+                                                onTap: isAdded
+                                                    ? () {
+                                                        setState(() {
+                                                          _selectedHostsRightList
+                                                              .removeWhere(
+                                                                  (item) =>
+                                                                      item[
+                                                                          "ip"] ==
+                                                                      ipAddress);
+                                                        });
+                                                      }
+                                                    : () {
+                                                        setState(() {
+                                                          _selectedHostsRightList
+                                                              .add({
+                                                            "ip": ipAddress,
+                                                            "name": "",
+                                                            "description": ""
+                                                          });
+                                                        });
+                                                      },
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ],
                                     );
                                   } else {
                                     return Center(
@@ -358,8 +406,7 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
                               );
                             } else {
                               if (state is FullState) {
-                                final List<dynamic> list =
-                                    state.list["hostList"];
+                                final List<ModelHost> list = state.list;
                                 return ListView.builder(
                                     itemCount: list.length,
                                     itemBuilder: (builder, index) {
@@ -371,11 +418,20 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
                                           });
                                         },
                                         title: Text(
-                                          '${list[index]["ip"]}',
+                                          list[index].ip,
                                         ),
                                         subtitle: Text(
-                                          '${list[index]["name"]}',
+                                          list[index].name,
                                         ),
+                                        leading: list[index].inventory != null
+                                            ? Icon(
+                                                Icons.inventory,
+                                                color: Colors.green,
+                                              )
+                                            : Icon(
+                                                Icons.circle_outlined,
+                                                color: Colors.blue,
+                                              ),
                                         trailing: Icon(Icons.arrow_forward),
                                       );
                                     });
@@ -569,7 +625,7 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Хост: ${_selectedHostItem!["name"]}'),
+            Text('Хост: ${_selectedHostItem!.name}'),
             Row(
               children: [
                 IconButton(
@@ -580,7 +636,7 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
                   onPressed: () {
                     context
                         .read<ApiBloc>()
-                        .add(DeleteHost(id: _selectedHostItem!["ID"]));
+                        .add(DeleteHost(id: _selectedHostItem!.ID));
                   },
                   icon: Icon(Icons.delete),
                 ),
@@ -597,10 +653,41 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
           ],
         ),
         Divider(),
-        Text('IP: ${_selectedHostItem!["ip"]}'),
+        Text('IP: ${_selectedHostItem!.ip}'),
         Divider(),
         Text('Описание'),
-        Text('${_selectedHostItem!["description"]}')
+        Text('${_selectedHostItem!.description}'),
+        Divider(),
+        Text('Инвенторизация'),
+        Builder(builder: (builder) {
+          if (_selectedHostItem!.inventory != null) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Время актуализации: ${_selectedHostItem!.UpdatedAt}'),
+                Text('Имя хоста: ' + _selectedHostItem!.inventory!.name),
+                Text('OS: ' + _selectedHostItem!.inventory!.os),
+                Text('Версия OS: ' + _selectedHostItem!.inventory!.os_version),
+                Text('Версия ядра: ' +
+                    _selectedHostItem!.inventory!.kernel_version),
+                Text('Полное название OS: ' +
+                    _selectedHostItem!.inventory!.full_os_name),
+                Text('Процессор: ' + _selectedHostItem!.inventory!.cpu_name),
+                Text('Кол-во ядер: ' +
+                    _selectedHostItem!.inventory!.cpu_cores.toString()),
+                Text('Кол-во ОЗУ: ' +
+                    _selectedHostItem!.inventory!.ram.toString()),
+                Text('Время работы: ' +
+                    _selectedHostItem!.inventory!.uptime.toString()),
+              ],
+            );
+          } else {
+            return Text(
+              'Нет инвенторизации на данный хост',
+              style: TextStyle(color: Colors.grey),
+            );
+          }
+        }),
       ],
     );
   }

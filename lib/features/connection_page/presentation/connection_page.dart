@@ -41,7 +41,7 @@ class _ConnectionPageState extends State<ConnectionPage> {
           ),
           BlocListener<ApiBloc, ApiState>(
             listener: (context, state) {
-              if (state is ConnectedState) {
+              if (state is ConnectedToServerState) {
                 Navigator.of(context).pushNamed('/login');
               }
             },

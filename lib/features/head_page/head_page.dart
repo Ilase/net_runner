@@ -103,8 +103,9 @@ class _HeadPageState extends State<HeadPage> {
                       children: [
                         IconButton(
                           onPressed: () {
-                            Navigator.of(context)
-                                .popAndPushNamed(ConnectionPage.route);
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                                ConnectionPage.route,
+                                (Route<dynamic> route) => false);
                             context
                                 .read<ApiBloc>()
                                 .add(DisconnectFromServerEvent());

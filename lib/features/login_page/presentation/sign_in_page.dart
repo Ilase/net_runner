@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
 import 'package:net_runner/core/domain/user_repository/user_data_cubit.dart';
+import 'package:net_runner/core/presentation/widgets/notification_manager.dart';
 import 'package:net_runner/features/head_page/head_page.dart';
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
 
@@ -16,11 +17,19 @@ class LoginPage extends StatelessWidget {
     TextEditingController _passwordController = TextEditingController();
     return BlocListener<UserDataCubit, UserDataState>(
       listener: (context, state) {
+        print(state.runtimeType);
         if (state is UserLogInState) {
-          Navigator.of(context).pushNamed(HeadPage.route);
+          Future.microtask(() {
+            //microfuture
+            Navigator.of(context).pushNamed(HeadPage.route);
+          });
+
+          context.read<ApiBloc>().add(GetHostListEvent());
+          context.read<ApiBloc>().add(GetGroupListEvent());
+          context.read<ApiBloc>().add(FetchTaskListEvent());
         } else {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text('ERRRRO')));
+          context.read<ApiBloc>().notificationControllerCubit.addNotification(
+              "Упс...", "Ошибка авторизации", NotificationType.error);
         }
       },
       child: Scaffold(

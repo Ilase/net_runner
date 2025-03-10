@@ -37,11 +37,13 @@ class _TitlePgState extends State<TitlePg> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
+                          height: double.maxFinite,
+                          width: double.maxFinite,
                           padding: EdgeInsets.all(16),
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
                               border: Border.all(width: 2, color: Colors.blue)),
-                          child: Placeholder(),
+                          child: Text('В разработке'),
                         ),
                       ),
                     ),
@@ -50,11 +52,13 @@ class _TitlePgState extends State<TitlePg> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
+                          height: double.maxFinite,
+                          width: double.maxFinite,
                           padding: EdgeInsets.all(16),
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
                               border: Border.all(width: 2, color: Colors.blue)),
-                          child: Placeholder(),
+                          child: Text('В разработке'),
                         ),
                       ),
                     ),
@@ -136,11 +140,13 @@ class _TitlePgState extends State<TitlePg> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
+                    height: double.maxFinite,
+                    width: double.maxFinite,
                     padding: EdgeInsets.all(16),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15),
                         border: Border.all(width: 2, color: Colors.blue)),
-                    child: Placeholder(),
+                    child: Text('В разработке'),
                   ),
                 ),
               )
