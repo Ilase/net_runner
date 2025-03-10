@@ -79,3 +79,9 @@ class LoginToServer extends ApiEvent {
   final String password;
   LoginToServer({required this.login, required this.password});
 }
+
+class PutHost extends ApiEvent {
+  final int hostId;
+  final Map<String, dynamic> body;
+  PutHost({required this.hostId, required this.body});
+}

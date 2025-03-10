@@ -69,6 +69,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     on<OpenReportInBrowser>(_openTaskInBrowser);
     on<DeleteGroup>(_deleteGroup);
     on<DeleteHost>(_deleteHost);
+    on<PutHost>(_putHost);
   }
 
   Future<void> _loginWithWsConnect() async {}
@@ -464,6 +465,28 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
       return;
     } else {
       notificationControllerCubit.addNotification("Ошибка удаления",
+          "${jsonDecode(response.body)}", NotificationType.error);
+      return;
+    }
+  }
+
+  Future<void> _putHost(PutHost event, Emitter emit) async {
+    final response = await http.put(
+      apiEndpoints.getUri(
+        "get-host-list",
+        extraPaths: [
+          event.hostId.toString(),
+        ],
+      ),
+      body: jsonEncode(event.body),
+      headers: headers,
+    );
+    if (response.statusCode == 200) {
+      notificationControllerCubit.addNotification(
+          "Измененно", " Хост успешно изменён", NotificationType.success);
+      return;
+    } else {
+      notificationControllerCubit.addNotification("Ошибка изменения",
           "${jsonDecode(response.body)}", NotificationType.error);
       return;
     }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:net_runner/core/data/ip_input_formatter.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
 import 'package:net_runner/core/domain/api/models/host/host_serial.dart';
 import 'package:net_runner/core/domain/group_list/group_list_cubit.dart';
@@ -14,6 +15,11 @@ class HostsPg extends StatefulWidget {
 }
 
 class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
+  TextEditingController _ipEditingHostController = TextEditingController();
+  TextEditingController _nameEditingHostController = TextEditingController();
+  TextEditingController _descriptionEditingHostController =
+      TextEditingController();
+
   late TabController _tabController;
   final TextEditingController _customIpController = TextEditingController();
   bool _isEditingGroupMode = false;
@@ -23,6 +29,8 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
 
   String hostTabState = "default";
   String groupTabState = "default";
+
+  bool isHostEditing = false;
 
   List<dynamic>? _selectedItemHosts;
 
@@ -329,8 +337,9 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
                                               child: TextField(
                                                 controller: _customIpController,
                                                 decoration: InputDecoration(
-                                                    label: Text(
-                                                        'Добавить вручную')),
+                                                  label:
+                                                      Text('Добавить вручную'),
+                                                ),
                                               ),
                                             ),
                                             IconButton(
@@ -602,7 +611,12 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Добавить группу'),
+              Text(
+                'Добавить группу',
+                style: TextStyle(
+                  fontSize: 38,
+                ),
+              ),
               IconButton(
                 onPressed: () {
                   setState(() {
@@ -612,7 +626,8 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
                 icon: Icon(Icons.close),
               ),
             ],
-          )
+          ),
+          Divider()
         ],
       ),
     );
@@ -625,12 +640,40 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Хост: ${_selectedHostItem!.name}'),
+            Expanded(
+              child: Builder(
+                builder: (builder) {
+                  _nameEditingHostController.text = _selectedHostItem!.name;
+                  if (isHostEditing) {
+                    return Row(
+                      children: [
+                        Text("Хост: "),
+                        Expanded(
+                            child: TextField(
+                          controller: _nameEditingHostController,
+                        )),
+                      ],
+                    );
+                  } else {
+                    return Text('Хост: ${_selectedHostItem!.name}');
+                  }
+                },
+              ),
+            ),
             Row(
               children: [
                 IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.edit),
+                  onPressed: () {
+                    setState(() {
+                      isHostEditing = !isHostEditing;
+                      if (!isHostEditing) {
+                        _descriptionEditingHostController.clear();
+                        _ipEditingHostController.clear();
+                        _nameEditingHostController.clear();
+                      }
+                    });
+                  },
+                  icon: Icon(isHostEditing ? Icons.edit_off : Icons.edit),
                 ),
                 IconButton(
                   onPressed: () {
@@ -644,6 +687,7 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
                   onPressed: () {
                     setState(() {
                       hostTabState = "default";
+                      isHostEditing = false;
                     });
                   },
                   icon: Icon(Icons.close),
@@ -653,38 +697,99 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
           ],
         ),
         Divider(),
-        Text('IP: ${_selectedHostItem!.ip}'),
+        Builder(
+          builder: (builder) {
+            if (isHostEditing) {
+              _ipEditingHostController.text = _selectedHostItem!.ip;
+              return Row(
+                children: [
+                  Text("IP: "),
+                  Expanded(
+                      child: TextField(
+                    controller: _ipEditingHostController,
+                    inputFormatters: [
+                      IPTextInputFormatter(),
+                    ],
+                  )),
+                ],
+              );
+            } else {
+              return Text('IP: ${_selectedHostItem!.ip}');
+            }
+          },
+        ),
         Divider(),
         Text('Описание'),
-        Text('${_selectedHostItem!.description}'),
+        Builder(
+          builder: (builder) {
+            if (isHostEditing) {
+              _descriptionEditingHostController.text =
+                  _selectedHostItem!.description ?? "";
+              return TextField(
+                controller: _descriptionEditingHostController,
+              );
+            } else {
+              return Text('${_selectedHostItem!.description}');
+            }
+          },
+        ),
         Divider(),
-        Text('Инвенторизация'),
         Builder(builder: (builder) {
-          if (_selectedHostItem!.inventory != null) {
+          if (isHostEditing) {
+            return ElevatedButton(
+                onPressed: () {
+                  context.read<ApiBloc>().add(
+                        PutHost(
+                          hostId: _selectedHostItem!.ID,
+                          body: {
+                            "name": _nameEditingHostController.text,
+                            "ip": _ipEditingHostController.text,
+                            "description":
+                                _descriptionEditingHostController.text
+                          },
+                        ),
+                      );
+                },
+                child: Text('Подтвердить'));
+          } else {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Время актуализации: ${_selectedHostItem!.UpdatedAt}'),
-                Text('Имя хоста: ' + _selectedHostItem!.inventory!.name),
-                Text('OS: ' + _selectedHostItem!.inventory!.os),
-                Text('Версия OS: ' + _selectedHostItem!.inventory!.os_version),
-                Text('Версия ядра: ' +
-                    _selectedHostItem!.inventory!.kernel_version),
-                Text('Полное название OS: ' +
-                    _selectedHostItem!.inventory!.full_os_name),
-                Text('Процессор: ' + _selectedHostItem!.inventory!.cpu_name),
-                Text('Кол-во ядер: ' +
-                    _selectedHostItem!.inventory!.cpu_cores.toString()),
-                Text('Кол-во ОЗУ: ' +
-                    _selectedHostItem!.inventory!.ram.toString()),
-                Text('Время работы: ' +
-                    _selectedHostItem!.inventory!.uptime.toString()),
+                Text('Инвентаризация'),
+                Builder(builder: (builder) {
+                  if (_selectedHostItem!.inventory != null) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                            'Время актуализации: ${_selectedHostItem!.UpdatedAt}'),
+                        Text(
+                            'Имя хоста: ' + _selectedHostItem!.inventory!.name),
+                        Text('OS: ' + _selectedHostItem!.inventory!.os),
+                        Text('Версия OS: ' +
+                            _selectedHostItem!.inventory!.os_version),
+                        Text('Версия ядра: ' +
+                            _selectedHostItem!.inventory!.kernel_version),
+                        Text('Полное название OS: ' +
+                            _selectedHostItem!.inventory!.full_os_name),
+                        Text('Процессор: ' +
+                            _selectedHostItem!.inventory!.cpu_name),
+                        Text('Кол-во ядер: ' +
+                            _selectedHostItem!.inventory!.cpu_cores.toString()),
+                        Text('Кол-во ОЗУ: ' +
+                            _selectedHostItem!.inventory!.ram.toString()),
+                        Text('Время работы: ' +
+                            _selectedHostItem!.inventory!.uptime.toString()),
+                      ],
+                    );
+                  } else {
+                    return Text(
+                      'Нет инвенторизации на данный хост',
+                      style: TextStyle(color: Colors.grey),
+                    );
+                  }
+                }),
               ],
-            );
-          } else {
-            return Text(
-              'Нет инвенторизации на данный хост',
-              style: TextStyle(color: Colors.grey),
             );
           }
         }),

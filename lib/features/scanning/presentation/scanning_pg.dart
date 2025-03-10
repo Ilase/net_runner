@@ -355,12 +355,6 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
                                                             Text(list[index]
                                                                 .number_task
                                                                 .toString()),
-                                                            Text(
-                                                              list[index].name,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                            ),
                                                           ],
                                                         ),
                                                       ),
@@ -390,7 +384,7 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
                                                       Expanded(
                                                           child: Text(
                                                               list[index]
-                                                                  .status)),
+                                                                  .type),),
                                                     ],
                                                   ),
                                                 ),
