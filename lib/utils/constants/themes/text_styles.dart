@@ -3,9 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppTextStyle {
   static TextTheme lightTextTheme = TextTheme(
-      titleLarge: GoogleFonts.openSans(fontSize: 44, color: Colors.white),
-      titleMedium: GoogleFonts.openSans(fontSize: 32, color: Colors.blue),
-      titleSmall: GoogleFonts.openSans(fontSize: 16, color: Colors.white),
+      titleLarge: GoogleFonts.openSans(fontSize: 36, color: Colors.blue),
+      titleMedium: GoogleFonts.openSans(fontSize: 24, color: Colors.blue),
+      titleSmall: GoogleFonts.openSans(fontSize: 16, color: Colors.blue),
       headlineMedium: GoogleFonts.openSans(fontSize: 18, color: Colors.white),
       headlineSmall: GoogleFonts.openSans(fontSize: 14, color: Colors.white),
       labelSmall: GoogleFonts.openSans(fontSize: 12, color: Colors.blue),

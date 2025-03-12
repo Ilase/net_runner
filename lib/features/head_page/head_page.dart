@@ -57,79 +57,87 @@ class _HeadPageState extends State<HeadPage> {
                 // showFadedButtons = !showFadedButtons;
               });
             },
-            child: AnimatedContainer(
-              onEnd: () {
-                setState(() {
-                  showFadedButtons = !showFadedButtons;
-                });
-              },
-              width: isDrawerExpanded ? 300 : 100,
-              duration: Duration(milliseconds: 100),
-              curve: Curves.easeInOut,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                //border: Border.all(width: 2),
-                boxShadow: [
-                  isDrawerExpanded
-                      ? BoxShadow(
-                          offset: Offset(3, 3),
-                          color: Colors.grey,
-                          blurRadius: 50,
-                        )
-                      : BoxShadow(),
-                ],
-                borderRadius: isDrawerExpanded
-                    ? BorderRadius.horizontal(right: Radius.circular(15))
-                    : BorderRadius.horizontal(right: Radius.circular(0)),
+            child: Padding(
+              padding: const EdgeInsets.only(
+                top: 16,
+                bottom: 16,
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    AnimatedCrossFade(
-                      firstChild: Center(
-                        child: Text('NetRunner'),
-                      ),
-                      secondChild: Text('NT'),
-                      crossFadeState: isDrawerExpanded
-                          ? CrossFadeState.showFirst
-                          : CrossFadeState.showSecond,
-                      duration: Duration(milliseconds: 100),
-                    ),
-                    _buildDrawer(),
-                    Column(
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            Navigator.of(context).pushNamedAndRemoveUntil(
-                                ConnectionPage.route,
-                                (Route<dynamic> route) => false);
-                            context
-                                .read<ApiBloc>()
-                                .add(DisconnectFromServerEvent());
-                          },
-                          icon: Icon(Icons.exit_to_app),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            Navigator.of(context).pushNamed('/profile');
-                          },
-                          icon: Icon(Icons.person_2_outlined),
-                        ),
-                        Switch(
-                          value: _isDarkTheme,
-                          onChanged: (value) {
-                            setState(() {
-                              _isDarkTheme = value;
-                            });
-                            context.read<ThemeControllerCubit>().toggleTheme();
-                          },
-                        ),
-                      ],
-                    )
+              child: AnimatedContainer(
+                onEnd: () {
+                  setState(() {
+                    showFadedButtons = !showFadedButtons;
+                  });
+                },
+                width: isDrawerExpanded ? 300 : 100,
+                duration: Duration(milliseconds: 100),
+                curve: Curves.easeInOut,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  //border: Border.all(width: 2),
+                  boxShadow: [
+                    isDrawerExpanded
+                        ? BoxShadow(
+                            offset: Offset(3, 3),
+                            color: Colors.grey,
+                            blurRadius: 50,
+                          )
+                        : BoxShadow(),
                   ],
+                  borderRadius: isDrawerExpanded
+                      ? BorderRadius.horizontal(right: Radius.circular(15))
+                      : BorderRadius.horizontal(right: Radius.circular(0)),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      AnimatedCrossFade(
+                        firstChild: Center(
+                          child: Text('NetRunner'),
+                        ),
+                        secondChild: Text('NT'),
+                        crossFadeState: isDrawerExpanded
+                            ? CrossFadeState.showFirst
+                            : CrossFadeState.showSecond,
+                        duration: Duration(milliseconds: 100),
+                      ),
+                      _buildDrawer(),
+                      Column(
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              Navigator.of(context).pushNamedAndRemoveUntil(
+                                  ConnectionPage.route,
+                                  (Route<dynamic> route) => false);
+                              context
+                                  .read<ApiBloc>()
+                                  .add(DisconnectFromServerEvent());
+                            },
+                            icon: Icon(Icons.exit_to_app),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              Navigator.of(context).pushNamed('/profile');
+                            },
+                            icon: Icon(Icons.person_2_outlined),
+                          ),
+                          Switch(
+                            value: _isDarkTheme,
+                            onChanged: (value) {
+                              setState(() {
+                                _isDarkTheme = value;
+                              });
+                              context
+                                  .read<ThemeControllerCubit>()
+                                  .toggleTheme();
+                            },
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -138,7 +146,7 @@ class _HeadPageState extends State<HeadPage> {
             child: PageView(
               controller: _pageController,
               physics: NeverScrollableScrollPhysics(),
-              scrollDirection: Axis.vertical,
+              scrollDirection: Axis.horizontal,
               children: pages,
             ),
           ),

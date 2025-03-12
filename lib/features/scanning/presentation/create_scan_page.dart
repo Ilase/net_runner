@@ -252,12 +252,11 @@ class _CreateScanPageState extends State<CreateScanPage> {
                             child: BlocBuilder<GroupListCubit, GroupListState>(
                               builder: (context, state) {
                                 if (state is FilledState) {
-                                  final List<dynamic> list =
-                                      state.list["groupList"];
+                                  final List<ModelGroup> list = state.list;
                                   return ListView.builder(
                                       itemCount: list.length,
                                       itemBuilder: (builder, index) {
-                                        final item = list[index].ip;
+                                        final item = list[index];
                                         final isSelected =
                                             _groupList.contains(item);
                                         return ListTile(
@@ -271,9 +270,9 @@ class _CreateScanPageState extends State<CreateScanPage> {
                                             });
                                           },
                                           title: Text(
-                                              'Кол-во хостов: ${list[index]["hosts"].length}'),
+                                              'Кол-во хостов: ${list[index].hosts.length}'),
                                           leading: Text(index.toString()),
-                                          subtitle: Text(list[index]["name"]),
+                                          subtitle: Text(list[index].name),
                                           trailing: Icon(
                                             isSelected
                                                 ? Icons.check

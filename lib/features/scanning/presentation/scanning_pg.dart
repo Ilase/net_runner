@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graphic/graphic.dart';
@@ -17,6 +18,7 @@ import 'package:net_runner/core/presentation/widgets/notification_manager.dart';
 import 'package:net_runner/features/graph/presentation/graph_page.dart';
 import 'package:net_runner/features/scanning/presentation/create_scan_page.dart';
 import 'package:net_runner/utils/constants/themes/task_status_color.dart';
+import 'package:net_runner/utils/constants/themes/text_styles.dart';
 import 'package:net_runner/utils/routes/router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -382,9 +384,9 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
                                                         ),
                                                       ),
                                                       Expanded(
-                                                          child: Text(
-                                                              list[index]
-                                                                  .type),),
+                                                        child: Text(
+                                                            list[index].type),
+                                                      ),
                                                     ],
                                                   ),
                                                 ),
@@ -432,23 +434,44 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
     );
   }
 
+  final Map<String, Color> severityColors = {
+    'Незначительный': Colors.blue,
+    'Низкий': Colors.green,
+    'Средний': Colors.orangeAccent,
+    'Высокий': Colors.redAccent,
+    'Критический': Colors.red.shade700,
+  };
+  String _getCategory(double cvssScore) {
+    if (cvssScore >= 9.0 && cvssScore <= 10.0) {
+      return 'Критический';
+    } else if (cvssScore >= 7.0 && cvssScore <= 8.9) {
+      return 'Высокий';
+    } else if (cvssScore >= 4.0 && cvssScore <= 6.9) {
+      return 'Средний';
+    } else if (cvssScore >= 0.1 && cvssScore <= 3.9) {
+      return 'Низкий';
+    } else {
+      return 'Незначительный';
+    }
+  }
+
   Widget _buildGeneralInfoPentest(
     GeneralInfo generalInfo,
     Map<String, PentestHost> hosts,
   ) {
     // List<Map<String, dynamic>> vulnsList = [];
     final Map<String, int> severityCount = {
-      'Критический': 0,
-      'Высокий': 0,
-      'Средний': 0,
+      'Незначительный': 0,
       'Низкий': 0,
-      'Незначительный': 0
+      'Средний': 0,
+      'Высокий': 0,
+      'Критический': 0,
     };
     for (var host in hosts.values) {
       for (var vuln in host.vulns.values) {
         double cvssScore = double.tryParse(vuln.cvss) ?? 0.0;
 
-        if (cvssScore >= 9.0 && cvssScore >= 10) {
+        if (cvssScore >= 9.0 && cvssScore <= 10.0) {
           severityCount['Критический'] = severityCount['Критический']! + 1;
         } else if (cvssScore >= 7.0 && cvssScore <= 8.9) {
           severityCount['Высокий'] = severityCount['Высокий']! + 1;
@@ -460,6 +483,8 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
           severityCount['Незначительный'] =
               severityCount['Незначительный']! + 1;
         }
+
+        //print('CVSS Score: $cvssScore, Category: ${_getCategory(cvssScore)}');
       }
     }
     final chartData = severityCount.entries
@@ -467,7 +492,28 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
         .toList();
 
     ntLogger.w(chartData);
-
+    final colors = {
+      'Незначительный': Colors.grey,
+      'Низкий': Colors.green,
+      'Средний': Colors.orange,
+      'Высокий': Colors.redAccent,
+      'Критический': Colors.red,
+    };
+    final List<PieChartSectionData> sections = severityCount.entries
+        .where((entry) => entry.value > 0) // Исключаем нулевые значения
+        .map((entry) {
+      return PieChartSectionData(
+        color: colors[entry.key] ?? Colors.blue,
+        value: entry.value.toDouble(),
+        title: '${entry.value}', // Показываем количество
+        radius: 50,
+        titleStyle: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      );
+    }).toList();
     return ListView(
       children: [
         Padding(
@@ -524,114 +570,41 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Краткая сводка'),
+                  Text(
+                    'Краткая сводка',
+                    style: AppTextStyle.lightTextTheme.titleMedium,
+                  ),
                   Row(
                     children: [
-                      ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minHeight: 300,
-                          maxHeight: 300,
-                          maxWidth: 500,
-                          minWidth: 400,
-                        ),
-                        // /height: double.maxFinite,
-                        child: Chart(
-                          data: chartData,
-                          variables: {
-                            'severity': Variable(
-                              accessor: (Map map) => map['severity'] as String,
-                            ),
-                            'count': Variable(
-                              accessor: (Map map) => map['count'] as num,
-                            ),
-                          },
-                          marks: [
-                            IntervalMark(
-                              position: Varset('count') / Varset('severity'),
-                              label: LabelEncode(
-                                encoder: (tuple) => Label(
-                                  tuple["severity"].toString(),
-                                  LabelStyle(
-                                    textStyle: TextStyle(color: Colors.blue),
-                                  ),
-                                ),
-                              ),
-                              color: ColorEncode(
-                                variable: 'severity',
-                                values: [
-                                  Colors.blue,
-                                  Colors.green,
-                                  Colors.orangeAccent,
-                                  Colors.redAccent,
-                                  Colors.red.shade700,
-                                ],
-                              ),
-                              modifiers: [
-                                StackModifier(),
-                              ],
-                            )
-                          ],
-                          coord: PolarCoord(
-                            transposed: true,
-                            dimCount: 1,
-                            dimFill: 1.01,
+                      SizedBox(
+                        height: 300,
+                        width: 300,
+                        child: PieChart(
+                          PieChartData(
+                            pieTouchData: PieTouchData(),
+                            sections: sections,
+                            borderData: FlBorderData(show: true),
+                            sectionsSpace: 1,
+                            centerSpaceRadius: 40,
                           ),
+                          duration: Duration(microseconds: 100),
+                          curve: Curves.easeInOut,
                         ),
                       ),
                       Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Кол-во уязвимостей по уровню угрозы (CVSS)'),
-                            Divider(),
-                            Text('Незначительный: ${chartData[0]["count"]}'),
-                            Text('Низкий: ${chartData[1]["count"]}'),
-                            Text('Средний: ${chartData[2]["count"]}'),
-                            Text('Высокий: ${chartData[3]["count"]}'),
-                            Text('Кристический: ${chartData[4]["count"]}'),
-                          ],
-                        ),
-                      )
+                          child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Колличество угроз по уровню (CVSS3)'),
+                          Text(
+                              'Незначительный: ${severityCount['Незначительный']}'),
+                          Text('Низкий: ${severityCount['Низкий']}'),
+                          Text('Средний: ${severityCount['Средний']}'),
+                          Text('Высокий: ${severityCount['Высокий']}'),
+                        ],
+                      ))
                     ],
                   ),
-
-                  ///example
-                  // Container(
-                  //   margin: const EdgeInsets.only(top: 10),
-                  //   width: 350,
-                  //   height: 300,
-                  //   child: Chart(
-                  //     data: basicData,
-                  //     variables: {
-                  //       'genre': Variable(
-                  //         accessor: (Map map) => map['genre'] as String,
-                  //       ),
-                  //       'sold': Variable(
-                  //         accessor: (Map map) => map['sold'] as num,
-                  //       ),
-                  //     },
-                  //     transforms: [
-                  //       Proportion(
-                  //         variable: 'sold',
-                  //         as: 'percent',
-                  //       )
-                  //     ],
-                  //     marks: [
-                  //       IntervalMark(
-                  //         position: Varset('percent') / Varset('genre'),
-                  //         label: LabelEncode(
-                  //             encoder: (tuple) => Label(
-                  //               tuple['sold'].toString(),
-                  //             )),
-                  //         color: ColorEncode(
-                  //             variable: 'genre', values: Defaults.colors10),
-                  //         modifiers: [StackModifier()],
-                  //       )
-                  //     ],
-                  //     coord: PolarCoord(transposed: true, dimCount: 1, dimFill: 1.05),
-                  //   ),
-                  // ),
                 ],
               ),
             ),
@@ -639,53 +612,6 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
         ),
       ],
     );
-    // return SingleChildScrollView(
-    //   child: Column(
-    //     children: [
-    //       Expanded(
-    //         child: Container(
-    //           padding: EdgeInsetsDirectional.all(16),
-    //           decoration: BoxDecoration(
-    //             borderRadius: BorderRadius.circular(15),
-    //             border: Border.all(
-    //               width: 2,
-    //               color: Colors.blue,
-    //             ),
-    //           ),
-    //           child: Column(
-    //             crossAxisAlignment: CrossAxisAlignment.start,
-    //             children: [
-    //               Text(
-    //                 'Краткая информация: ${generalInfo.summary}',
-    //               ),
-    //               Divider(),
-    //               Text(
-    //                 'Время сканирования (сек): ${generalInfo.elapsed}',
-    //               ),
-    //               Text(
-    //                 'Время начала: ${generalInfo.start}',
-    //               ),
-    //               Text(
-    //                 'Время окончания: ${generalInfo.end}',
-    //               ),
-    //               Divider(),
-    //               Text(
-    //                 'Всего просканировано целей: ${generalInfo.total},',
-    //               ),
-    //               Text(
-    //                 'Целей доступно: ${generalInfo.up}',
-    //               ),
-    //               Text(
-    //                 'Целей недоступно: ${generalInfo.down}',
-    //               ),
-    //             ],
-    //           ),
-    //         ),
-    //       ),
-    //       Expanded(child: Placeholder()),
-    //     ],
-    //   ),
-    // );
   }
 
   Widget _buildGeneralInfoNetworkScan(
@@ -757,30 +683,53 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Container(
-          padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-              border: Border.all(width: 2, color: Colors.blue),
-              borderRadius: BorderRadius.circular(15)),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: hosts.values.map((host) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('IP: ${host.ip}',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  Text('Status: ${host.status}'),
-                  Text('Ports:'),
-                  ...host.ports.map((port) => Text(
-                      '  - Port: ${port.port}, Protocol: ${port.protocol}, Service: ${port.service}, State: ${port.state}')),
-                  SizedBox(height: 10),
-                  ...host.vulns.values
-                      .map((vuln) => _buildCollapsibleVuln(vuln)),
-                ],
-              );
-            }).toList(),
-          ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: hosts.values.map((host) {
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(
+                    border: Border.all(width: 2, color: Colors.blue),
+                    borderRadius: BorderRadius.circular(15)),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('IP: ${host.ip}',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text('Статус: ${host.status}'),
+                      Text('Порты:'),
+                      ...host.ports.map(
+                        (port) => ListTile(
+                          title: Text('Порт: ${port.port}'),
+                          subtitle: Text("Протокол: ${port.protocol}"),
+                          leading: Icon(
+                            port.state == "open"
+                                ? Icons.lock_open_outlined
+                                : Icons.lock_outline,
+                            color: port.state == "open"
+                                ? Colors.green
+                                : Colors.redAccent,
+                          ),
+                          trailing: Text(
+                            port.service,
+                            style: AppTextStyle.lightTextTheme.bodyMedium,
+                          ),
+                        ),
+                      ),
+                      Divider(),
+                      SizedBox(height: 10),
+                      ...host.vulns.values.map(
+                        (vuln) => _buildCollapsibleVuln(vuln),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
         ),
       ),
     );
@@ -831,7 +780,10 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
             Text('Порт: ${vuln.port}'),
             Row(
               children: [
-                Text('Источник: '),
+                Text(
+                  'Источник: ',
+                  style: TextStyle(decoration: TextDecoration.underline),
+                ),
                 InkWell(
                     onTap: () {
                       launchUrl(refVulnUri);
@@ -851,19 +803,19 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
     double? dCvss = double.tryParse(cvss);
 
     if (dCvss != null) {
-      if (dCvss < 0.1) {
+      if (dCvss <= 0.1) {
         return Colors.grey;
       }
-      if (dCvss > 0.1 && dCvss < 3.9) {
+      if (dCvss >= 0.1 && dCvss <= 3.9) {
         return Colors.lightGreen;
       }
-      if (dCvss > 4.0 && dCvss < 6.9) {
+      if (dCvss >= 4.0 && dCvss <= 6.9) {
         return Colors.orangeAccent;
       }
-      if (dCvss > 7.0 && dCvss < 8.9) {
+      if (dCvss >= 7.0 && dCvss <= 8.9) {
         return Colors.redAccent;
       }
-      if (dCvss > 9.0 && dCvss < 10.0) {
+      if (dCvss >= 9.0 && dCvss <= 10.0) {
         return Colors.redAccent.shade700;
       }
     }
@@ -1092,17 +1044,21 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                      'Сканирование: ${taskInfo.general_info.task_name}'),
+                                    'Сканирование: ${taskInfo.general_info.task_name}',
+                                    style:
+                                        AppTextStyle.lightTextTheme.titleMedium,
+                                  ),
                                   Row(
                                     children: [
                                       OutlinedButton(
                                         onPressed: () {
                                           context.read<ApiBloc>().add(
-                                              DownloadPdf(
+                                                DownloadPdf(
                                                   type: _selectedItem!.type,
                                                   taskNumber: taskInfo
-                                                      .general_info
-                                                      .task_number));
+                                                      .general_info.task_number,
+                                                ),
+                                              );
                                         },
                                         child: Text("Скачать PDF"),
                                       ),
@@ -1111,15 +1067,6 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
                                       ),
                                       OutlinedButton(
                                           onPressed: null,
-                                          // onPressed: () {
-                                          //   // context.read<ApiBloc>().add(
-                                          //   //       OpenReportInBrowser(
-                                          //   //         task_number: _selectedItem!
-                                          //   //             .number_task,
-                                          //   //         type: _selectedItem!.type,
-                                          //   //       ),
-                                          //   //     );
-                                          // },
                                           child: Text('Открыть в браузере'))
                                     ],
                                   ),

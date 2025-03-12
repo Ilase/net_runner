@@ -5,10 +5,12 @@ part 'group_serial.g.dart';
 
 @JsonSerializable()
 class ModelGroup {
+  int ID;
   String name;
   String description;
   List<ModelHost> hosts;
   ModelGroup({
+    required this.ID,
     required this.name,
     required this.description,
     required this.hosts,

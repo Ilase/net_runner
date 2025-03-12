@@ -251,10 +251,12 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     final response =
         await http.get(apiEndpoints.getUri("get-group-list"), headers: headers);
     if (response.statusCode == 200) {
-      List groupList = jsonDecode(response.body);
+      final List<dynamic> jsonList = jsonDecode(response.body);
+      final List<Map<String, dynamic>> groups =
+          jsonList.cast<Map<String, dynamic>>();
 
       /// Обновление списка
-      groupListCubit.updateState({"groupList": groupList});
+      groupListCubit.updateState(groups);
     } else {
       notificationControllerCubit.addNotification(
           "Ошибка данных",

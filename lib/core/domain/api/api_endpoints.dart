@@ -31,6 +31,11 @@ class ApiEndpoints {
         host: host,
         path: '$baseApiPath/pentest',
       ),
+      "add-hosts-to-groups": Uri(
+          scheme: scheme,
+          port: port,
+          host: host,
+          path: '$baseApiPath/add-hosts-to-groups'),
       "get-host-list": Uri(
         scheme: scheme,
         port: port,
