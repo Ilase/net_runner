@@ -5,9 +5,11 @@ sealed class PingListState {}
 
 final class PingListInitial extends PingListState {}
 
-class FilledPingState extends PingListState {
-  final Map<String, dynamic> list;
-  FilledPingState({required this.list});
+class PingListFilledState extends PingListState {
+  final List<dynamic> list;
+  PingListFilledState({required this.list});
 }
 
-class EmptyState extends PingListState {}
+class PingListEmptyState extends PingListState {}
+
+class PingListLoadingState extends PingListState {}

@@ -268,9 +268,9 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
   Future<void> _getPingList(GetPingListEvent event, Emitter emit) async {
     final response =
         await http.get(apiEndpoints.getUri("get-ping-list"), headers: headers);
-    ntLogger.i(response.body);
     if (response.statusCode == 200) {
-      pingListCubit.updateState(jsonDecode(response.body));
+      final List<dynamic> pingList = jsonDecode(response.body)["activeHosts"];
+      pingListCubit.updateState(pingList);
     } else {
       notificationControllerCubit.addNotification(
           "Ошибка данных",

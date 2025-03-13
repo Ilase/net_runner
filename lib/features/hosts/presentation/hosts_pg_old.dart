@@ -15,7 +15,8 @@ class HostsPgOld extends StatefulWidget {
   State<HostsPgOld> createState() => _HostsPgOldState();
 }
 
-class _HostsPgOldState extends State<HostsPgOld> with SingleTickerProviderStateMixin {
+class _HostsPgOldState extends State<HostsPgOld>
+    with SingleTickerProviderStateMixin {
   TextEditingController _ipEditingHostController = TextEditingController();
   TextEditingController _nameEditingHostController = TextEditingController();
   TextEditingController _descriptionEditingHostController =
@@ -383,7 +384,7 @@ class _HostsPgOldState extends State<HostsPgOld> with SingleTickerProviderStateM
                             if (hostTabState == "adding") {
                               return BlocBuilder<PingListCubit, PingListState>(
                                 builder: (context, state) {
-                                  if (state is FilledPingState) {
+                                  if (state is PingListFilledState) {
                                     return Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
@@ -418,11 +419,10 @@ class _HostsPgOldState extends State<HostsPgOld> with SingleTickerProviderStateM
                                         Divider(),
                                         Expanded(
                                           child: ListView.builder(
-                                            itemCount: state
-                                                .list["activeHosts"].length,
+                                            itemCount: state.list.length,
                                             itemBuilder: (context, index) {
-                                              final ipAddress = state
-                                                  .list["activeHosts"][index];
+                                              final ipAddress =
+                                                  state.list[index];
                                               final isAdded =
                                                   _selectedHostsRightList.any(
                                                       (host) =>
