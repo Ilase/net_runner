@@ -6,6 +6,7 @@ import 'package:net_runner/core/domain/api/api_endpoints.dart';
 import 'package:net_runner/core/domain/notificatioon_controller/notification_controller_cubit.dart';
 import 'package:net_runner/core/presentation/widgets/notification_manager.dart';
 import 'package:net_runner/utils/constants/themes/text_styles.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ConnectionPage extends StatefulWidget {
   static const String route = '/init';
@@ -19,6 +20,26 @@ class ConnectionPage extends StatefulWidget {
 class _ConnectionPageState extends State<ConnectionPage> {
   final TextEditingController _uriAddress = TextEditingController();
   final TextEditingController _portController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedData();
+  }
+
+  Future<void> _loadSavedData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _uriAddress.text = prefs.getString('server_address') ?? '';
+      _portController.text = prefs.getString('server_port') ?? '';
+    });
+  }
+
+  Future<void> _saveData() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('server_address', _uriAddress.text);
+    await prefs.setString('server_port', _portController.text);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +63,7 @@ class _ConnectionPageState extends State<ConnectionPage> {
           BlocListener<ApiBloc, ApiState>(
             listener: (context, state) {
               if (state is ConnectedToServerState) {
+                _saveData();
                 Navigator.of(context).pushNamed('/login');
               }
             },
@@ -57,12 +79,12 @@ class _ConnectionPageState extends State<ConnectionPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('Server address*'),
+                    const Text('Адрес сервера'),
                     const SizedBox(
                       height: 5,
                     ),
                     Text(
-                      'Enter address with port*',
+                      'Введите адрес и порт сервера',
                       style: AppTextStyle.lightTextTheme.bodySmall,
                     ),
                     const SizedBox(
@@ -75,11 +97,10 @@ class _ConnectionPageState extends State<ConnectionPage> {
                           child: TextField(
                             inputFormatters: [
                               IPTextInputFormatter(),
-                              // FilteringTextInputFormatter.allow(RegExp(r'^[\d\.\:]+$')),
                             ],
                             controller: _uriAddress,
                             decoration: const InputDecoration(
-                              labelText: 'Local address*',
+                              labelText: 'Адрес',
                             ),
                           ),
                         ),
@@ -92,7 +113,7 @@ class _ConnectionPageState extends State<ConnectionPage> {
                             inputFormatters: [],
                             controller: _portController,
                             decoration:
-                                const InputDecoration(labelText: 'Port*'),
+                                const InputDecoration(labelText: 'Порт'),
                           ),
                         ),
                       ],
@@ -100,7 +121,7 @@ class _ConnectionPageState extends State<ConnectionPage> {
                     const SizedBox(
                       height: 5,
                     ),
-                    ElevatedButton(
+                    OutlinedButton.icon(
                       onPressed: () async {
                         if (_uriAddress.text.isNotEmpty &&
                             _portController.text.isNotEmpty) {
@@ -114,7 +135,8 @@ class _ConnectionPageState extends State<ConnectionPage> {
                               );
                         }
                       },
-                      child: const Text('Connect'),
+                      label: const Text('Подключиться'),
+                      icon: Icon(Icons.login),
                     ),
                   ],
                 ),

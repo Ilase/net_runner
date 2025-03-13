@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/domain/notificatioon_controller/notification_controller_cubit.dart';
+import 'package:net_runner/core/domain/task_list/task_list_cubit.dart';
+import 'package:net_runner/features/title_page/presentation/task_count_chart.dart';
 
 class TitlePg extends StatefulWidget {
   const TitlePg({super.key});
@@ -150,19 +152,22 @@ class _TitlePgState extends State<TitlePg> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
-                    height: double.maxFinite,
-                    width: double.maxFinite,
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(width: 2, color: Colors.blue)),
-                    child: Center(
-                      child: Text(
-                        'В разработке',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                  ),
+                      height: double.maxFinite,
+                      width: double.maxFinite,
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15),
+                          border: Border.all(width: 2, color: Colors.blue)),
+                      child: BlocBuilder<TaskListCubit, TaskListState>(
+                          builder: (builder, state) {
+                        if (state is FilledState) {
+                          return TaskCountChart(tasks: state.list);
+                        } else {
+                          return Center(
+                            child: Text('Перезагрузите смисок задач'),
+                          );
+                        }
+                      })),
                 ),
               )
             ],
