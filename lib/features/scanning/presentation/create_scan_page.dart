@@ -191,10 +191,11 @@ class _CreateScanPageState extends State<CreateScanPage> {
                             _scanTypeValues["agentInventory"]) {
                         } else {
                           NotificationManager().showAnimatedNotification(
-                              context,
-                              "Предупреждение",
-                              "Выберите тип сканирования",
-                              NotificationType.warning);
+                            context,
+                            "Предупреждение",
+                            "Выберите тип сканирования",
+                            NotificationType.warning,
+                          );
                         }
                       },
                       child: const Text('Подтвердить'),
@@ -251,7 +252,7 @@ class _CreateScanPageState extends State<CreateScanPage> {
                           Expanded(
                             child: BlocBuilder<GroupListCubit, GroupListState>(
                               builder: (context, state) {
-                                if (state is FilledState) {
+                                if (state is GroupListFullState) {
                                   final List<ModelGroup> list = state.list;
                                   return ListView.builder(
                                       itemCount: list.length,
@@ -333,7 +334,7 @@ class _CreateScanPageState extends State<CreateScanPage> {
                           Expanded(
                             child: BlocBuilder<HostListCubit, HostListState>(
                               builder: (context, state) {
-                                if (state is FullState) {
+                                if (state is HostListFullState) {
                                   final List<ModelHost> hostList = state.list;
                                   return ListView.builder(
                                       itemCount: hostList.length,

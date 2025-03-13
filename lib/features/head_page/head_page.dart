@@ -6,6 +6,7 @@ import 'package:net_runner/features/connection_page/presentation/connection_page
 import 'package:net_runner/features/hosts/presentation/hosts_pg.dart';
 import 'package:net_runner/features/scanning/presentation/scanning_pg.dart';
 import 'package:net_runner/features/title_page/presentation/title_pg.dart';
+import 'package:net_runner/utils/constants/themes/text_styles.dart';
 
 class HeadPage extends StatefulWidget {
   static const String route = '/head';
@@ -95,7 +96,10 @@ class _HeadPageState extends State<HeadPage> {
                     children: [
                       AnimatedCrossFade(
                         firstChild: Center(
-                          child: Text('NetRunner'),
+                          child: Text(
+                            'NetRunner',
+                            style: AppTextStyle.lightTextTheme.titleLarge,
+                          ),
                         ),
                         secondChild: Text('NT'),
                         crossFadeState: isDrawerExpanded
@@ -155,11 +159,7 @@ class _HeadPageState extends State<HeadPage> {
     );
   }
 
-  Widget _buildDrawer(
-      // int pageIndex,
-      // IconData icon,
-      // String text,
-      ) {
+  Widget _buildDrawer() {
     return AnimatedCrossFade(
       firstChild: Container(
         // /height: MediaQuery.of(context).size.height / 3,
@@ -168,58 +168,45 @@ class _HeadPageState extends State<HeadPage> {
           children: [
             Padding(
               padding: EdgeInsetsDirectional.all(4),
-              child: OutlinedButton(
+              child: OutlinedButton.icon(
                   onPressed: () {
                     _pageController.animateToPage(0,
                         duration: Duration(milliseconds: 200),
                         curve: Curves.easeInOut);
                   },
-                  child: Text('Главная')),
+                  icon: Icon(Icons.home),
+                  label: Text('Главная')),
             ),
             Padding(
               padding: EdgeInsetsDirectional.all(4),
-              child: OutlinedButton(
+              child: OutlinedButton.icon(
                   onPressed: () {
                     _pageController.animateToPage(1,
                         duration: Duration(milliseconds: 200),
                         curve: Curves.easeInOut);
                   },
-                  child: Text('Хосты')),
+                  icon: Icon(Icons.groups),
+                  label: Text('Хосты')),
             ),
             Padding(
               padding: EdgeInsetsDirectional.all(4),
-              child: OutlinedButton(
+              child: OutlinedButton.icon(
                   onPressed: () {
                     _pageController.animateToPage(2,
                         duration: Duration(milliseconds: 200),
                         curve: Curves.easeInOut);
                   },
-                  child: Text('Сканирования')),
+                  icon: Icon(Icons.radar),
+                  label: Text('Сканирования')),
             ),
           ],
         ),
       ),
-      secondChild: Container(
-        // /height: MediaQuery.of(context).size.height / 3,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Padding(
-              padding: EdgeInsetsDirectional.all(4),
-              child: Icon(Icons.home),
-            ),
-            Padding(
-              padding: EdgeInsetsDirectional.all(4),
-              child: Icon(Icons.group),
-            ),
-            Padding(
-              padding: EdgeInsetsDirectional.all(4),
-              child: Icon(Icons.radar),
-            ),
-          ],
-        ),
+      secondChild: Icon(
+        Icons.arrow_forward,
+        color: Colors.blue,
       ),
-      crossFadeState: showFadedButtons
+      crossFadeState: isDrawerExpanded
           ? CrossFadeState.showFirst
           : CrossFadeState.showSecond,
       duration: Duration(milliseconds: 100),

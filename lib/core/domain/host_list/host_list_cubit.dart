@@ -5,9 +5,9 @@ abstract class HostListState {}
 
 final class HostListInitState extends HostListState {}
 
-class FullState extends HostListState {
+class HostListFullState extends HostListState {
   final List<ModelHost> list;
-  FullState({required this.list});
+  HostListFullState({required this.list});
 }
 
 class EmptyState extends HostListState {}
@@ -19,6 +19,6 @@ class HostListCubit extends Cubit<HostListState> {
 
   void updateState(List<Map<String, dynamic>> json) {
     List<ModelHost> hosts = json.map((e) => ModelHost.fromJson(e)).toList();
-    emit(FullState(list: hosts));
+    emit(HostListFullState(list: hosts));
   }
 }

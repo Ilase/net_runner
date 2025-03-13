@@ -63,6 +63,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     on<GetPingListEvent>(_getPingList);
     on<GetReport>(_getReport);
     on<PostTask>(_postTask);
+    on<PostGroup>(_postGroup);
     on<EditHost>(_editHost);
     on<PostHost>(_postHost);
     on<DownloadPdf>(_downloadReportPdf);
@@ -540,6 +541,27 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
       }
     } else {
       ntLogger.e('Error login: ');
+    }
+  }
+
+  Future<void> _postGroup(PostGroup event, Emitter emit) async {
+    final response = await http.post(
+        apiEndpoints.getUri(
+          "get-group-list",
+          extraPaths: [],
+        ),
+        headers: headers,
+        body: jsonEncode(event.body));
+    if (response.statusCode == 200) {
+      notificationControllerCubit.addNotification(
+          "Успешно", " Группа успешно создана", NotificationType.success);
+      return;
+    } else {
+      print(response.body);
+      print(response.statusCode);
+      notificationControllerCubit.addNotification("Ошибка создания",
+          "${jsonDecode(response.body)}", NotificationType.error);
+      return;
     }
   }
 }

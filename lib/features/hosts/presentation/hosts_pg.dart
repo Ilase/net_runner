@@ -61,13 +61,14 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
                     icon: Icon(Icons.groups),
                   ),
                   Tab(
-                    text: 'Метрика',
+                    text: 'Соотношения',
                     icon: Icon(MaterialCommunityIcons.grain),
                   ),
                 ],
               ),
               Expanded(
                 child: TabBarView(
+                  physics: NeverScrollableScrollPhysics(),
                   controller: _tabController,
                   children: _tabs,
                 ),

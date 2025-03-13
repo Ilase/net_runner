@@ -136,7 +136,7 @@ class _HostsPgOldState extends State<HostsPgOld>
                         return BlocBuilder<GroupListCubit, GroupListState>(
                           builder: (context, state) {
                             if (groupTabState != "adding") {
-                              if (state is FilledState &&
+                              if (state is GroupListFullState &&
                                   state.list.isNotEmpty) {
                                 final List<ModelGroup> list = state.list;
                                 return ListView.builder(
@@ -169,7 +169,7 @@ class _HostsPgOldState extends State<HostsPgOld>
                             } else {
                               return BlocBuilder<HostListCubit, HostListState>(
                                 builder: (context, state) {
-                                  if (state is FullState) {
+                                  if (state is HostListFullState) {
                                     return ListView.builder(
                                         itemCount: state.list.length,
                                         itemBuilder: (builder, index) {
@@ -428,7 +428,6 @@ class _HostsPgOldState extends State<HostsPgOld>
                                                       (host) =>
                                                           host["ip"] ==
                                                           ipAddress);
-
                                               return ListTile(
                                                 leading: Text(index.toString()),
                                                 subtitle: Text(ipAddress),
@@ -471,7 +470,7 @@ class _HostsPgOldState extends State<HostsPgOld>
                                 },
                               );
                             } else {
-                              if (state is FullState) {
+                              if (state is HostListFullState) {
                                 final List<ModelHost> list = state.list;
                                 return ListView.builder(
                                     itemCount: list.length,

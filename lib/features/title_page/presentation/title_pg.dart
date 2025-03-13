@@ -43,7 +43,12 @@ class _TitlePgState extends State<TitlePg> {
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
                               border: Border.all(width: 2, color: Colors.blue)),
-                          child: Text('В разработке'),
+                          child: Center(
+                            child: Text(
+                              'В разработке',
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -58,7 +63,12 @@ class _TitlePgState extends State<TitlePg> {
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
                               border: Border.all(width: 2, color: Colors.blue)),
-                          child: Text('В разработке'),
+                          child: Center(
+                            child: Text(
+                              'В разработке',
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -146,7 +156,12 @@ class _TitlePgState extends State<TitlePg> {
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15),
                         border: Border.all(width: 2, color: Colors.blue)),
-                    child: Text('В разработке'),
+                    child: Center(
+                      child: Text(
+                        'В разработке',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
                   ),
                 ),
               )

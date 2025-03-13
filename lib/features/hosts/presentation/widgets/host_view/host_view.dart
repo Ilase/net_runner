@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:net_runner/core/data/ip_input_formatter.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
 import 'package:net_runner/core/domain/api/models/host/host_serial.dart';
 import 'package:net_runner/core/domain/host_list/host_list_cubit.dart';
@@ -25,11 +26,15 @@ class _HostViewState extends State<HostView> with TickerProviderStateMixin {
   InfoModes _viewMode = InfoModes.view;
   ModelHost? _selectedItemForShowInfo;
   bool _showHostFilter = false;
+  TextEditingController _customIpController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _hostTabBar = TabController(length: 2, vsync: this);
+    _hostTabBar = TabController(
+      length: 2,
+      vsync: this,
+    );
   }
 
   @override
@@ -56,6 +61,7 @@ class _HostViewState extends State<HostView> with TickerProviderStateMixin {
           ),
           Expanded(
             child: TabBarView(
+              physics: NeverScrollableScrollPhysics(),
               controller: _hostTabBar,
               children: [
                 _buildHostView(),
@@ -82,7 +88,9 @@ class _HostViewState extends State<HostView> with TickerProviderStateMixin {
                   Row(
                     children: [
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          context.read<ApiBloc>().add(GetHostListEvent());
+                        },
                         icon: Icon(Icons.refresh),
                       ),
                       Expanded(
@@ -134,7 +142,7 @@ class _HostViewState extends State<HostView> with TickerProviderStateMixin {
                   Expanded(
                     child: BlocBuilder<HostListCubit, HostListState>(
                       builder: (builder, state) {
-                        if (state is FullState) {
+                        if (state is HostListFullState) {
                           return ListView.builder(
                             itemCount: state.list.length,
                             itemBuilder: (builder, index) {
@@ -229,7 +237,15 @@ class _HostViewState extends State<HostView> with TickerProviderStateMixin {
                             ? Icons.edit_off
                             : Icons.edit)),
                     IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          context.read<ApiBloc>().add(
+                              DeleteHost(id: _selectedItemForShowInfo!.ID));
+
+                          setState(() {
+                            context.read<ApiBloc>().add(GetHostListEvent());
+                            _selectedItemForShowInfo = null;
+                          });
+                        },
                         icon: Icon(
                           Icons.delete_forever,
                           color: Colors.redAccent,
@@ -348,6 +364,28 @@ class _HostViewState extends State<HostView> with TickerProviderStateMixin {
                           ],
                         ),
                         Divider(),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                inputFormatters: [IPTextInputFormatter()],
+                                controller: _customIpController,
+                                decoration:
+                                    InputDecoration(label: Text('Ручной ввод')),
+                              ),
+                            ),
+                            IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _rightList.add(
+                                        HostItem(_customIpController.text));
+                                    _customIpController.clear();
+                                  });
+                                },
+                                icon: Icon(Icons.arrow_forward))
+                          ],
+                        ),
+                        Divider(),
                         Expanded(
                           child: BlocBuilder<PingListCubit, PingListState>(
                             builder: (builder, state) {
@@ -378,8 +416,8 @@ class _HostViewState extends State<HostView> with TickerProviderStateMixin {
                                                 .read<ApiBloc>()
                                                 .notificationControllerCubit
                                                 .addNotification(
-                                                  "Уже добавлен",
-                                                  "Хост уже добавлен",
+                                                  "Уже выбран",
+                                                  "Хост уже выбран",
                                                   NotificationType.warning,
                                                 );
                                           }
@@ -411,11 +449,26 @@ class _HostViewState extends State<HostView> with TickerProviderStateMixin {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Добавленные хосты',
+                              'Добавленние хостов',
                               style: AppTextStyle.lightTextTheme.titleMedium,
                             ),
                             OutlinedButton.icon(
-                              onPressed: () {},
+                              onPressed: () {
+                                for (final item in _rightList) {
+                                  Map<String, dynamic> sendBody;
+                                  sendBody = {
+                                    "ip": item.ip,
+                                    "name": item.name,
+                                    "description": item.description,
+                                  };
+                                  context
+                                      .read<ApiBloc>()
+                                      .add(PostHost(body: sendBody));
+                                }
+                                setState(() {
+                                  _rightList.clear();
+                                });
+                              },
                               label: Text('Подтвердить'),
                               iconAlignment: IconAlignment.end,
                               icon: Icon(
@@ -546,4 +599,6 @@ class _HostViewState extends State<HostView> with TickerProviderStateMixin {
       ),
     );
   }
+
+  Future<void> _confirmAdding(List<HostItem> list) async {}
 }
