@@ -31,16 +31,15 @@ class ApiScanResponse {
         }
       }
     } catch (e) {
-      ntLogger.e("Error parsing ApiScanResponse: $e");
+      ntLogger.e(e.toString());
     }
   }
 }
 
-
 class GeneralInfo {
   String taskName;
   String elapsed; // scan time
-  String startTime; 
+  String startTime;
   String endTime;
   String summary;
   int total;
@@ -49,16 +48,16 @@ class GeneralInfo {
   String version;
 
   factory GeneralInfo.fromJson(Map<String, dynamic> json) => GeneralInfo(
-    taskName: json["task_name"] ?? "???",
-    elapsed: json["elapsed"] ?? "???",
-    startTime: json["start"] ?? "???",
-    endTime: json["end"] ?? "???",
-    summary: json["summary"] ?? "???",
-    total: json["total"] ?? 0,
-    up: json["up"] ?? 0,
-    down: json["down"] ?? 0,
-    version: json["version"] ?? "???",
-  );
+        taskName: json["task_name"] ?? "???",
+        elapsed: json["elapsed"] ?? "???",
+        startTime: json["start"] ?? "???",
+        endTime: json["end"] ?? "???",
+        summary: json["summary"] ?? "???",
+        total: json["total"] ?? 0,
+        up: json["up"] ?? 0,
+        down: json["down"] ?? 0,
+        version: json["version"] ?? "???",
+      );
 
   GeneralInfo({
     required this.taskName,
@@ -73,14 +72,11 @@ class GeneralInfo {
   });
 }
 
-
-
 class Host {
   String ip;
   List<PortInfo> ports;
   List<Vuln> vulns;
   String status;
-
 
   Host({
     required this.ip,
@@ -100,14 +96,14 @@ class Vuln {
   String references;
 
   factory Vuln.fromJson(Map<String, dynamic> json) => Vuln(
-    cveId: json["id"] ?? "???",
-    cpe: json["cpe"] ?? "???",
-    cvss: json["cvss"] ?? "???",
-    cvssString: json["cvss_vector"] ?? "???",
-    port: json["port"] ?? 0,
-    references: json["references"] ?? "???",
-    description: json["description"] ?? "???",
-  );
+        cveId: json["id"] ?? "???",
+        cpe: json["cpe"] ?? "???",
+        cvss: json["cvss"] ?? "???",
+        cvssString: json["cvss_vector"] ?? "???",
+        port: json["port"] ?? 0,
+        references: json["references"] ?? "???",
+        description: json["description"] ?? "???",
+      );
 
   Vuln({
     required this.cveId,
@@ -118,7 +114,6 @@ class Vuln {
     required this.port,
     required this.references,
   });
-
 }
 
 class PortInfo {
@@ -128,11 +123,11 @@ class PortInfo {
   String state;
 
   factory PortInfo.fromJson(Map<String, dynamic> json) => PortInfo(
-    port: json["port"] ?? 0,
-    protocol: json["protocol"] ?? "???",
-    service: json["service"] ?? "???",
-    state: json["state"] ?? "???",
-  );
+        port: json["port"] ?? 0,
+        protocol: json["protocol"] ?? "???",
+        service: json["service"] ?? "???",
+        state: json["state"] ?? "???",
+      );
 
   PortInfo({
     required this.port,

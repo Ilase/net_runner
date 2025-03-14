@@ -1,6 +1,7 @@
 import 'dart:async';
-import 'package:google_fonts/google_fonts.dart';
+
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:net_runner/core/data/data_loader.dart';
 //import 'package:net_runner/main.dart';
@@ -39,7 +40,6 @@ class _SplashLoadingScreenState extends State<SplashLoadingScreen> {
         errorMessage = e.toString();
         _hasError = true;
       });
-      //print(e.toString());
     }
   }
 

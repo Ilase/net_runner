@@ -27,8 +27,6 @@ part 'api_event.dart';
 part 'api_state.dart';
 
 class ApiBloc extends Bloc<ApiEvent, ApiState> {
-  String? token =
-      "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDEyNTY5MDIsInJvbGUiOiJhZG1pbiIsInVzZXJuYW1lIjoiSWxhc2UifQ.ryqB-SqYYJw1rRIPQX1zhgkB7G8YQc83KFlpp3ylzak";
   Map<String, String> headers = {"Authorization": ""};
   late ApiEndpoints apiEndpoints;
   HostListCubit hostListCubit;
@@ -73,8 +71,6 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     on<PutHost>(_putHost);
   }
 
-  Future<void> _loginWithWsConnect() async {}
-
   Future<void> _connectToServer(
     ConnectToServerEvent event,
     Emitter emit,
@@ -84,37 +80,6 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
       emit(ConnectLoadState());
       bool isConnected = await _checkConnectionToServer();
       if (isConnected) {
-        // try {
-        //   webSocketChannel = IOWebSocketChannel.connect(
-        //     apiEndpoints.getUri("ws"),
-        //     headers: {
-        //       "Sec-WebSocket-Protocol": headers["Authorization"],
-        //     },
-        //   );
-        //   _webSocketSubscription = webSocketChannel.stream.listen(
-        //     (message) async {
-        //       try {
-        //         final Map<String, dynamic> decodedMessage = jsonDecode(message);
-        //         ntLogger.w('Message from web socket: \n $decodedMessage');
-        //         final ModelTask newElement = ModelTask.fromJson(decodedMessage);
-        //         taskListCubit.updateElementInTaskList(newElement);
-        //       } catch (e) {
-        //         notificationControllerCubit.addNotification(
-        //             "Ошибка подключения",
-        //             "Подключение к серверу завершилось ошибкой: ${e.toString()}",
-        //             NotificationType.error);
-        //       } //add error stack
-        //     },
-        //   );
-        //   notificationControllerCubit.addNotification(
-        //       "Подключено", "", NotificationType.success);
-        //   emit(ConnectedState());
-        // } catch (e) {
-        //   notificationControllerCubit.addNotification(
-        //       "Ошибка подключения",
-        //       "Подключение к серверу завершилось ошибкой: ${e.toString()}",
-        //       NotificationType.error);
-        // }
         notificationControllerCubit.addNotification(
             "Успешно", "Сервер определён", NotificationType.success);
         emit(ConnectedToServerState());
@@ -158,7 +123,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     final response = await http.get(
         apiEndpoints.getUri("get-task-list", queryParams: event.queryParams),
         headers: headers);
-    ntLogger.t(response.body);
+
     if (response.statusCode == 200) {
       // Decode the JSON response into a List<dynamic>
       final List<dynamic> jsonList = jsonDecode(response.body);
@@ -171,37 +136,6 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
 
       taskListCubit.fillTaskListFromGet(tasks);
     } else {
-      ntLogger.e("Failed to fetch task list: ${response.statusCode}");
-      notificationControllerCubit.addNotification(
-        "Ошибка данных",
-        "Статус: ${response.statusCode}. ${response.body}",
-        NotificationType.error,
-      );
-    }
-  }
-
-  Future<void> _fetchNetworkScanTaskListEvent(
-      FetchTaskListEvent event, Emitter emit) async {
-    taskListCubit.clearList();
-
-    final response = await http.get(
-        apiEndpoints
-            .getUri("get-task-list", queryParams: {"type": "networkscan"}),
-        headers: headers);
-    ntLogger.t(response.body);
-    if (response.statusCode == 200) {
-      // Decode the JSON response into a List<dynamic>
-      final List<dynamic> jsonList = jsonDecode(response.body);
-
-      // Convert List<dynamic> to List<ModelTask>
-      final List<ModelTask> tasks = jsonList
-          .map((taskJson) =>
-              ModelTask.fromJson(taskJson as Map<String, dynamic>))
-          .toList();
-
-      taskListCubit.fillTaskListFromGet(tasks);
-    } else {
-      ntLogger.e("Failed to fetch task list: ${response.statusCode}");
       notificationControllerCubit.addNotification(
         "Ошибка данных",
         "Статус: ${response.statusCode}. ${response.body}",
@@ -328,7 +262,6 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
         headers: headers);
 
     if (response.statusCode == 200) {
-      int taskId = jsonDecode(response.body)["task_id"];
       notificationControllerCubit.addNotification(
           "Успешно", "Изменения применены", NotificationType.success);
       return;
@@ -379,10 +312,16 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
         );
         _openFileExplorer(downloadDir.path);
         notificationControllerCubit.addNotification(
-            "Успешно ",
-            "Проверьте папку Загрузок на вышем устройстве",
-            NotificationType.success);
+          "Успешно ",
+          "Проверьте папку Загрузок на вышем устройстве",
+          NotificationType.success,
+        );
       } catch (e) {
+        notificationControllerCubit.addNotification(
+          "Ошибка",
+          e.toString(),
+          NotificationType.success,
+        );
         ntLogger.e(e.toString());
       }
     } else {
@@ -424,12 +363,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
       enableJavaScript: true,
       headers: headers,
     );
-    // final _webController = WebViewController()
-    //   ..setJavaScriptMode(JavaScriptMode.unrestricted)
-    //   ..loadRequest(
-    //     Uri.parse("https://example.com"),
-    //     headers: {"Authorization": "Bearer YOUR_TOKEN"},
-    //   );
+
     if (!await launchUrl(
       taskUri,
       webViewConfiguration: webController,
@@ -505,9 +439,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     );
     if (response.statusCode == 200) {
       headers["Authorization"] = 'Bearer ' + jsonDecode(response.body)["token"];
-      ntLogger.w(headers["Authorization"]);
       userDataCubit.login();
-
       try {
         webSocketChannel = IOWebSocketChannel.connect(
           apiEndpoints.getUri("ws"),
@@ -540,7 +472,10 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
             NotificationType.error);
       }
     } else {
-      ntLogger.e('Error login: ');
+      notificationControllerCubit.addNotification(
+          "Ошибка подключения",
+          "Подключение к серверу завершилось неизвестной ошибкой",
+          NotificationType.error);
     }
   }
 
@@ -557,8 +492,6 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
           "Успешно", " Группа успешно создана", NotificationType.success);
       return;
     } else {
-      print(response.body);
-      print(response.statusCode);
       notificationControllerCubit.addNotification("Ошибка создания",
           "${jsonDecode(response.body)}", NotificationType.error);
       return;

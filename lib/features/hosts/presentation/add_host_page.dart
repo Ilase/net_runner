@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:net_runner/core/data/ip_input_formatter.dart';
 
 class AddHostPage extends StatefulWidget {
@@ -12,11 +11,7 @@ class AddHostPage extends StatefulWidget {
 
 class _AddHostPageState extends State<AddHostPage> {
   final TextEditingController _customIpController = TextEditingController();
-  final _ipInputFormater = MaskTextInputFormatter(
-    mask: '###.###.###.###',
-    filter: {"#": RegExp(r'[0-9]')},
-    type: MaskAutoCompletionType.lazy,
-  );
+
   List<String> leftResponseList = [];
   List<String> rightResponseList = [];
   Map<String, TextEditingController> hostNameControllers = {};

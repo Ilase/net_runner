@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/data/notification/notification_model.dart';
 import 'package:net_runner/core/presentation/widgets/notification_manager.dart';
 
@@ -14,7 +13,7 @@ class NotificationControllerCubit extends Cubit<NotificationControllerState> {
     final updatedList = List<NotificationModel>.from(state.notifications)
       ..add(NotificationModel(
           title: title, body: body, notificationType: notificationType));
-    ntLogger.i(updatedList);
+
     emit(NotificationControllerState(notifications: updatedList));
   }
 

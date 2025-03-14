@@ -17,13 +17,13 @@ class LoginPage extends StatelessWidget {
     TextEditingController _passwordController = TextEditingController();
     return BlocListener<UserDataCubit, UserDataState>(
       listener: (context, state) {
-        print(state.runtimeType);
         if (state is UserLogInState) {
           Future.microtask(() {
             //microfuture
             Navigator.of(context).pushNamed(HeadPage.route);
           });
 
+          ///Get info from api
           context.read<ApiBloc>().add(GetHostListEvent());
           context.read<ApiBloc>().add(GetGroupListEvent());
           context.read<ApiBloc>().add(FetchTaskListEvent());

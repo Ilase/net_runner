@@ -34,19 +34,6 @@ class _NetworkGraphState extends State<GraphPage> {
   @override
   Widget build(BuildContext context) {
     final Graph graph = Graph()..isTree = false;
-    final BuchheimWalkerConfiguration configuration =
-        BuchheimWalkerConfiguration();
-
-    // final Node node1 = Node.Id(1);
-    // final Node node2 = Node.Id(2);
-    // final Node node3 = Node.Id(3);
-    // final Node node4 = Node.Id(4);
-    // graph.addNode(node1);
-    // graph.addNode(node2);
-    // graph.addNode(node3);
-    //
-    // graph.addEdge(node1, node2);
-    // graph.addEdge(node2, node3);
 
     List<Node> listNodes = [];
     for (final item in widget.report.hosts) {
@@ -204,9 +191,7 @@ class _NetworkGraphState extends State<GraphPage> {
 
   Widget rectangleWidget(Node node) {
     return GestureDetector(
-      onTap: () {
-        print('Tapped on ${node.key}');
-      },
+      onTap: () {},
       child: AnimatedCrossFade(
         firstChild: Padding(
           padding: const EdgeInsets.all(16.0),

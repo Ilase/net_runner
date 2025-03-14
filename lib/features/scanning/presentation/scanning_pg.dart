@@ -147,7 +147,7 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
                           builder: (context, state) {
                             if (state is FilledState) {
                               final List<ModelTask> list = state.list;
-                              ntLogger.t(state.list.length + 1);
+
                               return Center(
                                 child: ListView.builder(
                                   reverse: true,
@@ -491,7 +491,6 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
         .map((e) => {'severity': e.key, 'count': e.value})
         .toList();
 
-    ntLogger.w(chartData);
     final colors = {
       'Незначительный': Colors.grey,
       'Низкий': Colors.green,

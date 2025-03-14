@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/data/data_loader.dart';
-import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
 import 'package:net_runner/core/domain/group_list/group_list_cubit.dart';
 import 'package:net_runner/core/domain/host_list/host_list_cubit.dart';
@@ -74,7 +73,6 @@ class StartPoint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ntLogger.i('enter point of app');
     return MaterialApp(
       debugShowCheckedModeBanner: true,
       theme: context.watch<ThemeControllerCubit>().state,
