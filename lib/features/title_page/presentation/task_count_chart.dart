@@ -38,13 +38,11 @@ class TaskCountChart extends StatelessWidget {
     });
 
     return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Padding(
-          padding: EdgeInsets.only(top: 8.0),
-          child: Text(
-            "Количество сканирований по дням",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
+        Text(
+          "Количество сканирований по дням",
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         Expanded(
           child: Padding(
@@ -57,19 +55,17 @@ class TaskCountChart extends StatelessWidget {
                   leftTitles: AxisTitles(
                     axisNameWidget: const Text("Количество",
                         style: TextStyle(fontSize: 12)),
-                    sideTitles: SideTitles(showTitles: true),
+                    sideTitles: SideTitles(showTitles: false),
                   ),
                   bottomTitles: AxisTitles(
-                    axisNameWidget: const Padding(
-                      padding: EdgeInsets.only(top: 8.0),
-                      child: Text("Дата", style: TextStyle(fontSize: 12)),
-                    ),
+                    axisNameWidget:
+                        Text("Дата", style: TextStyle(fontSize: 12)),
                     sideTitles: SideTitles(
                       showTitles: true,
                       getTitlesWidget: (value, meta) {
                         if (value.toInt() < dates.length) {
                           return Padding(
-                            padding: const EdgeInsets.only(top: 4.0),
+                            padding: const EdgeInsets.only(top: 8.0),
                             child: Text(dates[value.toInt()],
                                 style: TextStyle(fontSize: 10)),
                           );

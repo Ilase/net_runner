@@ -148,9 +148,9 @@ class _TitlePgState extends State<TitlePg> {
                 ),
               ),
               Expanded(
-                flex: 2,
+                flex: 3,
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Container(
                       height: double.maxFinite,
                       width: double.maxFinite,
@@ -164,7 +164,7 @@ class _TitlePgState extends State<TitlePg> {
                           return TaskCountChart(tasks: state.list);
                         } else {
                           return Center(
-                            child: Text('Перезагрузите смисок задач'),
+                            child: Text('Перезагрузите список задач'),
                           );
                         }
                       })),

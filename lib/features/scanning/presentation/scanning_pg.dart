@@ -556,59 +556,70 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
             ),
           ),
         ),
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: 8),
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border.all(width: 2, color: Colors.blue),
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Краткая сводка',
-                    style: AppTextStyle.lightTextTheme.titleMedium,
-                  ),
-                  Row(
+        Builder(builder: (context) {
+          if (_selectedItem!.hosts.isEmpty) {
+            return Padding(
+              padding: EdgeInsets.symmetric(vertical: 8),
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(width: 2, color: Colors.blue),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
-                        height: 300,
-                        width: 300,
-                        child: PieChart(
-                          PieChartData(
-                            pieTouchData: PieTouchData(),
-                            sections: sections,
-                            borderData: FlBorderData(show: true),
-                            sectionsSpace: 1,
-                            centerSpaceRadius: 40,
-                          ),
-                          duration: Duration(microseconds: 100),
-                          curve: Curves.easeInOut,
-                        ),
+                      Text(
+                        'Краткая сводка',
+                        style: AppTextStyle.lightTextTheme.titleMedium,
                       ),
-                      Expanded(
-                          child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      Row(
                         children: [
-                          Text('Колличество угроз по уровню (CVSS3)'),
-                          Text(
-                              'Незначительный: ${severityCount['Незначительный']}'),
-                          Text('Низкий: ${severityCount['Низкий']}'),
-                          Text('Средний: ${severityCount['Средний']}'),
-                          Text('Высокий: ${severityCount['Высокий']}'),
+                          SizedBox(
+                            height: 300,
+                            width: 300,
+                            child: PieChart(
+                              PieChartData(
+                                pieTouchData: PieTouchData(),
+                                sections: sections,
+                                borderData: FlBorderData(show: true),
+                                sectionsSpace: 1,
+                                centerSpaceRadius: 40,
+                              ),
+                              duration: Duration(microseconds: 100),
+                              curve: Curves.easeInOut,
+                            ),
+                          ),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Колличество угроз по уровню (CVSS3)'),
+                                Text(
+                                    'Незначительный: ${severityCount['Незначительный']}'),
+                                Text('Низкий: ${severityCount['Низкий']}'),
+                                Text('Средний: ${severityCount['Средний']}'),
+                                Text('Высокий: ${severityCount['Высокий']}'),
+                              ],
+                            ),
+                          )
                         ],
-                      ))
+                      ),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
-        ),
+            );
+          } else {
+            return SizedBox(
+              child: Center(
+                child: Text('Уязвимостей не найдено'),
+              ),
+            );
+          }
+        }),
       ],
     );
   }
@@ -679,59 +690,65 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
   }
 
   Widget _buildHosts(Map<String, PentestHost> hosts) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: hosts.values.map((host) {
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                decoration: BoxDecoration(
-                    border: Border.all(width: 2, color: Colors.blue),
-                    borderRadius: BorderRadius.circular(15)),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('IP: ${host.ip}',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      Text('Статус: ${host.status}'),
-                      Text('Порты:'),
-                      ...host.ports.map(
-                        (port) => ListTile(
-                          title: Text('Порт: ${port.port}'),
-                          subtitle: Text("Протокол: ${port.protocol}"),
-                          leading: Icon(
-                            port.state == "open"
-                                ? Icons.lock_open_outlined
-                                : Icons.lock_outline,
-                            color: port.state == "open"
-                                ? Colors.green
-                                : Colors.redAccent,
-                          ),
-                          trailing: Text(
-                            port.service,
-                            style: AppTextStyle.lightTextTheme.bodyMedium,
+    if (hosts.isNotEmpty) {
+      return SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: hosts.values.map((host) {
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 2, color: Colors.blue),
+                      borderRadius: BorderRadius.circular(15)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('IP: ${host.ip}',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text('Статус: ${host.status}'),
+                        Text('Порты:'),
+                        ...host.ports.map(
+                          (port) => ListTile(
+                            title: Text('Порт: ${port.port}'),
+                            subtitle: Text("Протокол: ${port.protocol}"),
+                            leading: Icon(
+                              port.state == "open"
+                                  ? Icons.lock_open_outlined
+                                  : Icons.lock_outline,
+                              color: port.state == "open"
+                                  ? Colors.green
+                                  : Colors.redAccent,
+                            ),
+                            trailing: Text(
+                              port.service,
+                              style: AppTextStyle.lightTextTheme.bodyMedium,
+                            ),
                           ),
                         ),
-                      ),
-                      Divider(),
-                      SizedBox(height: 10),
-                      ...host.vulns.values.map(
-                        (vuln) => _buildCollapsibleVuln(vuln),
-                      ),
-                    ],
+                        Divider(),
+                        SizedBox(height: 10),
+                        ...host.vulns.values.map(
+                          (vuln) => _buildCollapsibleVuln(vuln),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            );
-          }).toList(),
+              );
+            }).toList(),
+          ),
         ),
-      ),
-    );
+      );
+    } else {
+      return Center(
+        child: Text('Нет хостов для отображения'),
+      );
+    }
   }
 
   Widget _buildCollapsibleVuln(PentestVulns vuln) {
@@ -841,103 +858,151 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
   }
 
   Widget _buildDiff(Map<String, PentestDiff> diff) {
-    return Row(
-      children: [
-        Expanded(
+    return Builder(builder: (context) {
+      if (diff.isNotEmpty) {
+        return SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Добавлено',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 10),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: diff.entries.map((entry) {
-                      String host = entry.key;
-                      PentestDiff diffItem = entry.value;
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 8, top: 8),
-                        child: Container(
-                          padding: EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            border: Border.all(width: 2, color: Colors.blue),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Хост: $host',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                              Divider(),
-                              ...diffItem.added.values
-                                  .map((vuln) => _buildCollapsibleVuln(vuln))
-                                  .toList(),
-                              SizedBox(height: 20),
-                            ],
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(
-          width: 16,
-        ),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Убрано', style: TextStyle(fontWeight: FontWeight.bold)),
-              SizedBox(height: 10),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: diff.entries.map(
-                      (entry) {
-                        String host = entry.key;
-                        PentestDiff diffItem = entry.value;
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 8, top: 8),
-                          child: Container(
-                            padding: EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15),
-                                border:
-                                    Border.all(width: 2, color: Colors.blue)),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+            children: diff.entries.map(
+              (entry) {
+                return Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(width: 2, color: Colors.blue),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Text('Хост: ${entry.key}'),
+                          Divider(),
+                          SingleChildScrollView(
+                            child: Row(
                               children: [
-                                Text('Хост: $host',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
-                                Divider(),
-                                ...diffItem.removed.values
-                                    .map((vuln) => _buildCollapsibleVuln(vuln)),
-                                SizedBox(height: 20),
+                                Expanded(
+                                  child: Placeholder(),
+                                ),
+                                Expanded(
+                                  child: Placeholder(),
+                                )
                               ],
                             ),
-                          ),
-                        );
-                      },
-                    ).toList(),
+                          )
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ],
+                );
+              },
+            ).toList(),
           ),
-        ),
-      ],
-    );
+        );
+        // return Row(
+        //   children: [
+        //     Expanded(
+        //       child: Column(
+        //         crossAxisAlignment: CrossAxisAlignment.start,
+        //         children: [
+        //           Text(
+        //             'Добавлено',
+        //             style: TextStyle(fontWeight: FontWeight.bold),
+        //           ),
+        //           SizedBox(height: 10),
+        //           Expanded(
+        //             child: SingleChildScrollView(
+        //               child: Column(
+        //                 crossAxisAlignment: CrossAxisAlignment.start,
+        //                 children: diff.entries.map((entry) {
+        //                   String host = entry.key;
+        //                   PentestDiff diffItem = entry.value;
+        //                   return Padding(
+        //                     padding: const EdgeInsets.only(bottom: 8, top: 8),
+        //                     child: Container(
+        //                       padding: EdgeInsets.all(16),
+        //                       decoration: BoxDecoration(
+        //                         borderRadius: BorderRadius.circular(15),
+        //                         border:
+        //                             Border.all(width: 2, color: Colors.blue),
+        //                       ),
+        //                       child: Column(
+        //                         crossAxisAlignment: CrossAxisAlignment.start,
+        //                         children: [
+        //                           Text('Хост: $host',
+        //                               style: TextStyle(
+        //                                   fontWeight: FontWeight.bold)),
+        //                           Divider(),
+        //                           ...diffItem.added.values
+        //                               .map(
+        //                                   (vuln) => _buildCollapsibleVuln(vuln))
+        //                               .toList(),
+        //                           SizedBox(height: 20),
+        //                         ],
+        //                       ),
+        //                     ),
+        //                   );
+        //                 }).toList(),
+        //               ),
+        //             ),
+        //           ),
+        //         ],
+        //       ),
+        //     ),
+        //     SizedBox(
+        //       width: 16,
+        //     ),
+        //     Expanded(
+        //       child: Column(
+        //         crossAxisAlignment: CrossAxisAlignment.start,
+        //         children: [
+        //           Text('Убрано', style: TextStyle(fontWeight: FontWeight.bold)),
+        //           SizedBox(height: 10),
+        //           Expanded(
+        //             child: SingleChildScrollView(
+        //               child: Column(
+        //                 crossAxisAlignment: CrossAxisAlignment.start,
+        //                 children: diff.entries.map(
+        //                   (entry) {
+        //                     String host = entry.key;
+        //                     PentestDiff diffItem = entry.value;
+        //                     return Padding(
+        //                       padding: const EdgeInsets.only(bottom: 8, top: 8),
+        //                       child: Container(
+        //                         padding: EdgeInsets.all(16),
+        //                         decoration: BoxDecoration(
+        //                             borderRadius: BorderRadius.circular(15),
+        //                             border: Border.all(
+        //                                 width: 2, color: Colors.blue)),
+        //                         child: Column(
+        //                           crossAxisAlignment: CrossAxisAlignment.start,
+        //                           children: [
+        //                             Text('Хост: $host',
+        //                                 style: TextStyle(
+        //                                     fontWeight: FontWeight.bold)),
+        //                             Divider(),
+        //                             ...diffItem.removed.values.map(
+        //                                 (vuln) => _buildCollapsibleVuln(vuln)),
+        //                             SizedBox(height: 20),
+        //                           ],
+        //                         ),
+        //                       ),
+        //                     );
+        //                   },
+        //                 ).toList(),
+        //               ),
+        //             ),
+        //           ),
+        //         ],
+        //       ),
+        //     ),
+        //   ],
+        // );
+      } else {
+        return Center(
+          child: Text('Нет диффиренцирования для данного сканирования'),
+        );
+      }
+    });
   }
 
   Widget _buildTasksFilter() {
