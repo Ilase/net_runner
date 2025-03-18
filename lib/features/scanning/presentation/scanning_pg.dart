@@ -557,7 +557,7 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
           ),
         ),
         Builder(builder: (context) {
-          if (_selectedItem!.hosts.isEmpty) {
+          if (generalInfo.up == 0) {
             return Padding(
               padding: EdgeInsets.symmetric(vertical: 8),
               child: Container(
@@ -875,7 +875,14 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
                       padding: const EdgeInsets.all(8.0),
                       child: Column(
                         children: [
-                          Text('Хост: ${entry.key}'),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Хост: ${entry.key}'),
+                              Text(
+                                  entry.value.prev_task.runtimeType.toString()),
+                            ],
+                          ),
                           Divider(),
                           SingleChildScrollView(
                             child: Row(

@@ -11,7 +11,7 @@ class ModelTask {
   int percent;
   String name;
   String type;
-  List<ModelTaskHost> hosts;
+  List<ModelTaskHost>? hosts;
   String status;
   Map<String, dynamic> params;
 

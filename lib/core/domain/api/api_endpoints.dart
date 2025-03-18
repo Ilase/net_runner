@@ -7,13 +7,13 @@ class ApiEndpoints {
     required String scheme,
   }) {
     endpoints = {
-      "check-connection": Uri(
+      "checkConnection": Uri(
         scheme: scheme,
         port: port,
         host: host,
         path: baseApiPath,
       ),
-      "get-task-list": Uri(
+      "getTaskList": Uri(
         scheme: scheme,
         port: port,
         host: host,

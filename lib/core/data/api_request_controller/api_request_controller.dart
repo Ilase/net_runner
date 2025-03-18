@@ -52,7 +52,7 @@ class ApiRequestController {
     dio.interceptors.add(ApiInterceptor());
   }
 
-  Future<Map<String, dynamic>> getRequest({
+  Future<dynamic> getRequest({
     required String endpointKey,
     String? queryParams,
   }) async {
