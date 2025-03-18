@@ -28,7 +28,7 @@ class _MetricViewState extends State<MetricView> {
     //             return Container(
     //               decoration: BoxDecoration(
     //                 shape: BoxShape.circle,
-    //                 color: Colors.blue,
+    //                 color: AppTheme.lightTheme.primaryColor,
     //               ),
     //               child: Text('1'),
     //             );

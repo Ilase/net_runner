@@ -10,18 +10,18 @@ class AppTheme {
         // scaffoldBackgroundColor: Colors.white,
         colorScheme: const ColorScheme(
           brightness: Brightness.light,
-          primary: Colors.blue, //scaffold color
+          primary: Colors.black, //scaffold color
           onPrimary: Colors.white,
           secondary: Colors.grey, //color for shapes
           onSecondary: Colors.black,
           error: Colors.red,
           onError: Colors.white,
           surface: Colors.white,
-          onSurface: Colors.blue,
+          onSurface: Colors.black,
         ),
         //appbar theme
         appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.blue,
+          backgroundColor: Colors.black,
           foregroundColor: Colors.white,
         ),
         //text styles

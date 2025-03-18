@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graphic/graphic.dart';
 import 'package:icons_flutter/icons_flutter.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
 import 'package:net_runner/core/domain/api/models/task/task_serial.dart';
@@ -17,6 +18,7 @@ import 'package:net_runner/core/domain/task_list/task_list_cubit.dart';
 import 'package:net_runner/core/presentation/widgets/notification_manager.dart';
 import 'package:net_runner/features/graph/presentation/graph_page.dart';
 import 'package:net_runner/features/scanning/presentation/create_scan_page.dart';
+import 'package:net_runner/utils/constants/themes/app_themes.dart';
 import 'package:net_runner/utils/constants/themes/task_status_color.dart';
 import 'package:net_runner/utils/constants/themes/text_styles.dart';
 import 'package:net_runner/utils/routes/router.dart';
@@ -111,9 +113,9 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
                               context.read<ApiBloc>().add(
                                     FetchTaskListEvent(
                                       queryParams: {
-                                        "name": _taskNameController.text,
+                                        "name": _taskNameController.value.text,
                                         "type": _typeController.value.text,
-                                        "status": _statusController.text,
+                                        "status": _statusController.value.text,
                                         //"status": ,
                                       },
                                     ),
@@ -211,9 +213,12 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
                                                     16.0,
                                                   ),
                                                   child: Row(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
                                                     mainAxisAlignment:
                                                         MainAxisAlignment
-                                                            .spaceBetween, // Разместить элементы равномерно
+                                                            .spaceEvenly,
                                                     children: [
                                                       Expanded(
                                                         child: Text(list[index]
@@ -229,10 +234,29 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
                                                         ),
                                                       ),
                                                       Expanded(
-                                                        child: Text(
-                                                            '${list[index].percent}%'
-                                                                .toString()),
+                                                        child: Builder(
+                                                          builder: (context) {
+                                                            if (list[index]
+                                                                    .status ==
+                                                                "pending") {
+                                                              return LoadingAnimationWidget
+                                                                  .fourRotatingDots(
+                                                                color: AppTheme
+                                                                    .lightTheme
+                                                                    .primaryColor,
+                                                                size: 25,
+                                                              );
+                                                            } else {
+                                                              return SizedBox();
+                                                            }
+                                                          },
+                                                        ),
                                                       ),
+                                                      // Expanded(
+                                                      //   child: Text(
+                                                      //       '${list[index].percent}%'
+                                                      //           .toString()),
+                                                      // ),
                                                       Expanded(
                                                         child: Column(
                                                           crossAxisAlignment:
@@ -435,7 +459,7 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
   }
 
   final Map<String, Color> severityColors = {
-    'Незначительный': Colors.blue,
+    'Незначительный': AppTheme.lightTheme.primaryColor,
     'Низкий': Colors.green,
     'Средний': Colors.orangeAccent,
     'Высокий': Colors.redAccent,
@@ -502,7 +526,7 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
         .where((entry) => entry.value > 0) // Исключаем нулевые значения
         .map((entry) {
       return PieChartSectionData(
-        color: colors[entry.key] ?? Colors.blue,
+        color: colors[entry.key] ?? AppTheme.lightTheme.primaryColor,
         value: entry.value.toDouble(),
         title: '${entry.value}', // Показываем количество
         radius: 50,
@@ -523,7 +547,7 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
               borderRadius: BorderRadius.circular(15),
               border: Border.all(
                 width: 2,
-                color: Colors.blue,
+                color: AppTheme.lightTheme.primaryColor,
               ),
             ),
             child: Column(
@@ -557,12 +581,13 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
           ),
         ),
         Builder(builder: (context) {
-          if (_selectedItem!.hosts.isEmpty) {
+          if (hosts.entries == 0) {
             return Padding(
               padding: EdgeInsets.symmetric(vertical: 8),
               child: Container(
                 decoration: BoxDecoration(
-                  border: Border.all(width: 2, color: Colors.blue),
+                  border: Border.all(
+                      width: 2, color: AppTheme.lightTheme.primaryColor),
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Padding(
@@ -638,7 +663,7 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
               borderRadius: BorderRadius.circular(15),
               border: Border.all(
                 width: 2,
-                color: Colors.blue,
+                color: AppTheme.lightTheme.primaryColor,
               ),
             ),
             child: Column(
@@ -679,7 +704,7 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
           //     borderRadius: BorderRadius.circular(15),
           //     border: Border.all(
           //       width: 2,
-          //       color: Colors.blue,
+          //       color: AppTheme.lightTheme.primaryColor,
           //     ),
           //   ),
           //   child: Text(''),
@@ -701,7 +726,8 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
                   decoration: BoxDecoration(
-                      border: Border.all(width: 2, color: Colors.blue),
+                      border: Border.all(
+                          width: 2, color: AppTheme.lightTheme.primaryColor),
                       borderRadius: BorderRadius.circular(15)),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -862,141 +888,105 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
       if (diff.isNotEmpty) {
         return SingleChildScrollView(
           child: Column(
-            children: diff.entries.map(
-              (entry) {
-                return Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(width: 2, color: Colors.blue),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: [
-                          Text('Хост: ${entry.key}'),
-                          Divider(),
-                          SingleChildScrollView(
-                            child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(),
+                  height: 300,
+                  child: Column(
+                    children: [
+                      Text('График диффиренцирования'),
+                      SizedBox(
+                        height: 200,
+                        child: Scrollbar(
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (context, index) {
+                              return Placeholder();
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              ...diff.entries.map(
+                (entry) {
+                  return Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                            width: 2, color: AppTheme.lightTheme.primaryColor),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Expanded(
-                                  child: Placeholder(),
-                                ),
-                                Expanded(
-                                  child: Placeholder(),
-                                )
+                                Text('Хост: ${entry.key}'),
+                                Text(
+                                    'Дата последнего отчёта по хосту: ${entry.value.prev_task!.CreatedAt ?? "Not"}'),
                               ],
                             ),
-                          )
-                        ],
+                            Divider(),
+                            SingleChildScrollView(
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      children: [
+                                        Text('Добавлено'),
+                                        SingleChildScrollView(
+                                          child: Column(
+                                            children: entry.value.added.entries
+                                                .map((added) =>
+                                                    _buildCollapsibleVuln(
+                                                        added.value))
+                                                .toList(),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  VerticalDivider(),
+                                  Expanded(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Text('Убрано'),
+                                        SingleChildScrollView(
+                                          child: Column(
+                                            children: entry
+                                                .value.removed.entries
+                                                .map((removed) =>
+                                                    _buildCollapsibleVuln(
+                                                        removed.value))
+                                                .toList(),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                );
-              },
-            ).toList(),
+                  );
+                },
+              ).toList(),
+            ],
           ),
         );
-        // return Row(
-        //   children: [
-        //     Expanded(
-        //       child: Column(
-        //         crossAxisAlignment: CrossAxisAlignment.start,
-        //         children: [
-        //           Text(
-        //             'Добавлено',
-        //             style: TextStyle(fontWeight: FontWeight.bold),
-        //           ),
-        //           SizedBox(height: 10),
-        //           Expanded(
-        //             child: SingleChildScrollView(
-        //               child: Column(
-        //                 crossAxisAlignment: CrossAxisAlignment.start,
-        //                 children: diff.entries.map((entry) {
-        //                   String host = entry.key;
-        //                   PentestDiff diffItem = entry.value;
-        //                   return Padding(
-        //                     padding: const EdgeInsets.only(bottom: 8, top: 8),
-        //                     child: Container(
-        //                       padding: EdgeInsets.all(16),
-        //                       decoration: BoxDecoration(
-        //                         borderRadius: BorderRadius.circular(15),
-        //                         border:
-        //                             Border.all(width: 2, color: Colors.blue),
-        //                       ),
-        //                       child: Column(
-        //                         crossAxisAlignment: CrossAxisAlignment.start,
-        //                         children: [
-        //                           Text('Хост: $host',
-        //                               style: TextStyle(
-        //                                   fontWeight: FontWeight.bold)),
-        //                           Divider(),
-        //                           ...diffItem.added.values
-        //                               .map(
-        //                                   (vuln) => _buildCollapsibleVuln(vuln))
-        //                               .toList(),
-        //                           SizedBox(height: 20),
-        //                         ],
-        //                       ),
-        //                     ),
-        //                   );
-        //                 }).toList(),
-        //               ),
-        //             ),
-        //           ),
-        //         ],
-        //       ),
-        //     ),
-        //     SizedBox(
-        //       width: 16,
-        //     ),
-        //     Expanded(
-        //       child: Column(
-        //         crossAxisAlignment: CrossAxisAlignment.start,
-        //         children: [
-        //           Text('Убрано', style: TextStyle(fontWeight: FontWeight.bold)),
-        //           SizedBox(height: 10),
-        //           Expanded(
-        //             child: SingleChildScrollView(
-        //               child: Column(
-        //                 crossAxisAlignment: CrossAxisAlignment.start,
-        //                 children: diff.entries.map(
-        //                   (entry) {
-        //                     String host = entry.key;
-        //                     PentestDiff diffItem = entry.value;
-        //                     return Padding(
-        //                       padding: const EdgeInsets.only(bottom: 8, top: 8),
-        //                       child: Container(
-        //                         padding: EdgeInsets.all(16),
-        //                         decoration: BoxDecoration(
-        //                             borderRadius: BorderRadius.circular(15),
-        //                             border: Border.all(
-        //                                 width: 2, color: Colors.blue)),
-        //                         child: Column(
-        //                           crossAxisAlignment: CrossAxisAlignment.start,
-        //                           children: [
-        //                             Text('Хост: $host',
-        //                                 style: TextStyle(
-        //                                     fontWeight: FontWeight.bold)),
-        //                             Divider(),
-        //                             ...diffItem.removed.values.map(
-        //                                 (vuln) => _buildCollapsibleVuln(vuln)),
-        //                             SizedBox(height: 20),
-        //                           ],
-        //                         ),
-        //                       ),
-        //                     );
-        //                   },
-        //                 ).toList(),
-        //               ),
-        //             ),
-        //           ),
-        //         ],
-        //       ),
-        //     ),
-        //   ],
-        // );
       } else {
         return Center(
           child: Text('Нет диффиренцирования для данного сканирования'),
@@ -1007,7 +997,7 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
 
   Widget _buildTasksFilter() {
     return AnimatedContainer(
-      height: _showFilter ? 200 : 0,
+      height: _showFilter ? 150 : 0,
       duration: Duration(milliseconds: 100),
       curve: Curves.easeInOut,
       decoration: BoxDecoration(),
@@ -1017,45 +1007,75 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
           Padding(
             padding: const EdgeInsets.only(top: 8),
             child: TextField(
-              controller: _statusController,
-              decoration: InputDecoration(
-                label: Text("Статус"),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: TextField(
               controller: _numberTaskController,
               decoration: InputDecoration(
                 label: Text("Номер задачи"),
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Row(
-              children: [
-                Text('Тип сканирования: '),
-                DropdownMenu(
-                  controller: _typeController,
-                  dropdownMenuEntries: [
-                    DropdownMenuEntry(
-                      value: "pentest",
-                      label: "Пентест",
-                    ),
-                    DropdownMenuEntry(
-                      value: "pentest",
-                      label: "Просмотр сети",
-                    ),
-                    DropdownMenuEntry(
-                      value: "pentest",
-                      label: "Инвентаризация",
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Row(
+                  children: [
+                    Text('Тип сканирования: '),
+                    DropdownMenu(
+                      onSelected: (value) {
+                        _typeController.text = value!;
+                      },
+                      controller: _typeController,
+                      dropdownMenuEntries: [
+                        DropdownMenuEntry(
+                          value: "pentest",
+                          label: "Пентест",
+                        ),
+                        DropdownMenuEntry(
+                          value: "networkscan",
+                          label: "Просмотр сети",
+                        ),
+                        DropdownMenuEntry(
+                          value: "agentInventory",
+                          label: "Инвентаризация",
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Row(
+                  children: [
+                    Text('Статус сканирования: '),
+                    DropdownMenu(
+                      onSelected: (value) {
+                        _statusController.text = value!;
+                      },
+                      controller: _statusController,
+                      dropdownMenuEntries: [
+                        DropdownMenuEntry(
+                          value: "completed",
+                          label: "Выполенено",
+                          leadingIcon: Icon(Icons.check_circle_outline),
+                        ),
+                        DropdownMenuEntry(
+                          value: "pending",
+                          label: "Выполняется",
+                          leadingIcon: Icon(Icons.radio),
+                        ),
+                        DropdownMenuEntry(
+                          value: "error",
+                          label: "Ошибка",
+                          leadingIcon: Icon(Icons.error_outline),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
           )
         ],
       ),
@@ -1100,6 +1120,7 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
                         );
                       } else if (state is GetPentestTaskState) {
                         final taskInfo = state.report;
+                        ntLogger.t(taskInfo.diff.entries);
                         return Center(
                           child: Column(
                             children: [
@@ -1108,7 +1129,7 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    'Сканирование: ${taskInfo.general_info.task_name}',
+                                    '${taskInfo.general_info.task_number} : ${taskInfo.general_info.task_name}',
                                     style:
                                         AppTextStyle.lightTextTheme.titleMedium,
                                   ),
@@ -1165,10 +1186,13 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
                               ),
                               Expanded(
                                 child: TabBarView(
+                                  physics: NeverScrollableScrollPhysics(),
                                   controller: _pentestTabController,
                                   children: [
                                     _buildGeneralInfoPentest(
-                                        taskInfo.general_info, taskInfo.hosts),
+                                      taskInfo.general_info,
+                                      taskInfo.hosts,
+                                    ),
 
                                     ///SecondTab
                                     _buildHosts(taskInfo.hosts),
@@ -1241,7 +1265,8 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
             padding: EdgeInsets.all(8),
             child: Container(
               decoration: BoxDecoration(
-                border: Border.all(width: 2, color: Colors.blue),
+                border: Border.all(
+                    width: 2, color: AppTheme.lightTheme.primaryColor),
                 borderRadius: BorderRadius.circular(15),
               ),
               child: Padding(
@@ -1253,7 +1278,7 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
                     Icon(
                       _getIconForCPE(hosts[index].cpe),
                       size: 50,
-                      color: Colors.blue,
+                      color: AppTheme.lightTheme.primaryColor,
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

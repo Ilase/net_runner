@@ -4,6 +4,8 @@ import 'package:net_runner/core/domain/notificatioon_controller/notification_con
 import 'package:net_runner/core/domain/task_list/task_list_cubit.dart';
 import 'package:net_runner/features/title_page/presentation/task_count_chart.dart';
 
+import '../../../utils/constants/themes/app_themes.dart';
+
 class TitlePg extends StatefulWidget {
   const TitlePg({super.key});
 
@@ -44,7 +46,9 @@ class _TitlePgState extends State<TitlePg> {
                           padding: EdgeInsets.all(16),
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
-                              border: Border.all(width: 2, color: Colors.blue)),
+                              border: Border.all(
+                                  width: 2,
+                                  color: AppTheme.lightTheme.primaryColor)),
                           child: Center(
                             child: Text(
                               'В разработке',
@@ -64,7 +68,9 @@ class _TitlePgState extends State<TitlePg> {
                           padding: EdgeInsets.all(16),
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
-                              border: Border.all(width: 2, color: Colors.blue)),
+                              border: Border.all(
+                                  width: 2,
+                                  color: AppTheme.lightTheme.primaryColor)),
                           child: Center(
                             child: Text(
                               'В разработке',
@@ -82,8 +88,9 @@ class _TitlePgState extends State<TitlePg> {
                             padding: EdgeInsets.all(16),
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(15),
-                                border:
-                                    Border.all(width: 2, color: Colors.blue)),
+                                border: Border.all(
+                                    width: 2,
+                                    color: AppTheme.lightTheme.primaryColor)),
                             child: Column(
                               children: [
                                 Row(
@@ -110,7 +117,8 @@ class _TitlePgState extends State<TitlePg> {
                                                 decoration: BoxDecoration(
                                                   border: Border.all(
                                                     width: 2,
-                                                    color: Colors.blue,
+                                                    color: AppTheme.lightTheme
+                                                        .primaryColor,
                                                   ),
                                                   borderRadius:
                                                       BorderRadius.circular(15),
@@ -157,7 +165,9 @@ class _TitlePgState extends State<TitlePg> {
                       padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15),
-                          border: Border.all(width: 2, color: Colors.blue)),
+                          border: Border.all(
+                              width: 2,
+                              color: AppTheme.lightTheme.primaryColor)),
                       child: BlocBuilder<TaskListCubit, TaskListState>(
                           builder: (builder, state) {
                         if (state is FilledState) {

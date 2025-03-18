@@ -8,6 +8,8 @@ import 'package:net_runner/features/scanning/presentation/scanning_pg.dart';
 import 'package:net_runner/features/title_page/presentation/title_pg.dart';
 import 'package:net_runner/utils/constants/themes/text_styles.dart';
 
+import '../../utils/constants/themes/app_themes.dart';
+
 class HeadPage extends StatefulWidget {
   static const String route = '/head';
   const HeadPage({super.key});
@@ -204,7 +206,7 @@ class _HeadPageState extends State<HeadPage> {
       ),
       secondChild: Icon(
         Icons.arrow_forward,
-        color: Colors.blue,
+        color: AppTheme.lightTheme.primaryColor,
       ),
       crossFadeState: isDrawerExpanded
           ? CrossFadeState.showFirst

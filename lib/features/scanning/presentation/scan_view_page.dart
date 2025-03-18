@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/features/scanning/data/scan_responce.dart';
+import 'package:net_runner/utils/constants/themes/app_themes.dart';
 //import 'scan_result.dart'; // Make sure to import your ScanResult class
 
 class ScanResultWidget extends StatelessWidget {
@@ -27,7 +27,8 @@ class ScanResultWidget extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(width: 2, color: Colors.blue)),
+          border:
+              Border.all(width: 2, color: AppTheme.lightTheme.primaryColor)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -84,7 +85,9 @@ class ScanResultWidget extends StatelessWidget {
                       padding:
                           EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                       decoration: BoxDecoration(
-                          border: Border.all(width: 2, color: Colors.blue),
+                          border: Border.all(
+                              width: 2,
+                              color: AppTheme.lightTheme.primaryColor),
                           borderRadius: BorderRadius.circular(15)),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

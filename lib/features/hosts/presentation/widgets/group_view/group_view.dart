@@ -7,6 +7,7 @@ import 'package:net_runner/core/domain/group_list/group_list_cubit.dart';
 import 'package:net_runner/core/domain/host_list/host_list_cubit.dart';
 import 'package:net_runner/core/presentation/widgets/notification_manager.dart';
 import 'package:net_runner/features/hosts/presentation/widgets/host_view/host_view.dart';
+import 'package:net_runner/utils/constants/themes/app_themes.dart';
 import 'package:net_runner/utils/constants/themes/text_styles.dart';
 
 class GroupView extends StatefulWidget {
@@ -511,7 +512,8 @@ class _GroupViewState extends State<GroupView> with TickerProviderStateMixin {
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
-                    border: Border.all(width: 2, color: Colors.blue),
+                    border: Border.all(
+                        width: 2, color: AppTheme.lightTheme.primaryColor),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),

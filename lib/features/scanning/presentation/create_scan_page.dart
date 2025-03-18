@@ -121,7 +121,7 @@ class _CreateScanPageState extends State<CreateScanPage> {
                             return _buildNetworkScan();
                           } else if (_selectedScanType ==
                               _scanTypeValues["agentInventory"]) {
-                            return Placeholder();
+                            return _buildAgentInventory();
                           } else if (_selectedScanType == null) {
                             return Center(
                               child: Text('Выберите тип сканирования'),
@@ -189,6 +189,31 @@ class _CreateScanPageState extends State<CreateScanPage> {
                               );
                         } else if (_selectedScanType ==
                             _scanTypeValues["agentInventory"]) {
+                          List<String> _hostListIp = [];
+                          for (final host in _hostList) {
+                            _hostListIp.add(host.ip);
+                          }
+                          List<String> _groupListIp = [];
+                          for (final group in _groupList) {
+                            for (final host in group.hosts) {
+                              _groupListIp.add(host.ip);
+                            }
+                          }
+
+                          List<String> _listIp =
+                              (_groupListIp + _hostListIp).toSet().toList();
+
+                          context.read<ApiBloc>().add(
+                                PostTask(
+                                  type: _selectedScanType!,
+                                  body: {
+                                    "name": _nameController.text,
+                                    "hosts": _listIp,
+                                    "type": _scanTypeValues["agentInventory"],
+                                    "params": {}
+                                  },
+                                ),
+                              );
                         } else {
                           NotificationManager().showAnimatedNotification(
                             context,
@@ -383,6 +408,13 @@ class _CreateScanPageState extends State<CreateScanPage> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildAgentInventory() {
+    return Center(
+      child:
+          Text('Инвенторизация происходит на хостах с установленным агентом'),
     );
   }
 

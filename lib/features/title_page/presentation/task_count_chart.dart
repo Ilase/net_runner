@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:net_runner/core/domain/api/models/task/task_serial.dart';
+import 'package:net_runner/utils/constants/themes/app_themes.dart';
 
 class TaskCountChart extends StatelessWidget {
   final List<ModelTask> tasks;
@@ -29,7 +30,7 @@ class TaskCountChart extends StatelessWidget {
         barRods: [
           BarChartRodData(
             toY: scanCounts[dates[index]]!.toDouble(),
-            color: Colors.blue,
+            color: AppTheme.lightTheme.primaryColor,
             width: 15,
             borderRadius: BorderRadius.circular(4),
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:net_runner/utils/constants/themes/app_themes.dart';
 import 'package:net_runner/utils/constants/themes/notification_status.dart'
     show getNotificationTypeColor;
 
@@ -164,13 +165,13 @@ class _NotificationState extends State<Notification>
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.blue,
+                      color: AppTheme.lightTheme.primaryColor,
                     ),
                   ),
                   IconButton(
                     icon: Icon(
                       Icons.close,
-                      color: Colors.blue,
+                      color: AppTheme.lightTheme.primaryColor,
                       size: 16,
                     ),
                     onPressed: _hideSnackbar,
@@ -188,7 +189,7 @@ class _NotificationState extends State<Notification>
                   ///message style
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.blue,
+                    color: AppTheme.lightTheme.primaryColor,
                   ),
                 ),
               ),
