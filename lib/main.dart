@@ -1,16 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/data/data_loader.dart';
-import 'package:net_runner/core/domain/api/api_bloc.dart';
-import 'package:net_runner/core/domain/group_list/group_list_cubit.dart';
-import 'package:net_runner/core/domain/host_list/host_list_cubit.dart';
-import 'package:net_runner/core/domain/notificatioon_controller/notification_controller_cubit.dart';
-import 'package:net_runner/core/domain/pentest_report_controller/pentest_report_controller_cubit.dart';
-import 'package:net_runner/core/domain/ping_list/ping_list_cubit.dart';
-import 'package:net_runner/core/domain/profile_page/profile_page.dart';
-import 'package:net_runner/core/domain/task_list/task_list_cubit.dart';
+import 'package:net_runner/core/domain/api/api_service_bloc.dart';
 import 'package:net_runner/core/domain/theme_controller/theme_controller_cubit.dart';
-import 'package:net_runner/core/domain/user_repository/user_data_cubit.dart';
 import 'package:net_runner/features/connection_page/presentation/connection_page.dart';
 import 'package:net_runner/features/head_page/head_page.dart';
 import 'package:net_runner/features/hosts/presentation/add_host_page.dart';
@@ -22,43 +14,22 @@ import 'package:net_runner/utils/routes/router.dart';
 import 'package:platform_detector/widgets/platform_type_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'core/domain/old_cubits/profile_page/profile_page.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-  HostListCubit hostListCubit = HostListCubit();
-  GroupListCubit groupListCubit = GroupListCubit();
-  TaskListCubit taskListCubit = TaskListCubit();
-  ReportControllerCubit pentestReportControllerCubit = ReportControllerCubit();
-  NotificationControllerCubit notificationControllerCubit =
-      NotificationControllerCubit();
-  PingListCubit pingListCubit = PingListCubit();
-  UserDataCubit userDataCubit = UserDataCubit();
-  runApp(MultiBlocProvider(
-    providers: [
-      BlocProvider(create: (context) => ThemeControllerCubit()),
-      BlocProvider.value(value: notificationControllerCubit),
-      BlocProvider.value(value: pentestReportControllerCubit),
-      BlocProvider.value(value: pingListCubit),
-      BlocProvider.value(value: groupListCubit),
-      BlocProvider.value(value: hostListCubit),
-      BlocProvider.value(value: taskListCubit),
-      BlocProvider.value(value: userDataCubit),
-      BlocProvider(
-        create: (context) => ApiBloc(
-          userDataCubit: userDataCubit,
-          notificationControllerCubit: notificationControllerCubit,
-          pingListCubit: pingListCubit,
-          taskListCubit: taskListCubit,
-          hostListCubit: hostListCubit,
-          groupListCubit: groupListCubit,
-          reportControllerCubit: pentestReportControllerCubit,
-        ),
+  ApiServiceBloc apiServiceBloc = ApiServiceBloc();
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => ThemeControllerCubit()),
+      ],
+      child: StartPoint(
+        sharedPreferences: sharedPreferences,
       ),
-    ],
-    child: StartPoint(
-      sharedPreferences: sharedPreferences,
     ),
-  ));
+  );
 }
 
 class StartPoint extends StatelessWidget {

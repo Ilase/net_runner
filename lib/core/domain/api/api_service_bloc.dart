@@ -79,6 +79,13 @@ class ApiServiceBloc extends Bloc<ApiServiceEvent, ApiServiceState> {
     }
   }
 
+  Future<void> _connectToServerState(
+    ConnectToServerEvent event,
+    Emitter emit,
+  ) async {
+    updateEndpoints(newEndpoints: event.endpoints);
+  }
+
   ///Service functions
   void updateEndpoints({
     required ApiEndpoints newEndpoints,

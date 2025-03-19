@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:net_runner/core/data/notification/notification_model.dart';
+import 'package:net_runner/core/domain/data_cubit/data_cubit.dart';
+import 'package:net_runner/core/domain/notification_controller/notification_controller_cubit.dart';
 import 'package:net_runner/core/domain/notificatioon_controller/notification_controller_cubit.dart';
 import 'package:net_runner/core/domain/task_list/task_list_cubit.dart';
 import 'package:net_runner/features/title_page/presentation/task_count_chart.dart';
@@ -95,11 +98,11 @@ class _TitlePgState extends State<TitlePg> {
                                 Expanded(
                                   child: BlocBuilder<
                                       NotificationControllerCubit,
-                                      NotificationControllerState>(
+                                      DataState<List<NotificationModel>>>(
                                     builder: (builder, state) {
-                                      if (state.notifications.isNotEmpty) {
+                                      if (state is DataLoadedState) {
                                         return ListView.builder(
-                                          itemCount: state.notifications.length,
+                                          itemCount: state.hashCode,
                                           itemBuilder: (builder, index) {
                                             return Padding(
                                               padding: const EdgeInsets.only(
@@ -152,14 +155,14 @@ class _TitlePgState extends State<TitlePg> {
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Container(
-                      height: double.maxFinite,
-                      width: double.maxFinite,
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          border: Border.all(width: 2, color: Colors.blue)),
-                      child: BlocBuilder<TaskListCubit, TaskListState>(
-                          builder: (builder, state) {
+                    height: double.maxFinite,
+                    width: double.maxFinite,
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(width: 2, color: Colors.blue)),
+                    child: BlocBuilder<TaskListCubit, TaskListState>(
+                      builder: (builder, state) {
                         if (state is FilledState) {
                           return TaskCountChart(tasks: state.list);
                         } else {
@@ -167,7 +170,9 @@ class _TitlePgState extends State<TitlePg> {
                             child: Text('Перезагрузите список задач'),
                           );
                         }
-                      })),
+                      },
+                    ),
+                  ),
                 ),
               )
             ],

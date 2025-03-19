@@ -3,8 +3,8 @@ part of 'api_bloc.dart';
 abstract class ApiEvent {}
 
 class ConnectToServerEvent extends ApiEvent {
-  final ApiEndpoints endpoints;
-  ConnectToServerEvent({required this.endpoints});
+  // final ApiEndpoints endpoints;
+  // ConnectToServerEvent({required this.endpoints});
 }
 
 class DisconnectFromServerEvent extends ApiEvent {}
@@ -19,7 +19,6 @@ class FetchTaskListEvent extends ApiEvent {
 class GetPentestReportEvent extends ApiEvent {
   final String taskName;
 
-  ///TODO: Rewrite to TASK ID;
   GetPentestReportEvent({required this.taskName});
 }
 

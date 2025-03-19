@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/data/ip_input_formatter.dart';
+import 'package:net_runner/core/data/notification/notification_model.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
 import 'package:net_runner/core/domain/api/api_endpoints.dart';
+import 'package:net_runner/core/domain/api/api_service_bloc.dart';
+import 'package:net_runner/core/domain/data_cubit/data_cubit.dart';
+import 'package:net_runner/core/domain/notification_controller/notification_controller_cubit.dart';
 import 'package:net_runner/core/domain/notificatioon_controller/notification_controller_cubit.dart';
 import 'package:net_runner/core/presentation/widgets/notification_manager.dart';
 import 'package:net_runner/utils/constants/themes/text_styles.dart';
@@ -47,10 +51,10 @@ class _ConnectionPageState extends State<ConnectionPage> {
       body: MultiBlocListener(
         listeners: [
           BlocListener<NotificationControllerCubit,
-              NotificationControllerState>(
+              DataState<List<NotificationModel>>>(
             listener: (context, state) {
-              if (state.notifications.isNotEmpty) {
-                final lastNotification = state.notifications.last;
+              if (state is DataLoadedState<List<NotificationModel>>) {
+                final lastNotification = state.data.last;
                 NotificationManager().showAnimatedNotification(
                   context,
                   lastNotification.title,
@@ -60,7 +64,7 @@ class _ConnectionPageState extends State<ConnectionPage> {
               }
             },
           ),
-          BlocListener<ApiBloc, ApiState>(
+          BlocListener<ApiServiceBloc, ApiServiceState>(
             listener: (context, state) {
               if (state is ConnectedToServerState) {
                 _saveData();
@@ -130,7 +134,7 @@ class _ConnectionPageState extends State<ConnectionPage> {
                             host: _uriAddress.text,
                             scheme: "http",
                           );
-                          context.read<ApiBloc>().add(
+                          context.read<ApiServiceBloc>().add(
                                 ConnectToServerEvent(endpoints: endpoints),
                               );
                         }

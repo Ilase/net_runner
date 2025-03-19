@@ -14,3 +14,8 @@ class FetchData extends ApiServiceEvent {
     required this.unitType,
   });
 }
+
+class ConnectToServerEvent extends ApiServiceEvent {
+  final ApiEndpoints endpoints;
+  ConnectToServerEvent({required this.endpoints});
+}

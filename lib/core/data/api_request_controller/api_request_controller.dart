@@ -135,6 +135,10 @@ class ApiRequestController {
       };
     }
   }
+
+  Future<Map<String, dynamic>> checkConnection() async {
+    return {};
+  }
 }
 
 ///Next time
