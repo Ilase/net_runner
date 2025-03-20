@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:net_runner/core/domain/api/models/group/group_serial.dart';
 
 part 'host_serial.g.dart';
 
@@ -8,8 +9,8 @@ class ModelHost {
   String name;
   String? description;
   String ip;
-  String UpdatedAt;
-  // List<ModelGroup>? group_hosts;
+  int UpdatedAt;
+  List<ModelGroup>? Groups;
   ModelHostInventory? inventory;
 
   ModelHost({
@@ -18,6 +19,8 @@ class ModelHost {
     required this.ip,
     this.description,
     required this.name,
+    required this.Groups,
+    required this.inventory,
   });
 
   factory ModelHost.fromJson(Map<String, dynamic> json) =>

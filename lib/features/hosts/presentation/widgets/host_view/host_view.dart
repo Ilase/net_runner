@@ -27,6 +27,11 @@ class _HostViewState extends State<HostView> with TickerProviderStateMixin {
   ModelHost? _selectedItemForShowInfo;
   bool _showHostFilter = false;
   TextEditingController _customIpController = TextEditingController();
+  TextEditingController _searchHostController = TextEditingController();
+  TextEditingController _editHostNameController = TextEditingController();
+  TextEditingController _editHostIpController = TextEditingController();
+  TextEditingController _editHostDescriptionController =
+      TextEditingController();
 
   @override
   void initState() {
@@ -213,6 +218,7 @@ class _HostViewState extends State<HostView> with TickerProviderStateMixin {
                       style: AppTextStyle.lightTextTheme.titleMedium,
                     ),
                     secondChild: TextField(
+                      controller: _editHostNameController,
                       decoration: InputDecoration(label: Text("Имя")),
                     ),
                     crossFadeState: _viewMode == InfoModes.view
@@ -228,8 +234,17 @@ class _HostViewState extends State<HostView> with TickerProviderStateMixin {
                           setState(() {
                             if (_viewMode == InfoModes.view) {
                               _viewMode = InfoModes.edit;
+                              _editHostNameController.text =
+                                  _selectedItemForShowInfo!.name;
+                              _editHostIpController.text =
+                                  _selectedItemForShowInfo!.ip;
+                              _editHostDescriptionController.text =
+                                  _selectedItemForShowInfo!.description ?? "";
                             } else {
                               _viewMode = InfoModes.view;
+                              _editHostNameController.clear();
+                              _editHostIpController.clear();
+                              _editHostDescriptionController.clear();
                             }
                           });
                         },
@@ -238,17 +253,38 @@ class _HostViewState extends State<HostView> with TickerProviderStateMixin {
                             : Icons.edit)),
                     IconButton(
                         onPressed: () {
-                          context.read<ApiBloc>().add(
-                              DeleteHost(id: _selectedItemForShowInfo!.ID));
+                          if (_viewMode == InfoModes.view) {
+                            context.read<ApiBloc>().add(
+                                DeleteHost(id: _selectedItemForShowInfo!.ID));
 
-                          setState(() {
-                            context.read<ApiBloc>().add(GetHostListEvent());
-                            _selectedItemForShowInfo = null;
-                          });
+                            setState(() {
+                              context.read<ApiBloc>().add(GetHostListEvent());
+                              _selectedItemForShowInfo = null;
+                            });
+                          } else {
+                            context.read<ApiBloc>().add(
+                                  PutHost(
+                                    hostId: _selectedItemForShowInfo!.ID,
+                                    body: {
+                                      "name": _editHostNameController.text,
+                                      "description":
+                                          _editHostDescriptionController.text,
+                                      "ip": _editHostIpController.text,
+                                    },
+                                  ),
+                                );
+                            setState(() {
+                              _viewMode = InfoModes.view;
+                            });
+                          }
                         },
                         icon: Icon(
-                          Icons.delete_forever,
-                          color: Colors.redAccent,
+                          _viewMode == InfoModes.edit
+                              ? Icons.check_circle_outline
+                              : Icons.delete_forever,
+                          color: _viewMode == InfoModes.edit
+                              ? Colors.green
+                              : Colors.redAccent,
                         )),
                     IconButton(
                         onPressed: () {
@@ -267,7 +303,11 @@ class _HostViewState extends State<HostView> with TickerProviderStateMixin {
               secondChild: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: TextField(
-                  decoration: InputDecoration(label: Text("IP")),
+                  inputFormatters: [IPTextInputFormatter()],
+                  controller: _editHostIpController,
+                  decoration: InputDecoration(
+                    label: Text("IP"),
+                  ),
                 ),
               ),
               crossFadeState: _viewMode == InfoModes.view
@@ -377,8 +417,11 @@ class _HostViewState extends State<HostView> with TickerProviderStateMixin {
                             IconButton(
                                 onPressed: () {
                                   setState(() {
-                                    _rightList.add(
-                                        HostItem(_customIpController.text));
+                                    _rightList.add(HostItem(
+                                      _customIpController.text,
+                                      name: '',
+                                      description: '',
+                                    ));
                                     _customIpController.clear();
                                   });
                                 },
@@ -391,7 +434,6 @@ class _HostViewState extends State<HostView> with TickerProviderStateMixin {
                             builder: (builder, state) {
                               if (state is PingListFilledState) {
                                 return ListView.builder(
-                                  //TODO: make animated
                                   itemCount: state.list.length,
                                   itemBuilder: (builder, index) {
                                     final item = state.list[index];
@@ -407,21 +449,27 @@ class _HostViewState extends State<HostView> with TickerProviderStateMixin {
                                             )
                                           : Icon(Icons.arrow_forward),
                                       onTap: () {
-                                        setState(() {
-                                          if (!_rightList
-                                              .any((host) => host.ip == item)) {
-                                            _rightList.add(HostItem(item));
-                                          } else {
-                                            context
-                                                .read<ApiBloc>()
-                                                .notificationControllerCubit
-                                                .addNotification(
-                                                  "Уже выбран",
-                                                  "Хост уже выбран",
-                                                  NotificationType.warning,
-                                                );
-                                          }
-                                        });
+                                        setState(
+                                          () {
+                                            if (!_rightList.any(
+                                                (host) => host.ip == item)) {
+                                              _rightList.add(HostItem(
+                                                item,
+                                                name: '',
+                                                description: '',
+                                              ));
+                                            } else {
+                                              context
+                                                  .read<ApiBloc>()
+                                                  .notificationControllerCubit
+                                                  .addNotification(
+                                                    "Уже выбран",
+                                                    "Хост уже выбран",
+                                                    NotificationType.warning,
+                                                  );
+                                            }
+                                          },
+                                        );
                                       },
                                     );
                                   },
@@ -464,6 +512,7 @@ class _HostViewState extends State<HostView> with TickerProviderStateMixin {
                                   context
                                       .read<ApiBloc>()
                                       .add(PostHost(body: sendBody));
+                                  print(sendBody);
                                 }
                                 setState(() {
                                   _rightList.clear();
@@ -492,6 +541,11 @@ class _HostViewState extends State<HostView> with TickerProviderStateMixin {
                                   itemCount: _rightList.length,
                                   itemBuilder: (builder, index) {
                                     final item = _rightList[index];
+                                    // Используем контроллеры, сохраненные в состоянии
+                                    item.nameController ??=
+                                        TextEditingController();
+                                    item.descriptionController ??=
+                                        TextEditingController();
 
                                     return Padding(
                                       padding: EdgeInsets.all(8),
@@ -553,6 +607,13 @@ class _HostViewState extends State<HostView> with TickerProviderStateMixin {
                                                             const EdgeInsets
                                                                 .all(4.0),
                                                         child: TextField(
+                                                          controller: item
+                                                              .nameController,
+                                                          onChanged: (value) {
+                                                            setState(() {
+                                                              item.name = value;
+                                                            });
+                                                          },
                                                           decoration:
                                                               InputDecoration(
                                                             label: Text(
@@ -565,6 +626,14 @@ class _HostViewState extends State<HostView> with TickerProviderStateMixin {
                                                             const EdgeInsets
                                                                 .all(4.0),
                                                         child: TextField(
+                                                          controller: item
+                                                              .descriptionController,
+                                                          onChanged: (value) {
+                                                            setState(() {
+                                                              item.description =
+                                                                  value;
+                                                            });
+                                                          },
                                                           decoration:
                                                               InputDecoration(
                                                             label: Text(
@@ -587,7 +656,6 @@ class _HostViewState extends State<HostView> with TickerProviderStateMixin {
                             },
                           ),
                         ),
-                        // AnimatedList(itemBuilder: itemBuilder)
                       ],
                     ),
                   ),

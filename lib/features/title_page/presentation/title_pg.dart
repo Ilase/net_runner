@@ -160,24 +160,34 @@ class _TitlePgState extends State<TitlePg> {
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Container(
-                      height: double.maxFinite,
-                      width: double.maxFinite,
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          border: Border.all(
-                              width: 2,
-                              color: AppTheme.lightTheme.primaryColor)),
-                      child: BlocBuilder<TaskListCubit, TaskListState>(
-                          builder: (builder, state) {
-                        if (state is FilledState) {
-                          return TaskCountChart(tasks: state.list);
-                        } else {
-                          return Center(
-                            child: Text('Перезагрузите список задач'),
-                          );
-                        }
-                      })),
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(
+                            width: 2, color: AppTheme.lightTheme.primaryColor)),
+                    child: Column(
+                      children: [
+                        Text(
+                          "Количество сканирований по дням",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        Expanded(
+                          child: BlocBuilder<TaskListCubit, TaskListState>(
+                              builder: (builder, state) {
+                            if (state is FilledState && state.list.isNotEmpty) {
+                              return TaskCountChart(tasks: state.list);
+                            } else {
+                              return Center(
+                                child:
+                                    Text('Задач нет для составления графика'),
+                              );
+                            }
+                          }),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               )
             ],

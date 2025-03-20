@@ -173,13 +173,35 @@ class _GroupViewState extends State<GroupView> with TickerProviderStateMixin {
                               shrinkWrap: true,
                               itemCount: state.list.length,
                               itemBuilder: (builder, index) {
-                                final host = state.list[index];
+                                final hostItem = state.list[index];
+                                bool isAdded = _rightList
+                                    .any((host) => host.ip == hostItem.ip);
                                 return ListTile(
                                   onTap: () {
-                                    setState(() {});
+                                    setState(
+                                      () {
+                                        if (!_rightList.any(
+                                            (host) => host.ip == hostItem.ip)) {
+                                          _rightList.add(hostItem);
+                                        } else {
+                                          context
+                                              .read<ApiBloc>()
+                                              .notificationControllerCubit
+                                              .addNotification(
+                                                "Уже выбран",
+                                                "Хост уже выбран",
+                                                NotificationType.warning,
+                                              );
+                                        }
+                                      },
+                                    );
                                   },
-                                  title: Text(host.name),
-                                  trailing: Icon(Icons.arrow_forward),
+                                  title: Text(hostItem.name),
+                                  trailing: Icon(
+                                    isAdded ? Icons.check : Icons.arrow_forward,
+                                    color:
+                                        isAdded ? Colors.green : Colors.black,
+                                  ),
                                 );
                               },
                             );
@@ -196,34 +218,6 @@ class _GroupViewState extends State<GroupView> with TickerProviderStateMixin {
                       duration: Duration(milliseconds: 200),
                     ),
                   ),
-
-                  // Expanded(
-                  //   child: BlocBuilder<GroupListCubit, GroupListState>(
-                  //     builder: (builder, state) {
-                  //       if (state is GroupListFullState) {
-                  //         return ListView.builder(
-                  //           itemCount: state.list.length,
-                  //           itemBuilder: (builder, index) {
-                  //             final group = state.list[index];
-                  //             return ListTile(
-                  //               onTap: () {
-                  //                 setState(() {
-                  //                   _selectedItemForShowInfo = group;
-                  //                 });
-                  //               },
-                  //               title: Text(group.name),
-                  //               trailing: Icon(Icons.arrow_forward),
-                  //             );
-                  //           },
-                  //         );
-                  //       } else {
-                  //         return Center(
-                  //           child: Text("Хостов нет"),
-                  //         );
-                  //       }
-                  //     },
-                  //   ),
-                  // )
                 ],
               ),
             ),
@@ -290,19 +284,35 @@ class _GroupViewState extends State<GroupView> with TickerProviderStateMixin {
                         icon: Icon(_viewMode == InfoModes.edit
                             ? Icons.edit_off
                             : Icons.edit)),
-                    IconButton(
-                        onPressed: () {
-                          setState(() {
-                            context.read<ApiBloc>().add(
-                                DeleteGroup(id: _selectedItemForShowInfo!.ID));
-                            context.read<ApiBloc>().add(GetGroupListEvent());
-                            _selectedItemForShowInfo = null;
-                          });
-                        },
-                        icon: Icon(
-                          Icons.delete_forever,
-                          color: Colors.redAccent,
-                        )),
+                    AnimatedCrossFade(
+                        firstChild: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                context.read<ApiBloc>().add(DeleteGroup(
+                                    id: _selectedItemForShowInfo!.ID));
+                                context
+                                    .read<ApiBloc>()
+                                    .add(GetGroupListEvent());
+                                _selectedItemForShowInfo = null;
+                                _rightList.clear();
+                              });
+                            },
+                            icon: Icon(
+                              Icons.delete_forever,
+                              color: Colors.redAccent,
+                            )),
+                        secondChild: IconButton(
+                            onPressed: () {
+                              setState(() {});
+                            },
+                            icon: Icon(
+                              Icons.check_circle_outline,
+                              color: Colors.green,
+                            )),
+                        crossFadeState: _viewMode == InfoModes.view
+                            ? CrossFadeState.showFirst
+                            : CrossFadeState.showSecond,
+                        duration: Duration(milliseconds: 200)),
                     IconButton(
                         onPressed: () {
                           setState(() {
@@ -331,25 +341,64 @@ class _GroupViewState extends State<GroupView> with TickerProviderStateMixin {
             Divider(),
             Text("Хосты"),
             Expanded(
-              child: Builder(builder: (builder) {
-                if (_selectedItemForShowInfo!.hosts.isNotEmpty) {
-                  return ListView.builder(
-                      itemCount: _selectedItemForShowInfo!.hosts.length,
-                      itemBuilder: (builder, index) {
-                        final item = _selectedItemForShowInfo!.hosts[index];
-                        return ListTile(
-                          title: Text(item.ip),
-                          subtitle: Text(item.name),
-                        );
-                      });
-                } else {
-                  return Text(
-                    'Для данной группы нет хостов',
-                    style: TextStyle(color: Colors.grey),
-                  );
-                }
-              }),
+              child: AnimatedCrossFade(
+                firstChild: Text('1'),
+                secondChild: Text('2'),
+                crossFadeState: _viewMode == InfoModes.view
+                    ? CrossFadeState.showSecond
+                    : CrossFadeState.showSecond,
+                duration: Duration(milliseconds: 200),
+              ),
             ),
+            // Expanded(
+            //   child: AnimatedCrossFade(
+            //     firstChild: Builder(
+            //       builder: (builder) {
+            //         if ((_selectedItemForShowInfo?.hosts ?? []).isNotEmpty) {
+            //           return SingleChildScrollView(
+            //             child: Column(
+            //               children:
+            //                   _selectedItemForShowInfo!.hosts!.map((item) {
+            //                 return ListTile(
+            //                   title: Text(item.ip),
+            //                   subtitle: Text(item.name),
+            //                 );
+            //               }).toList(),
+            //             ),
+            //           );
+            //         } else {
+            //           return Text(
+            //             'Для данной группы нет хостов',
+            //             style: TextStyle(color: Colors.grey),
+            //           );
+            //         }
+            //       },
+            //     ),
+            //     secondChild: ListView.builder(
+            //       itemCount: _rightList.length,
+            //       itemBuilder: (builder, index) {
+            //         return ListTile(
+            //           title: Text(_rightList[index].ip),
+            //           trailing: IconButton(
+            //             onPressed: () {
+            //               setState(() {
+            //                 _rightList.removeAt(index);
+            //               });
+            //             },
+            //             icon: Icon(
+            //               Icons.remove_circle_outline,
+            //               color: Colors.redAccent,
+            //             ),
+            //           ),
+            //         );
+            //       },
+            //     ),
+            //     crossFadeState: _viewMode == InfoModes.view
+            //         ? CrossFadeState.showFirst
+            //         : CrossFadeState.showSecond,
+            //     duration: Duration(milliseconds: 200),
+            //   ),
+            // )
           ],
         ),
       ),

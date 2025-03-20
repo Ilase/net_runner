@@ -156,7 +156,7 @@ class _HostsPgOldState extends State<HostsPgOld>
                                       title: Text(list[index].name),
                                       leading: Text((index + 1).toString()),
                                       subtitle: Text(
-                                          "Кол-во хостов: ${list[index].hosts.length}"),
+                                          "Кол-во хостов: ${list[index].hosts!.length}"),
                                       trailing: Icon(Icons.arrow_forward),
                                     );
                                   },
@@ -175,10 +175,6 @@ class _HostsPgOldState extends State<HostsPgOld>
                                         itemBuilder: (builder, index) {
                                           final item = state.list[index];
                                           bool isAdded = false;
-                                          // final isAdded =
-                                          //     _selectedGroupsRightList.any(
-                                          //         (host) =>
-                                          //             host["ip"] == ipAddress);
                                           return ListTile(
                                             leading: Text(item.ID.toString()),
                                             title: Text(item.ip),

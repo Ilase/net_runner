@@ -5,8 +5,8 @@ part 'task_serial.g.dart';
 @JsonSerializable()
 class ModelTask {
   int ID;
-  String? CreatedAt;
-  String? UpdatedAt;
+  int? CreatedAt;
+  int? UpdatedAt;
   String number_task;
   int percent;
   String name;

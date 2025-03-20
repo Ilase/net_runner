@@ -8,7 +8,7 @@ class ModelGroup {
   int ID;
   String name;
   String description;
-  List<ModelHost> hosts;
+  List<ModelHost>? hosts;
   ModelGroup({
     required this.ID,
     required this.name,

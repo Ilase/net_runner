@@ -1,8 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:net_runner/core/data/data_converter.dart';
 import 'package:net_runner/core/domain/api/models/task/task_serial.dart';
-import 'package:net_runner/utils/constants/themes/app_themes.dart';
 
 class TaskCountChart extends StatelessWidget {
   final List<ModelTask> tasks;
@@ -11,73 +11,81 @@ class TaskCountChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Группируем задачи по дате
-    Map<String, int> scanCounts = {};
+    Map<DateTime, int> scanCounts = {};
 
     for (var task in tasks) {
       if (task.CreatedAt != null) {
-        String date =
-            DateFormat('yyyy-MM-dd').format(DateTime.parse(task.CreatedAt!));
-        scanCounts[date] = (scanCounts[date] ?? 0) + 1;
+        DateTime date = convertUnixToDateTime(task.CreatedAt!);
+        DateTime dayOnly = DateTime(date.year, date.month, date.day);
+        scanCounts[dayOnly] = (scanCounts[dayOnly] ?? 0) + 1;
       }
     }
 
-    // Сортируем даты
-    List<String> dates = scanCounts.keys.toList()..sort();
-    List<BarChartGroupData> barGroups = List.generate(dates.length, (index) {
-      return BarChartGroupData(
-        x: index,
-        barRods: [
-          BarChartRodData(
-            toY: scanCounts[dates[index]]!.toDouble(),
-            color: AppTheme.lightTheme.primaryColor,
-            width: 15,
-            borderRadius: BorderRadius.circular(4),
-          ),
-        ],
-      );
-    });
+    List<DateTime> dates = scanCounts.keys.toList()..sort();
+
+    List<FlSpot> spots = dates.map((date) {
+      return FlSpot(
+          date.millisecondsSinceEpoch.toDouble(), scanCounts[date]!.toDouble());
+    }).toList();
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          "Количество сканирований по дням",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: BarChart(
-              BarChartData(
-                alignment: BarChartAlignment.spaceBetween,
-                barGroups: barGroups,
+            child: LineChart(
+              LineChartData(
                 titlesData: FlTitlesData(
                   leftTitles: AxisTitles(
-                    axisNameWidget: const Text("Количество",
-                        style: TextStyle(fontSize: 12)),
-                    sideTitles: SideTitles(showTitles: false),
+                    sideTitles: SideTitles(
+                      showTitles: false,
+                    ),
                   ),
                   bottomTitles: AxisTitles(
-                    axisNameWidget:
-                        Text("Дата", style: TextStyle(fontSize: 12)),
                     sideTitles: SideTitles(
                       showTitles: true,
+                      interval: Duration(days: 1)
+                          .inMilliseconds
+                          .toDouble(), // Интервал 1 день
                       getTitlesWidget: (value, meta) {
-                        if (value.toInt() < dates.length) {
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(dates[value.toInt()],
-                                style: TextStyle(fontSize: 10)),
-                          );
-                        }
-                        return Container();
+                        DateTime date =
+                            DateTime.fromMillisecondsSinceEpoch(value.toInt());
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Transform(
+                            transform: Matrix4.rotationZ(0.4),
+                            child: Text(
+                              DateFormat('MM-dd').format(date),
+                              style: TextStyle(fontSize: 10),
+                            ),
+                          ),
+                        );
                       },
                     ),
+                  ),
+                  topTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
                   ),
                 ),
                 borderData: FlBorderData(show: false),
                 gridData: FlGridData(show: true),
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: spots,
+                    isCurved: false,
+                    color: Colors.black,
+                    barWidth: 3,
+                    isStrokeCapRound: false,
+                    belowBarData: BarAreaData(
+                      show: false,
+                      color: Colors.black,
+                    ),
+                    dotData: FlDotData(show: true),
+                  ),
+                ],
+                minX: dates.first.millisecondsSinceEpoch.toDouble(),
+                maxX: dates.last.millisecondsSinceEpoch.toDouble(),
               ),
             ),
           ),

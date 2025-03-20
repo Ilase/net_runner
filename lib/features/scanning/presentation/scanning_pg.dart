@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graphic/graphic.dart';
-import 'package:icons_flutter/icons_flutter.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
@@ -19,6 +19,7 @@ import 'package:net_runner/core/presentation/widgets/notification_manager.dart';
 import 'package:net_runner/features/graph/presentation/graph_page.dart';
 import 'package:net_runner/features/scanning/presentation/create_scan_page.dart';
 import 'package:net_runner/utils/constants/themes/app_themes.dart';
+import 'package:net_runner/utils/constants/themes/icons_by_cpe.dart';
 import 'package:net_runner/utils/constants/themes/task_status_color.dart';
 import 'package:net_runner/utils/constants/themes/text_styles.dart';
 import 'package:net_runner/utils/routes/router.dart';
@@ -47,11 +48,18 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
   TextEditingController _typeController = TextEditingController();
 
   ///
+  final ScrollController _scrollController = ScrollController();
+
+  ///
   @override
   void initState() {
     super.initState();
     _pentestTabController = TabController(length: 3, vsync: this);
     _networkScanTabController = TabController(length: 2, vsync: this);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    });
   }
 
   @override
@@ -152,6 +160,7 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
 
                               return Center(
                                 child: ListView.builder(
+                                  controller: _scrollController,
                                   reverse: true,
                                   itemCount: list.length,
                                   itemBuilder: (context, index) {
@@ -177,247 +186,12 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
                                             context
                                                 .read<ApiBloc>()
                                                 .add(GetReport(
-                                                  task_number:
-                                                      list[index].number_task,
+                                                  task_ID: list[index].ID,
                                                   task_type: list[index].type,
                                                 ));
                                           }
                                         },
-                                        child: LayoutBuilder(
-                                          builder: (context, constraints) {
-                                            if (constraints.maxWidth > 400) {
-                                              return Container(
-                                                decoration: BoxDecoration(
-                                                  border: Border.symmetric(
-                                                      vertical: BorderSide(
-                                                          color:
-                                                              getTaskStatusColor(
-                                                                  list[index]
-                                                                      .status),
-                                                          width: 5)),
-                                                  borderRadius:
-                                                      BorderRadius.circular(15),
-                                                  color: Colors.white,
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      offset: Offset(3, 3),
-                                                      color: Colors.grey,
-                                                      blurRadius: 15,
-                                                    ),
-                                                  ],
-                                                ),
-                                                width: double
-                                                    .infinity, // Контейнер занимает всю ширину
-                                                child: Padding(
-                                                  padding: EdgeInsets.all(
-                                                    16.0,
-                                                  ),
-                                                  child: Row(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .center,
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceEvenly,
-                                                    children: [
-                                                      Expanded(
-                                                        child: Text(list[index]
-                                                            .number_task
-                                                            .toString()),
-                                                      ),
-                                                      Expanded(
-                                                        // Растягиваем колонку по ширине
-                                                        child: Text(
-                                                          list[index].name,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                        ),
-                                                      ),
-                                                      Expanded(
-                                                        child: Builder(
-                                                          builder: (context) {
-                                                            if (list[index]
-                                                                    .status ==
-                                                                "pending") {
-                                                              return LoadingAnimationWidget
-                                                                  .fourRotatingDots(
-                                                                color: AppTheme
-                                                                    .lightTheme
-                                                                    .primaryColor,
-                                                                size: 25,
-                                                              );
-                                                            } else {
-                                                              return SizedBox();
-                                                            }
-                                                          },
-                                                        ),
-                                                      ),
-                                                      // Expanded(
-                                                      //   child: Text(
-                                                      //       '${list[index].percent}%'
-                                                      //           .toString()),
-                                                      // ),
-                                                      Expanded(
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Text("Статус"),
-                                                            Text(
-                                                              list[index]
-                                                                  .status,
-                                                              style: TextStyle(
-                                                                  color: getTaskStatusColor(
-                                                                      list[index]
-                                                                          .status)),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      Expanded(
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Text("Тип"),
-                                                            Text(list[index]
-                                                                .type),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              );
-                                            } else if (constraints.maxWidth <
-                                                350) {
-                                              return Container(
-                                                decoration: BoxDecoration(
-                                                  border: Border.symmetric(
-                                                      vertical: BorderSide(
-                                                          color:
-                                                              getTaskStatusColor(
-                                                                  list[index]
-                                                                      .status),
-                                                          width: 5)),
-                                                  borderRadius:
-                                                      BorderRadius.circular(15),
-                                                  color: Colors.white,
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      offset: Offset(3, 3),
-                                                      color: Colors.grey,
-                                                      blurRadius: 15,
-                                                    ),
-                                                  ],
-                                                ),
-                                                width: double
-                                                    .infinity, // Контейнер занимает всю ширину
-                                                child: Padding(
-                                                  padding: EdgeInsets.all(
-                                                    16.0,
-                                                  ),
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween, // Разместить элементы равномерно
-                                                    children: [
-                                                      Expanded(
-                                                        // Растягиваем колонку по ширине
-                                                        child: Column(
-                                                          children: [
-                                                            Text(list[index]
-                                                                .number_task
-                                                                .toString()),
-                                                            Text(
-                                                              list[index].name,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              );
-                                            } else {
-                                              return Container(
-                                                decoration: BoxDecoration(
-                                                  border: Border.symmetric(
-                                                      vertical: BorderSide(
-                                                          color:
-                                                              getTaskStatusColor(
-                                                                  list[index]
-                                                                      .status),
-                                                          width: 5)),
-                                                  borderRadius:
-                                                      BorderRadius.circular(15),
-                                                  color: Colors.white,
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      offset: Offset(3, 3),
-                                                      color: Colors.grey,
-                                                      blurRadius: 15,
-                                                    ),
-                                                  ],
-                                                ),
-                                                width: double
-                                                    .infinity, // Контейнер занимает всю ширину
-                                                child: Padding(
-                                                  padding: EdgeInsets.all(16.0),
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween, // Разместить элементы равномерно
-                                                    children: [
-                                                      Expanded(
-                                                        // Растягиваем колонку по ширине
-                                                        child: Column(
-                                                          children: [
-                                                            Text(list[index]
-                                                                .number_task
-                                                                .toString()),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      Expanded(
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Text(
-                                                              "Статус",
-                                                            ),
-                                                            Text(
-                                                              list[index]
-                                                                  .status,
-                                                              style: TextStyle(
-                                                                color:
-                                                                    getTaskStatusColor(
-                                                                  list[index]
-                                                                      .status,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      Expanded(
-                                                        child: Text(
-                                                            list[index].type),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              );
-                                            }
-                                          },
-                                        ),
+                                        child: TaskCard(task: list[index]),
                                       ),
                                     );
                                   },
@@ -864,25 +638,6 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
     return Colors.grey;
   }
 
-  Widget _buildVuln(PentestVulns vuln) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('  - ID: ${vuln.id}',
-            style: TextStyle(fontWeight: FontWeight.bold)),
-        Text('    CPE: ${vuln.cpe}'),
-        Text('    CVSS: ${vuln.cvss}'),
-        Text('    CVSS Vector: ${vuln.cvss_vector}'),
-        Text('    CWE: ${vuln.cwe.join(", ")}'),
-        Text('    Description: ${vuln.description}'),
-        Text('    Port: ${vuln.port}'),
-        Text('    References: ${vuln.references}'),
-        Text('    Solutions: ${vuln.solutions}'),
-        SizedBox(height: 10),
-      ],
-    );
-  }
-
   Widget _buildDiff(Map<String, PentestDiff> diff) {
     return Builder(builder: (context) {
       if (diff.isNotEmpty) {
@@ -1261,67 +1016,15 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
       child: GridView.builder(
         itemCount: hosts.length,
         itemBuilder: (builder, index) {
-          return Padding(
-            padding: EdgeInsets.all(8),
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(
-                    width: 2, color: AppTheme.lightTheme.primaryColor),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Хост: $index'),
-                    Icon(
-                      _getIconForCPE(hosts[index].cpe),
-                      size: 50,
-                      color: AppTheme.lightTheme.primaryColor,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('IP: ${hosts[index].ip}'),
-                        Text('MAC: ${hosts[index].mac}'),
-                        Text('OS: ${hosts[index].os}'),
-                        Text('CPE: ${hosts[index].cpe}'),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
+          return HostCard(
+            index: index,
+            networkScanHost: hosts[index],
           );
         },
         gridDelegate:
             SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
       ),
     );
-  }
-
-  IconData _getIconForCPE(String cpe) {
-    if (cpe.contains("windows")) {
-      return MaterialCommunityIcons.windows;
-    }
-    if (cpe.contains("linux")) {
-      return MaterialCommunityIcons.linux;
-    }
-    if (cpe.contains("apple")) {
-      return MaterialCommunityIcons.apple;
-    }
-    if (cpe.contains("dlink")) {
-      return MaterialCommunityIcons.router_wireless;
-    }
-    if (cpe.contains("vmware")) {
-      return FontAwesome5Icon.window_maximize;
-    }
-    if (cpe.contains("axis")) {
-      return MaterialCommunityIcons.camera_gopro;
-    }
-
-    return Icons.device_unknown;
   }
 
   Widget _buildNetworkScanReport() {
@@ -1373,11 +1076,12 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
                                   Text(
                                       'Сканирование: ${taskInfo.general_info.task_name}'),
                                   OutlinedButton(
-                                      onPressed: () {
-                                        Navigator.of(context).push(createRoute(
-                                            GraphPage(report: state.report)));
-                                      },
-                                      child: Text('Посмотреть граф')),
+                                    onPressed: () {
+                                      Navigator.of(context).push(createRoute(
+                                          GraphPage(report: state.report)));
+                                    },
+                                    child: Text('Посмотреть граф'),
+                                  ),
                                   IconButton(
                                     onPressed: () {
                                       setState(() {
@@ -1451,6 +1155,299 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
                 ),
               ),
             ),
+    );
+  }
+}
+
+class HostCard extends StatelessWidget {
+  final NetworkScanHost networkScanHost;
+  final int index;
+  const HostCard({
+    super.key,
+    required this.networkScanHost,
+    required this.index,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.all(8),
+      child: FlipCard(
+        direction: FlipDirection.VERTICAL,
+        front: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(
+              width: 2,
+              color: AppTheme.lightTheme.primaryColor,
+            ),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Column(
+              children: [
+                Expanded(
+                  child: Row(
+                    children: [
+                      Expanded(
+                          child: Center(
+                              child: Text(
+                        '${index + 1}',
+                        style: AppTextStyle.lightTextTheme.titleLarge,
+                      ))),
+                      Expanded(
+                          child: Center(
+                              child: Icon(
+                        getIconForCPE(networkScanHost.cpe),
+                        size: 50,
+                      ))),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Информация",
+                          style: AppTextStyle.lightTextTheme.titleSmall,
+                        ),
+                        Text(
+                          '${networkScanHost.os}',
+                          style: AppTextStyle.lightTextTheme.titleSmall,
+                        ),
+                        Text(
+                          '${networkScanHost.cpe}',
+                          style: AppTextStyle.lightTextTheme.titleSmall,
+                        ),
+                        Text(
+                          '${networkScanHost.ip}',
+                          style: AppTextStyle.lightTextTheme.titleSmall,
+                        ),
+                        Text(
+                          '${networkScanHost.mac}',
+                          style: AppTextStyle.lightTextTheme.titleSmall,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        back: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(
+              width: 2,
+              color: AppTheme.lightTheme.primaryColor,
+            ),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Column(
+            children: [
+              Text('Back'),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class TaskCard extends StatelessWidget {
+  final ModelTask task;
+  const TaskCard({super.key, required this.task});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          if (constraints.maxWidth > 400) {
+            return Container(
+              decoration: BoxDecoration(
+                border: Border.symmetric(
+                  vertical: BorderSide(
+                    color: getTaskStatusColor(task.status),
+                    width: 5,
+                  ),
+                ),
+                borderRadius: BorderRadius.circular(15),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    offset: Offset(3, 3),
+                    color: Colors.grey,
+                    blurRadius: 15,
+                  ),
+                ],
+              ),
+              width: double.infinity,
+              child: Padding(
+                padding: EdgeInsets.all(
+                  16.0,
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(
+                      child: Text(task.number_task.toString()),
+                    ),
+                    Expanded(
+                      child: Text(
+                        task.name,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Expanded(
+                      child: Builder(
+                        builder: (context) {
+                          if (task.status == "pending") {
+                            return LoadingAnimationWidget.fourRotatingDots(
+                              color: AppTheme.lightTheme.primaryColor,
+                              size: 25,
+                            );
+                          } else {
+                            return SizedBox();
+                          }
+                        },
+                      ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Статус"),
+                          Text(
+                            task.status,
+                            style: TextStyle(
+                                color: getTaskStatusColor(task.status)),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Тип"),
+                          Text(task.type),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          } else if (constraints.maxWidth < 350) {
+            return Container(
+              decoration: BoxDecoration(
+                border: Border.symmetric(
+                    vertical: BorderSide(
+                        color: getTaskStatusColor(task.status), width: 5)),
+                borderRadius: BorderRadius.circular(15),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    offset: Offset(3, 3),
+                    color: Colors.grey,
+                    blurRadius: 15,
+                  ),
+                ],
+              ),
+              width: double.infinity, // Контейнер занимает всю ширину
+              child: Padding(
+                padding: EdgeInsets.all(
+                  16.0,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment
+                      .spaceBetween, // Разместить элементы равномерно
+                  children: [
+                    Expanded(
+                      // Растягиваем колонку по ширине
+                      child: Column(
+                        children: [
+                          Text(task.number_task.toString()),
+                          Text(
+                            task.name,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          } else {
+            return Container(
+              decoration: BoxDecoration(
+                border: Border.symmetric(
+                  vertical: BorderSide(
+                    color: getTaskStatusColor(task.status),
+                    width: 5,
+                  ),
+                ),
+                borderRadius: BorderRadius.circular(15),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    offset: Offset(3, 3),
+                    color: Colors.grey,
+                    blurRadius: 15,
+                  ),
+                ],
+              ),
+              width: double.infinity, // Контейнер занимает всю ширину
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment
+                      .spaceBetween, // Разместить элементы равномерно
+                  children: [
+                    Expanded(
+                      // Растягиваем колонку по ширине
+                      child: Column(
+                        children: [
+                          Text(task.number_task.toString()),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Статус",
+                          ),
+                          Text(
+                            task.status,
+                            style: TextStyle(
+                              color: getTaskStatusColor(
+                                task.status,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(task.type),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+        },
+      ),
     );
   }
 }

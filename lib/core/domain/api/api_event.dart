@@ -31,8 +31,8 @@ class GetPingListEvent extends ApiEvent {}
 
 class GetReport extends ApiEvent {
   final String task_type;
-  final String task_number;
-  GetReport({required this.task_number, required this.task_type});
+  final int task_ID;
+  GetReport({required this.task_ID, required this.task_type});
 }
 
 class PostTask extends ApiEvent {

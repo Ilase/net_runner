@@ -149,7 +149,7 @@ class _CreateScanPageState extends State<CreateScanPage> {
                           }
                           List<String> _groupListIp = [];
                           for (final group in _groupList) {
-                            for (final host in group.hosts) {
+                            for (final host in group.hosts!) {
                               _groupListIp.add(host.ip);
                             }
                           }
@@ -195,7 +195,7 @@ class _CreateScanPageState extends State<CreateScanPage> {
                           }
                           List<String> _groupListIp = [];
                           for (final group in _groupList) {
-                            for (final host in group.hosts) {
+                            for (final host in group.hosts!) {
                               _groupListIp.add(host.ip);
                             }
                           }
@@ -296,7 +296,7 @@ class _CreateScanPageState extends State<CreateScanPage> {
                                             });
                                           },
                                           title: Text(
-                                              'Кол-во хостов: ${list[index].hosts.length}'),
+                                              'Кол-во хостов: ${list[index].hosts!.length}'),
                                           leading: Text(index.toString()),
                                           subtitle: Text(list[index].name),
                                           trailing: Icon(

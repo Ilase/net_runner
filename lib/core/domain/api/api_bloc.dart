@@ -216,7 +216,8 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
 
   Future<void> _getReport(GetReport event, Emitter emit) async {
     final response = await http.get(
-        apiEndpoints.getUri(event.task_type, extraPaths: [event.task_number]),
+        apiEndpoints
+            .getUri(event.task_type, extraPaths: [event.task_ID.toString()]),
         headers: headers);
     if (response.statusCode == 200) {
       reportControllerCubit.getTask(jsonDecode(response.body), event.task_type);
@@ -303,7 +304,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
         throw Exception("Не удалось получить папку загрузок");
 
       String fileName = event.taskNumber;
-      String savePath = '${downloadDir.path}/$fileName';
+      String savePath = '${downloadDir.path}/$fileName.pdf';
       try {
         await dio.download(
           apiEndpoints.getUri("check-connection",
