@@ -341,7 +341,8 @@ class _GroupViewState extends State<GroupView> with TickerProviderStateMixin {
             ),
             Divider(),
             Text("Хосты"),
-            Expanded(
+            Flexible(
+              fit: FlexFit.loose,
               child: AnimatedCrossFade(
                 firstChild: ListView.builder(
                   itemCount: _selectedItemForShowInfo!.hosts!.length,

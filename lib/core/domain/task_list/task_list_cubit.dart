@@ -11,7 +11,7 @@ class TaskListCubit extends Cubit<TaskListState> {
 
   void fillTaskListFromGet(List<ModelTask> response) {
     taskList = List.from(response);
-    emit(FilledState(list: response));
+    emit(FilledState(list: taskList.reversed.toList()));
   }
 
   void updateElementInTaskList(ModelTask updatedElement) {
@@ -26,7 +26,7 @@ class TaskListCubit extends Cubit<TaskListState> {
     }
 
     /// Используем copyWith, чтобы не терять другие данные
-    emit(FilledState(list: updatedList));
+    emit(FilledState(list: updatedList.reversed.toList()));
   }
 
   void clearList() {

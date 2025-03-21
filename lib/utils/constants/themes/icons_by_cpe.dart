@@ -20,6 +20,9 @@ IconData getIconForCPE(String cpe) {
   if (cpe.contains("axis")) {
     return MaterialCommunityIcons.camera_gopro;
   }
+  if (cpe.contains("hp")) {
+    return MaterialCommunityIcons.printer;
+  }
 
   return Icons.device_unknown;
 }

@@ -11,6 +11,7 @@ class ModelTask {
   int percent;
   String name;
   String type;
+  String? workingStatus;
   List<ModelTaskHost>? hosts;
   String status;
   Map<String, dynamic> params;
@@ -26,6 +27,7 @@ class ModelTask {
     required this.type,
     required this.status,
     required this.params,
+    required this.workingStatus,
   });
   factory ModelTask.fromJson(Map<String, dynamic> json) =>
       _$ModelTaskFromJson(json);
