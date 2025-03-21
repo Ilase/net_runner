@@ -317,6 +317,7 @@ class _GroupViewState extends State<GroupView> with TickerProviderStateMixin {
                         onPressed: () {
                           setState(() {
                             _selectedItemForShowInfo = null;
+                            _viewMode = InfoModes.view;
                           });
                         },
                         icon: Icon(Icons.cancel_outlined)),
@@ -342,63 +343,41 @@ class _GroupViewState extends State<GroupView> with TickerProviderStateMixin {
             Text("Хосты"),
             Expanded(
               child: AnimatedCrossFade(
-                firstChild: Text('1'),
-                secondChild: Text('2'),
+                firstChild: ListView.builder(
+                  itemCount: _selectedItemForShowInfo!.hosts!.length,
+                  itemBuilder: (builder, index) {
+                    final host = _selectedItemForShowInfo!.hosts![index];
+                    return ListTile(
+                      title: Text(host.ip),
+                      subtitle: Text(host.name),
+                    );
+                  },
+                ),
+                secondChild: ListView.builder(
+                  itemCount: _rightList.length,
+                  itemBuilder: (builder, index) {
+                    final host = _rightList[index];
+                    bool isAdded = _rightList.any((item) =>
+                        item.ID == _selectedItemForShowInfo!.hosts![index].ID);
+                    return ListTile(
+                      title: Text(host.ip),
+                      subtitle: Text(host.name),
+                      trailing: IconButton(
+                        onPressed: () {},
+                        icon: Icon(
+                          Icons.remove_circle_outline,
+                          color: Colors.redAccent,
+                        ),
+                      ),
+                    );
+                  },
+                ),
                 crossFadeState: _viewMode == InfoModes.view
-                    ? CrossFadeState.showSecond
+                    ? CrossFadeState.showFirst
                     : CrossFadeState.showSecond,
                 duration: Duration(milliseconds: 200),
               ),
             ),
-            // Expanded(
-            //   child: AnimatedCrossFade(
-            //     firstChild: Builder(
-            //       builder: (builder) {
-            //         if ((_selectedItemForShowInfo?.hosts ?? []).isNotEmpty) {
-            //           return SingleChildScrollView(
-            //             child: Column(
-            //               children:
-            //                   _selectedItemForShowInfo!.hosts!.map((item) {
-            //                 return ListTile(
-            //                   title: Text(item.ip),
-            //                   subtitle: Text(item.name),
-            //                 );
-            //               }).toList(),
-            //             ),
-            //           );
-            //         } else {
-            //           return Text(
-            //             'Для данной группы нет хостов',
-            //             style: TextStyle(color: Colors.grey),
-            //           );
-            //         }
-            //       },
-            //     ),
-            //     secondChild: ListView.builder(
-            //       itemCount: _rightList.length,
-            //       itemBuilder: (builder, index) {
-            //         return ListTile(
-            //           title: Text(_rightList[index].ip),
-            //           trailing: IconButton(
-            //             onPressed: () {
-            //               setState(() {
-            //                 _rightList.removeAt(index);
-            //               });
-            //             },
-            //             icon: Icon(
-            //               Icons.remove_circle_outline,
-            //               color: Colors.redAccent,
-            //             ),
-            //           ),
-            //         );
-            //       },
-            //     ),
-            //     crossFadeState: _viewMode == InfoModes.view
-            //         ? CrossFadeState.showFirst
-            //         : CrossFadeState.showSecond,
-            //     duration: Duration(milliseconds: 200),
-            //   ),
-            // )
           ],
         ),
       ),

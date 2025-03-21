@@ -5,7 +5,6 @@ import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graphic/graphic.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
 import 'package:net_runner/core/domain/api/models/task/task_serial.dart';
@@ -48,7 +47,8 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
   TextEditingController _typeController = TextEditingController();
 
   ///
-  final ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController =
+      ScrollController(initialScrollOffset: double.minPositive);
 
   ///
   @override
@@ -157,19 +157,17 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
                           builder: (context, state) {
                             if (state is FilledState) {
                               final List<ModelTask> list = state.list;
-
                               return Center(
                                 child: ListView.builder(
                                   controller: _scrollController,
-                                  reverse: true,
-                                  itemCount: list.length,
+                                  reverse: false,
+                                  itemCount: list.reversed.length,
                                   itemBuilder: (context, index) {
                                     return Padding(
                                       padding: const EdgeInsets.all(16.0),
                                       child: GestureDetector(
                                         onTap: () {
                                           setState(() {
-                                            // if();
                                             _selectedItem = list[index];
                                           });
                                           if (list[index].type ==
@@ -669,76 +667,83 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
               ),
               ...diff.entries.map(
                 (entry) {
-                  return Padding(
-                    padding: EdgeInsets.all(8),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                            width: 2, color: AppTheme.lightTheme.primaryColor),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text('Хост: ${entry.key}'),
-                                Text(
-                                    'Дата последнего отчёта по хосту: ${entry.value.prev_task!.CreatedAt ?? "Not"}'),
-                              ],
-                            ),
-                            Divider(),
-                            SingleChildScrollView(
-                              child: Row(
+                  if (entry.value.prev_task == null) {
+                    return Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                              width: 2,
+                              color: AppTheme.lightTheme.primaryColor),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Expanded(
-                                    child: Column(
-                                      children: [
-                                        Text('Добавлено'),
-                                        SingleChildScrollView(
-                                          child: Column(
-                                            children: entry.value.added.entries
-                                                .map((added) =>
-                                                    _buildCollapsibleVuln(
-                                                        added.value))
-                                                .toList(),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  VerticalDivider(),
-                                  Expanded(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        Text('Убрано'),
-                                        SingleChildScrollView(
-                                          child: Column(
-                                            children: entry
-                                                .value.removed.entries
-                                                .map((removed) =>
-                                                    _buildCollapsibleVuln(
-                                                        removed.value))
-                                                .toList(),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                  Text('Хост: ${entry.key}'),
+                                  Text(
+                                      'Дата последнего отчёта по хосту: ${entry.value.prev_task!.CreatedAt ?? "Not"}'),
                                 ],
                               ),
-                            )
-                          ],
+                              Divider(),
+                              SingleChildScrollView(
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        children: [
+                                          Text('Добавлено'),
+                                          SingleChildScrollView(
+                                            child: Column(
+                                              children: entry
+                                                  .value.added.entries
+                                                  .map((added) =>
+                                                      _buildCollapsibleVuln(
+                                                          added.value))
+                                                  .toList(),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    VerticalDivider(),
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Text('Убрано'),
+                                          SingleChildScrollView(
+                                            child: Column(
+                                              children: entry
+                                                  .value.removed.entries
+                                                  .map((removed) =>
+                                                      _buildCollapsibleVuln(
+                                                          removed.value))
+                                                  .toList(),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
+                    );
+                  } else {
+                    return Text('Невозможно создать diff');
+                  }
                 },
-              ).toList(),
+              ),
             ],
           ),
         );
@@ -1185,57 +1190,72 @@ class HostCard extends StatelessWidget {
           ),
           child: Padding(
             padding: const EdgeInsets.all(4.0),
-            child: Column(
-              children: [
-                Expanded(
-                  child: Row(
-                    children: [
-                      Expanded(
-                          child: Center(
+            child: LayoutBuilder(builder: (context, constraints) {
+              if (constraints.minWidth >= 250) {
+                return Column(
+                  children: [
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Center(
                               child: Text(
-                        '${index + 1}',
-                        style: AppTextStyle.lightTextTheme.titleLarge,
-                      ))),
-                      Expanded(
-                          child: Center(
+                                '${index + 1}',
+                                style: AppTextStyle.lightTextTheme.titleLarge,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Center(
                               child: Icon(
-                        getIconForCPE(networkScanHost.cpe),
-                        size: 50,
-                      ))),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Информация",
-                          style: AppTextStyle.lightTextTheme.titleSmall,
-                        ),
-                        Text(
-                          '${networkScanHost.os}',
-                          style: AppTextStyle.lightTextTheme.titleSmall,
-                        ),
-                        Text(
-                          '${networkScanHost.cpe}',
-                          style: AppTextStyle.lightTextTheme.titleSmall,
-                        ),
-                        Text(
-                          '${networkScanHost.ip}',
-                          style: AppTextStyle.lightTextTheme.titleSmall,
-                        ),
-                        Text(
-                          '${networkScanHost.mac}',
-                          style: AppTextStyle.lightTextTheme.titleSmall,
-                        ),
-                      ],
+                                getIconForCPE(networkScanHost.cpe),
+                                size: 50,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Информация",
+                              style: AppTextStyle.lightTextTheme.titleSmall,
+                            ),
+                            Text(
+                              '${networkScanHost.os}',
+                              style: AppTextStyle.lightTextTheme.titleSmall,
+                            ),
+                            Text(
+                              '${networkScanHost.cpe}',
+                              style: AppTextStyle.lightTextTheme.titleSmall,
+                            ),
+                            Text(
+                              '${networkScanHost.ip}',
+                              style: AppTextStyle.lightTextTheme.titleSmall,
+                            ),
+                            Text(
+                              '${networkScanHost.mac}',
+                              style: AppTextStyle.lightTextTheme.titleSmall,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              } else {
+                return Center(
+                  child: Icon(
+                    getIconForCPE(networkScanHost.cpe),
+                    size: 50,
                   ),
-                ),
-              ],
-            ),
+                );
+              }
+            }),
           ),
         ),
         back: Container(
@@ -1247,10 +1267,18 @@ class HostCard extends StatelessWidget {
             ),
             borderRadius: BorderRadius.circular(15),
           ),
-          child: Column(
-            children: [
-              Text('Back'),
-            ],
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Text('Действия с хостом'),
+                OutlinedButton.icon(
+                  onPressed: () {},
+                  label: Text('Добавить в базу'),
+                  icon: Icon(Icons.add),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -1264,190 +1292,209 @@ class TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          if (constraints.maxWidth > 400) {
-            return Container(
-              decoration: BoxDecoration(
-                border: Border.symmetric(
-                  vertical: BorderSide(
-                    color: getTaskStatusColor(task.status),
-                    width: 5,
-                  ),
-                ),
-                borderRadius: BorderRadius.circular(15),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    offset: Offset(3, 3),
-                    color: Colors.grey,
-                    blurRadius: 15,
-                  ),
-                ],
-              ),
-              width: double.infinity,
-              child: Padding(
-                padding: EdgeInsets.all(
-                  16.0,
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Expanded(
-                      child: Text(task.number_task.toString()),
-                    ),
-                    Expanded(
-                      child: Text(
-                        task.name,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    Expanded(
-                      child: Builder(
-                        builder: (context) {
-                          if (task.status == "pending") {
-                            return LoadingAnimationWidget.fourRotatingDots(
-                              color: AppTheme.lightTheme.primaryColor,
-                              size: 25,
-                            );
-                          } else {
-                            return SizedBox();
-                          }
-                        },
-                      ),
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("Статус"),
-                          Text(
-                            task.status,
-                            style: TextStyle(
-                                color: getTaskStatusColor(task.status)),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("Тип"),
-                          Text(task.type),
-                        ],
-                      ),
-                    ),
-                  ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth > 400) {
+          return Container(
+            decoration: BoxDecoration(
+              border: Border.symmetric(
+                vertical: BorderSide(
+                  color: getTaskStatusColor(task.status),
+                  width: 5,
                 ),
               ),
-            );
-          } else if (constraints.maxWidth < 350) {
-            return Container(
-              decoration: BoxDecoration(
-                border: Border.symmetric(
-                    vertical: BorderSide(
-                        color: getTaskStatusColor(task.status), width: 5)),
-                borderRadius: BorderRadius.circular(15),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    offset: Offset(3, 3),
-                    color: Colors.grey,
-                    blurRadius: 15,
-                  ),
-                ],
-              ),
-              width: double.infinity, // Контейнер занимает всю ширину
-              child: Padding(
-                padding: EdgeInsets.all(
-                  16.0,
+              borderRadius: BorderRadius.circular(15),
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  offset: Offset(3, 3),
+                  color: Colors.grey,
+                  blurRadius: 15,
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment
-                      .spaceBetween, // Разместить элементы равномерно
-                  children: [
-                    Expanded(
-                      // Растягиваем колонку по ширине
-                      child: Column(
-                        children: [
-                          Text(task.number_task.toString()),
-                          Text(
-                            task.name,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
+              ],
+            ),
+            width: double.infinity,
+            child: Padding(
+              padding: EdgeInsets.all(
+                16.0,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Expanded(
+                    child: Text(task.number_task.toString()),
+                  ),
+                  Expanded(
+                    child: Text(
+                      task.name,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ],
-                ),
-              ),
-            );
-          } else {
-            return Container(
-              decoration: BoxDecoration(
-                border: Border.symmetric(
-                  vertical: BorderSide(
-                    color: getTaskStatusColor(task.status),
-                    width: 5,
                   ),
-                ),
-                borderRadius: BorderRadius.circular(15),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    offset: Offset(3, 3),
-                    color: Colors.grey,
-                    blurRadius: 15,
-                  ),
-                ],
-              ),
-              width: double.infinity, // Контейнер занимает всю ширину
-              child: Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment
-                      .spaceBetween, // Разместить элементы равномерно
-                  children: [
-                    Expanded(
-                      // Растягиваем колонку по ширине
-                      child: Column(
-                        children: [
-                          Text(task.number_task.toString()),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Статус",
-                          ),
-                          Text(
-                            task.status,
-                            style: TextStyle(
-                              color: getTaskStatusColor(
-                                task.status,
+                  Expanded(
+                    child: LayoutBuilder(builder: (context, constraints) {
+                      if (constraints.minWidth <= 600) {
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Прогресс'),
+                            Flexible(
+                              fit: FlexFit.loose,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    width: 200,
+                                    child: LinearProgressIndicator(
+                                      semanticsLabel: 'data',
+                                      borderRadius: BorderRadius.circular(15),
+                                      value: task.percent.toDouble(),
+                                      minHeight: 10,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 16,
+                                  ),
+                                  Text('${task.percent}%'),
+                                ],
                               ),
                             ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        );
+                      } else {
+                        return SizedBox();
+                      }
+                    }),
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text("Статус"),
+                        Text(
+                          task.status,
+                          style:
+                              TextStyle(color: getTaskStatusColor(task.status)),
+                        ),
+                      ],
                     ),
-                    Expanded(
-                      child: Text(task.type),
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text("Тип"),
+                        Text(task.type),
+                      ],
                     ),
-                  ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        } else if (constraints.maxWidth < 350) {
+          return Container(
+            decoration: BoxDecoration(
+              border: Border.symmetric(
+                  vertical: BorderSide(
+                      color: getTaskStatusColor(task.status), width: 5)),
+              borderRadius: BorderRadius.circular(15),
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  offset: Offset(3, 3),
+                  color: Colors.grey,
+                  blurRadius: 15,
+                ),
+              ],
+            ),
+            width: double.infinity, // Контейнер занимает всю ширину
+            child: Padding(
+              padding: EdgeInsets.all(
+                16.0,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment
+                    .spaceBetween, // Разместить элементы равномерно
+                children: [
+                  Expanded(
+                    // Растягиваем колонку по ширине
+                    child: Column(
+                      children: [
+                        Text(task.number_task.toString()),
+                        Text(
+                          task.name,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        } else {
+          return Container(
+            decoration: BoxDecoration(
+              border: Border.symmetric(
+                vertical: BorderSide(
+                  color: getTaskStatusColor(task.status),
+                  width: 5,
                 ),
               ),
-            );
-          }
-        },
-      ),
+              borderRadius: BorderRadius.circular(15),
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  offset: Offset(3, 3),
+                  color: Colors.grey,
+                  blurRadius: 15,
+                ),
+              ],
+            ),
+            width: double.infinity, // Контейнер занимает всю ширину
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment
+                    .spaceBetween, // Разместить элементы равномерно
+                children: [
+                  Expanded(
+                    // Растягиваем колонку по ширине
+                    child: Column(
+                      children: [
+                        Text(task.number_task.toString()),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Статус",
+                        ),
+                        Text(
+                          task.status,
+                          style: TextStyle(
+                            color: getTaskStatusColor(
+                              task.status,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(task.type),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+      },
     );
   }
 }
