@@ -91,6 +91,12 @@ class PutHost extends ApiEvent {
   PutHost({required this.hostId, required this.body});
 }
 
+class PutGroup extends ApiEvent {
+  final int groupId;
+  final Map<String, dynamic> body;
+  PutGroup({required this.groupId, required this.body});
+}
+
 class PostGroup extends ApiEvent {
   final Map<String, dynamic> body;
   PostGroup({required this.body});

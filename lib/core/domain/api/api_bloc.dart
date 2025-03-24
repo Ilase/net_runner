@@ -70,6 +70,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     on<DeleteGroup>(_deleteGroup);
     on<DeleteHost>(_deleteHost);
     on<PutHost>(_putHost);
+    on<PutGroup>(_putGroup);
   }
 
   Future<void> _connectToServer(
@@ -165,6 +166,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
   /// GET .../host
 
   Future<void> _getHostList(GetHostListEvent event, Emitter emit) async {
+    hostListCubit.setLoadingState();
     final response =
         await http.get(apiEndpoints.getUri("get-host-list"), headers: headers);
 
@@ -184,6 +186,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
   }
 
   Future<void> _getGroupList(GetGroupListEvent event, Emitter emit) async {
+    groupListCubit.setLoadingState();
     final response =
         await http.get(apiEndpoints.getUri("get-group-list"), headers: headers);
     if (response.statusCode == 200) {
@@ -202,6 +205,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
   }
 
   Future<void> _getPingList(GetPingListEvent event, Emitter emit) async {
+    pingListCubit.setLoadingState();
     final response =
         await http.get(apiEndpoints.getUri("get-ping-list"), headers: headers);
     if (response.statusCode == 200) {
@@ -442,6 +446,28 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     if (response.statusCode == 200) {
       notificationControllerCubit.addNotification(
           "Измененно", " Хост успешно изменён", NotificationType.success);
+      return;
+    } else {
+      notificationControllerCubit.addNotification("Ошибка изменения",
+          "${jsonDecode(response.body)}", NotificationType.error);
+      return;
+    }
+  }
+
+  Future<void> _putGroup(PutGroup event, Emitter emit) async {
+    final response = await http.put(
+      apiEndpoints.getUri(
+        "get-group-list",
+        extraPaths: [
+          event.groupId.toString(),
+        ],
+      ),
+      body: jsonEncode(event.body),
+      headers: headers,
+    );
+    if (response.statusCode == 200) {
+      notificationControllerCubit.addNotification(
+          "Измененно", " Группа успешно изменёна", NotificationType.success);
       return;
     } else {
       notificationControllerCubit.addNotification("Ошибка изменения",

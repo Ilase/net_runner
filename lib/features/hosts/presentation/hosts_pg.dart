@@ -21,9 +21,9 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
   }
 
   final List<Widget> _tabs = [
+    MetricView(),
     HostView(),
     GroupView(),
-    MetricView(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -53,16 +53,16 @@ class _HostsPgState extends State<HostsPg> with SingleTickerProviderStateMixin {
                 unselectedLabelColor: Colors.grey,
                 tabs: [
                   Tab(
+                    text: 'Сеть',
+                    icon: Icon(MaterialCommunityIcons.grain),
+                  ),
+                  Tab(
                     text: 'Хосты',
                     icon: Icon(Icons.person),
                   ),
                   Tab(
                     text: 'Группы',
                     icon: Icon(Icons.groups),
-                  ),
-                  Tab(
-                    text: 'Соотношения',
-                    icon: Icon(MaterialCommunityIcons.grain),
                   ),
                 ],
               ),

@@ -116,7 +116,6 @@ class NetworkScanReportWidget extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Краткая информация: ${generalInfo.summary}'),
                 const Divider(),
                 Text('Время сканирования (сек): ${generalInfo.elapsed}'),
                 Text('Время начала: ${generalInfo.start}'),

@@ -7,7 +7,6 @@ import 'package:net_runner/core/domain/host_list/host_list_cubit.dart';
 import 'package:net_runner/core/domain/notificatioon_controller/notification_controller_cubit.dart';
 import 'package:net_runner/core/domain/pentest_report_controller/pentest_report_controller_cubit.dart';
 import 'package:net_runner/core/domain/ping_list/ping_list_cubit.dart';
-import 'package:net_runner/core/domain/profile_page/profile_page.dart';
 import 'package:net_runner/core/domain/task_list/task_list_cubit.dart';
 import 'package:net_runner/core/domain/theme_controller/theme_controller_cubit.dart';
 import 'package:net_runner/core/domain/user_repository/user_data_cubit.dart';
@@ -21,6 +20,8 @@ import 'package:net_runner/locale/netrunner_localizations.dart';
 import 'package:net_runner/utils/routes/router.dart';
 import 'package:platform_detector/widgets/platform_type_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'core/domain/profile_page/profile_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

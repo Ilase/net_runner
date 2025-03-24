@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:net_runner/core/data/statusConverter.dart';
+import 'package:net_runner/core/data/typeConverter.dart';
 import 'package:net_runner/core/domain/api/models/task/task_serial.dart';
 import 'package:net_runner/utils/constants/themes/task_status_color.dart';
 
@@ -150,7 +152,7 @@ class _TaskCardState extends State<TaskCard>
                       children: [
                         const Text("Статус"),
                         Text(
-                          widget.task.status,
+                          statusConverter(widget.task.status),
                           style: TextStyle(
                             color: getTaskStatusColor(widget.task.status),
                           ),
@@ -163,7 +165,69 @@ class _TaskCardState extends State<TaskCard>
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const Text("Тип"),
-                        Text(widget.task.type),
+                        Text(typeConverter(widget.task.type)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        } else if (constraints.maxWidth >= 600) {
+          return Container(
+            decoration: BoxDecoration(
+              border: Border.symmetric(
+                vertical: BorderSide(
+                  color: getTaskStatusColor(widget.task.status),
+                  width: 5,
+                ),
+              ),
+              borderRadius: BorderRadius.circular(15),
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  offset: Offset(3, 3),
+                  color: Colors.grey,
+                  blurRadius: 15,
+                ),
+              ],
+            ),
+            width: double.infinity,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Expanded(
+                    child: Text(widget.task.number_task.toString()),
+                  ),
+                  Expanded(
+                    child: Text(
+                      widget.task.name,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Text("Статус"),
+                        Text(
+                          statusConverter(widget.task.status),
+                          style: TextStyle(
+                            color: getTaskStatusColor(widget.task.status),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Text("Тип"),
+                        Text(typeConverter(widget.task.type)),
                       ],
                     ),
                   ),
@@ -209,7 +273,7 @@ class _TaskCardState extends State<TaskCard>
                       children: [
                         const Text("Статус"),
                         Text(
-                          widget.task.status,
+                          statusConverter(widget.task.status),
                           style: TextStyle(
                             color: getTaskStatusColor(widget.task.status),
                           ),
@@ -218,7 +282,7 @@ class _TaskCardState extends State<TaskCard>
                     ),
                   ),
                   Expanded(
-                    child: Text(widget.task.type),
+                    child: Text(typeConverter(widget.task.type)),
                   ),
                 ],
               ),

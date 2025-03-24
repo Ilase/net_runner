@@ -10,7 +10,9 @@ class HostListFullState extends HostListState {
   HostListFullState({required this.list});
 }
 
-class EmptyState extends HostListState {}
+class HostListLoadingState extends HostListState {}
+
+class HostListEmptyState extends HostListState {}
 
 /// Кубит для хранения списка API ответов от серва
 class HostListCubit extends Cubit<HostListState> {
@@ -20,5 +22,9 @@ class HostListCubit extends Cubit<HostListState> {
   void updateState(List<Map<String, dynamic>> json) {
     List<ModelHost> hosts = json.map((e) => ModelHost.fromJson(e)).toList();
     emit(HostListFullState(list: hosts));
+  }
+
+  void setLoadingState() {
+    emit(HostListLoadingState());
   }
 }

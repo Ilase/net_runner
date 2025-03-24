@@ -10,6 +10,10 @@ class PingListCubit extends Cubit<PingListState> {
     emit(PingListFilledState(list: json));
   }
 
+  void setLoadingState() {
+    emit(PingListLoadingState());
+  }
+
   void clearState() {
     emit(PingListEmptyState());
   }

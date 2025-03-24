@@ -45,64 +45,83 @@ class _ScanningPgState extends State<ScanningPg> with TickerProviderStateMixin {
         children: [
           // Left panel (task list)
           Expanded(
-            child: TaskListPanel(
-              selectedItem: _selectedItem,
-              showFilter: _showFilter,
-              taskNameController: _taskNameController,
-              typeController: _typeController,
-              statusController: _statusController,
-              numberTaskController: _numberTaskController,
-              onRefresh: () =>
-                  context.read<ApiBloc>().add(FetchTaskListEvent()),
-              onSearch: () => context.read<ApiBloc>().add(
-                    FetchTaskListEvent(
-                      queryParams: {
-                        "name": _taskNameController.text,
-                        "type": _typeController.text,
-                        "status": _statusController.text,
-                      },
-                    ),
+            flex: 1,
+            child: LayoutBuilder(builder: (context, constraints) {
+              if (constraints.maxWidth >= 400) {
+                return TaskListPanel(
+                  selectedItem: _selectedItem,
+                  showFilter: _showFilter,
+                  taskNameController: _taskNameController,
+                  typeController: _typeController,
+                  statusController: _statusController,
+                  numberTaskController: _numberTaskController,
+                  onRefresh: () =>
+                      context.read<ApiBloc>().add(FetchTaskListEvent()),
+                  onSearch: () => context.read<ApiBloc>().add(
+                        FetchTaskListEvent(
+                          queryParams: {
+                            "name": _taskNameController.text,
+                            "type": _typeController.text,
+                            "status": _statusController.text,
+                          },
+                        ),
+                      ),
+                  onToggleFilter: () =>
+                      setState(() => _showFilter = !_showFilter),
+                  onCreateScan: () => Navigator.of(context)
+                      .push(createRoute(const CreateScanPage())),
+                  onTaskSelected: (task) {
+                    setState(() => _selectedItem = task);
+                    if (task.type == "agentInventory") {
+                      setState(() => _selectedItem = null);
+                      context
+                          .read<NotificationControllerCubit>()
+                          .addNotification(
+                            "Просмотр недоступен",
+                            "Посмотреть ивенторизацию можно на странице 'Хосты'",
+                            NotificationType.warning,
+                          );
+                    } else {
+                      context.read<ApiBloc>().add(
+                            GetReport(
+                              task_ID: task.ID,
+                              task_type: task.type,
+                            ),
+                          );
+                    }
+                  },
+                );
+              } else {
+                return Center(
+                  child: Container(
+                    child: Icon(Icons.emoji_emotions),
                   ),
-              onToggleFilter: () => setState(() => _showFilter = !_showFilter),
-              onCreateScan: () => Navigator.of(context)
-                  .push(createRoute(const CreateScanPage())),
-              onTaskSelected: (task) {
-                setState(() => _selectedItem = task);
-                if (task.type == "agentInventory") {
-                  setState(() => _selectedItem = null);
-                  context.read<NotificationControllerCubit>().addNotification(
-                        "Просмотр недоступен",
-                        "Посмотреть ивенторизацию можно на странице 'Хосты'",
-                        NotificationType.warning,
-                      );
-                } else {
-                  context.read<ApiBloc>().add(GetReport(
-                        task_ID: task.ID,
-                        task_type: task.type,
-                      ));
-                }
-              },
-            ),
+                );
+              }
+            }),
           ),
 
           // Right panel (report view)
-          BlocBuilder<ReportControllerCubit, ReportControllerState>(
-            builder: (context, state) {
-              if (state is GetPentestTaskState) {
-                return PentestReportWidget(
-                  selectedItem: _selectedItem,
-                  report: state.report,
-                  onClose: () => setState(() => _selectedItem = null),
-                );
-              } else if (state is GetNetworkScanTaskState) {
-                return NetworkScanReportWidget(
-                  selectedItem: _selectedItem,
-                  report: state.report,
-                  onClose: () => setState(() => _selectedItem = null),
-                );
-              }
-              return const SizedBox();
-            },
+          Expanded(
+            flex: 0,
+            child: BlocBuilder<ReportControllerCubit, ReportControllerState>(
+              builder: (context, state) {
+                if (state is GetPentestTaskState) {
+                  return PentestReportWidget(
+                    selectedItem: _selectedItem,
+                    report: state.report,
+                    onClose: () => setState(() => _selectedItem = null),
+                  );
+                } else if (state is GetNetworkScanTaskState) {
+                  return NetworkScanReportWidget(
+                    selectedItem: _selectedItem,
+                    report: state.report,
+                    onClose: () => setState(() => _selectedItem = null),
+                  );
+                }
+                return const SizedBox();
+              },
+            ),
           ),
         ],
       ),

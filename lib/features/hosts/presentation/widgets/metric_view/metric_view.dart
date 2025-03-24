@@ -23,6 +23,10 @@ class _MetricViewState extends State<MetricView> {
   Node? selectedNode;
   bool isSelectedNodeHost = false;
 
+  int _hostKey(int id) => id;
+
+  int _groupKey(int id) => -id;
+
   @override
   void initState() {
     super.initState();
@@ -31,22 +35,27 @@ class _MetricViewState extends State<MetricView> {
   void _onNodeSelected(Node node) {
     setState(() {
       selectedNode = node;
-      isSelectedNodeHost = hostNodes.containsKey((node.key as ValueKey).value);
+      final keyValue = (node.key as ValueKey).value;
+      isSelectedNodeHost = keyValue > 0;
     });
   }
 
   void _buildGraph(List<ModelHost> getHosts) {
     hosts = getHosts;
+    metricGraph.edges.clear();
+    metricGraph.nodes.clear();
+    hostNodes.clear();
+    groupNodes.clear();
 
     for (var host in hosts) {
-      Node hostNode = Node.Id(host.ID);
+      Node hostNode = Node.Id(_hostKey(host.ID));
       metricGraph.addNode(hostNode);
       hostNodes[host.ID] = hostNode;
 
       if (host.Groups != null) {
         for (var group in host.Groups!) {
           if (!groupNodes.containsKey(group.ID)) {
-            Node groupNode = Node.Id(group.ID);
+            Node groupNode = Node.Id(_groupKey(group.ID));
             metricGraph.addNode(groupNode);
             groupNodes[group.ID] = groupNode;
           }
@@ -63,28 +72,10 @@ class _MetricViewState extends State<MetricView> {
     }
   }
 
-  Widget _nodeWidget(String title, bool isGroup) {
-    return Container(
-      padding: EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: isGroup ? Colors.black : Colors.black,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        title,
-        style: TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-
   @override
   void dispose() {
     metricGraph.edges.clear();
     metricGraph.nodes.clear();
-
     super.dispose();
   }
 
@@ -115,16 +106,18 @@ class _MetricViewState extends State<MetricView> {
                       builder: (Node node) {
                         int id = (node.key as ValueKey).value;
                         String name = 'Unknown';
-                        bool isHost = hostNodes.containsKey(id);
+                        bool isHost = id > 0;
 
                         if (isHost) {
-                          final host =
-                              state.list.firstWhere((host) => host.ID == id);
+                          final hostId = id;
+                          final host = state.list
+                              .firstWhere((host) => host.ID == hostId);
                           name = host.name;
-                        } else if (groupNodes.containsKey(id)) {
+                        } else {
+                          final groupId = -id;
                           final group = state.list
                               .expand((host) => host.Groups ?? [])
-                              .firstWhere((group) => group.ID == id);
+                              .firstWhere((group) => group.ID == groupId);
                           name = group.name;
                         }
 
@@ -133,7 +126,7 @@ class _MetricViewState extends State<MetricView> {
                           child: Container(
                             padding: EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: isHost ? Colors.black : Colors.black,
+                              color: isHost ? Colors.blue : Colors.green,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Row(
@@ -147,7 +140,7 @@ class _MetricViewState extends State<MetricView> {
                                 ),
                                 Icon(
                                   isHost ? Icons.person : Icons.group,
-                                  color: AppTheme.lightTheme.canvasColor,
+                                  color: Colors.white,
                                 )
                               ],
                             ),
@@ -175,16 +168,19 @@ class _MetricViewState extends State<MetricView> {
                       ),
                       child: Builder(builder: (builder) {
                         if (selectedNode != null) {
-                          int id = (selectedNode!.key as ValueKey).value;
+                          final keyValue =
+                              (selectedNode!.key as ValueKey).value;
                           if (isSelectedNodeHost) {
+                            final hostId = keyValue;
                             final host =
-                                hosts.firstWhere((host) => host.ID == id);
-                            return _buildHostInfo(host); // Виджет для хоста
+                                hosts.firstWhere((host) => host.ID == hostId);
+                            return _buildHostInfo(host);
                           } else {
+                            final groupId = -keyValue;
                             final group = hosts
                                 .expand((host) => host.Groups ?? [])
-                                .firstWhere((group) => group.ID == id);
-                            return _buildGroupInfo(group); // Виджет для группы
+                                .firstWhere((group) => group.ID == groupId);
+                            return _buildGroupInfo(group);
                           }
                         } else {
                           return Center(
@@ -308,28 +304,6 @@ class _MetricViewState extends State<MetricView> {
             Divider(),
             Text("Хосты"),
             Text("Просмотр групп доступен только на вкладке \"Группы\""),
-            // Expanded(
-            //   child: Builder(builder: (builder) {
-            //     if (group.hosts != null) {
-            //       ntLogger.w(group.hosts!.isEmpty);
-            //       return ListView.builder(
-            //         itemCount: group.hosts!.length,
-            //         itemBuilder: (builder, index) {
-            //           final item = group.hosts![index];
-            //           return ListTile(
-            //             title: Text(item.ip),
-            //             subtitle: Text(item.name),
-            //           );
-            //         },
-            //       );
-            //     } else {
-            //       return Text(
-            //         'Для данной группы нет хостов',
-            //         style: TextStyle(color: Colors.grey),
-            //       );
-            //     }
-            //   }),
-            // ),
           ],
         ),
       ),

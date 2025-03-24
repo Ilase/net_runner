@@ -8,6 +8,8 @@ class GroupListFullState extends GroupListState {
   GroupListFullState({required this.list});
 }
 
+class GroupListLoadingState extends GroupListState {}
+
 class EmptyState extends GroupListState {}
 
 /// Кубит для хранения списка API ответов от серва
@@ -19,5 +21,9 @@ class GroupListCubit extends Cubit<GroupListState> {
     //List<ModelGroup> groups = json.map((e) => ModelGroup.fromJson(e)).toList();
     List<ModelGroup> groups = json.map((e) => ModelGroup.fromJson(e)).toList();
     emit(GroupListFullState(list: groups));
+  }
+
+  void setLoadingState() {
+    emit(GroupListLoadingState());
   }
 }

@@ -167,6 +167,10 @@ class _HostViewState extends State<HostView> with TickerProviderStateMixin {
                               );
                             },
                           );
+                        } else if (state is HostListLoadingState) {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
                         } else {
                           return Center(
                             child: Text("Хостов нет"),
@@ -183,17 +187,15 @@ class _HostViewState extends State<HostView> with TickerProviderStateMixin {
         VerticalDivider(),
         Expanded(
           flex: 1,
-          child: AnimatedBuilder(
-              animation: AnimationController(vsync: this),
-              builder: (builder, animation) {
-                if (_selectedItemForShowInfo != null) {
-                  return _buildHostInfo();
-                } else {
-                  return Center(
-                    child: Text("Выберите хост"),
-                  );
-                }
-              }),
+          child: Builder(builder: (builder) {
+            if (_selectedItemForShowInfo != null) {
+              return _buildHostInfo();
+            } else {
+              return Center(
+                child: Text("Выберите хост"),
+              );
+            }
+          }),
         ),
         // VerticalDivider(),
         // Expanded(flex: 1, child: _buildAddHost()),
@@ -474,9 +476,13 @@ class _HostViewState extends State<HostView> with TickerProviderStateMixin {
                                     );
                                   },
                                 );
+                              } else if (state is PingListLoadingState) {
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
                               } else {
                                 return Center(
-                                  child: Text("No ICMP hosts found"),
+                                  child: Icon(Icons.error_outline),
                                 );
                               }
                             },
@@ -529,9 +535,8 @@ class _HostViewState extends State<HostView> with TickerProviderStateMixin {
                         ),
                         Divider(),
                         Expanded(
-                          child: AnimatedBuilder(
-                            animation: AnimationController(vsync: this),
-                            builder: (context, animation) {
+                          child: Builder(
+                            builder: (context) {
                               if (_rightList.isEmpty) {
                                 return Center(
                                   child: Text('Выберите хосты для добавления'),
@@ -541,7 +546,6 @@ class _HostViewState extends State<HostView> with TickerProviderStateMixin {
                                   itemCount: _rightList.length,
                                   itemBuilder: (builder, index) {
                                     final item = _rightList[index];
-                                    // Используем контроллеры, сохраненные в состоянии
                                     item.nameController ??=
                                         TextEditingController();
                                     item.descriptionController ??=
