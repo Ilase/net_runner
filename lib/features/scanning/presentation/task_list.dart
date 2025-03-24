@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:net_runner/core/domain/task_list/task_list_cubit.dart';
+import 'package:net_runner/features/scanning/presentation/widgets/host_network_scan_card.dart';
 import 'package:net_runner/features/scanning/presentation/widgets/task_card.dart';
 import 'package:net_runner/features/scanning/presentation/widgets/task_filter.dart';
 

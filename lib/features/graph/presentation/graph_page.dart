@@ -1,87 +1,185 @@
 import 'package:flutter/material.dart';
 import 'package:graphview/GraphView.dart';
 import 'package:net_runner/core/domain/api/models/task_report_serial/networkscan/networkscan_report_serial.dart';
+import 'dart:math';
+import 'dart:async';
 
 class GraphPage extends StatefulWidget {
   final NetworkScanReport report;
 
-  GraphPage({required this.report});
+  GraphPage({super.key, required this.report});
 
   @override
   _NetworkGraphState createState() => _NetworkGraphState();
 }
 
 class _NetworkGraphState extends State<GraphPage> {
-  final Graph graph = Graph()..isTree = true;
+  final Graph graph = Graph();
   final Map<String, Node> nodeMap = {};
   final Map<String, Node> subnetNodeMap = {};
+  String? currentGroupingType;
+  final Random _random = Random();
+  bool _isBuildingGraph = false;
 
   @override
   void initState() {
     super.initState();
-    buildGraph();
+    _buildUngroupedGraph();
   }
 
-  // Функция для определения подсети по IP-адресу
-  String getSubnet(String ip) {
+  String _getSubnet16(String ip) {
     List<String> parts = ip.split('.');
     if (parts.length >= 2) {
-      return '${parts[0]}.${parts[1]}';
+      return '${parts[0]}.${parts[1]}.0.0/16';
     }
-    return ip; // Если IP не соответствует формату, возвращаем его целиком
+    return ip;
   }
 
-  void buildGraph() {
-    final List<NetworkScanHost> hosts = widget.report.hosts;
+  String _getSubnet24(String ip) {
+    List<String> parts = ip.split('.');
+    if (parts.length >= 3) {
+      return '${parts[0]}.${parts[1]}.${parts[2]}.0/24';
+    }
+    return ip;
+  }
 
-    // Node node1 = Node.Id("asd");
-    // Node node2 = Node.Id("4512");
-    // graph.addNode(node1);
-    // graph.addNode(node2);
-    // Создаем узлы для подсетей
-    for (final host in hosts) {
-      String subnet = getSubnet(host.ip);
+  Future<void> _buildUngroupedGraph() async {
+    if (_isBuildingGraph) return;
+    _isBuildingGraph = true;
+
+    setState(() {
+      currentGroupingType = null;
+      graph.edges.clear();
+      graph.nodes.clear();
+      nodeMap.clear();
+      subnetNodeMap.clear();
+    });
+
+    for (final host in widget.report.hosts) {
+      Node hostNode = Node.Id(host.ip)
+        ..position = Offset(
+          _random.nextDouble() * 1000,
+          _random.nextDouble() * 1000,
+        );
+
+      setState(() {
+        nodeMap[host.ip] = hostNode;
+        graph.addNode(hostNode);
+      });
+
+      await Future.delayed(Duration(milliseconds: 50));
+    }
+    setState(() {
+      _isBuildingGraph = false;
+    });
+  }
+
+  Future<void> _buildSubnet16Graph() async {
+    if (_isBuildingGraph) return;
+    setState(() {
+      _isBuildingGraph = true;
+    });
+
+    setState(() {
+      currentGroupingType = 'subnet16';
+      graph.edges.clear();
+      graph.nodes.clear();
+      nodeMap.clear();
+      subnetNodeMap.clear();
+    });
+
+    for (final host in widget.report.hosts) {
+      String subnet = _getSubnet16(host.ip);
       if (!subnetNodeMap.containsKey(subnet)) {
-        Node subnetNode = Node.Id(subnet);
-        subnetNodeMap[subnet] = subnetNode;
-        graph.addNode(subnetNode);
+        Node subnetNode = Node.Id(subnet)
+          ..position = Offset(
+            _random.nextDouble() * 1000,
+            _random.nextDouble() * 1000,
+          );
+
+        setState(() {
+          subnetNodeMap[subnet] = subnetNode;
+          graph.addNode(subnetNode);
+        });
+        await Future.delayed(Duration(milliseconds: 100));
       }
     }
 
-    for (final host in hosts) {
-      Node hostNode = Node.Id(host.ip);
-      nodeMap[host.ip] = hostNode;
-      graph.addNode(hostNode);
+    for (final host in widget.report.hosts) {
+      Node hostNode = Node.Id(host.ip)
+        ..position = Offset(
+          _random.nextDouble() * 1000,
+          _random.nextDouble() * 1000,
+        );
 
-      String subnet = getSubnet(host.ip);
+      String subnet = _getSubnet16(host.ip);
       Node subnetNode = subnetNodeMap[subnet]!;
-      graph.addEdge(subnetNode, hostNode);
+
+      setState(() {
+        nodeMap[host.ip] = hostNode;
+        graph.addNode(hostNode);
+        graph.addEdge(subnetNode, hostNode);
+      });
+
+      await Future.delayed(Duration(milliseconds: 50));
+    }
+    setState(() {
+      _isBuildingGraph = false;
+    });
+  }
+
+  Future<void> _buildSubnet24Graph() async {
+    if (_isBuildingGraph) return;
+    setState(() {
+      _isBuildingGraph = true;
+    });
+
+    setState(() {
+      currentGroupingType = 'subnet24';
+      graph.edges.clear();
+      graph.nodes.clear();
+      nodeMap.clear();
+      subnetNodeMap.clear();
+    });
+
+    for (final host in widget.report.hosts) {
+      String subnet = _getSubnet24(host.ip);
+      if (!subnetNodeMap.containsKey(subnet)) {
+        Node subnetNode = Node.Id(subnet)
+          ..position = Offset(
+            _random.nextDouble() * 1000,
+            _random.nextDouble() * 1000,
+          );
+
+        setState(() {
+          subnetNodeMap[subnet] = subnetNode;
+          graph.addNode(subnetNode);
+        });
+        await Future.delayed(Duration(milliseconds: 100));
+      }
     }
 
-    // for (final host in hosts) {
-    //   final currentNode = nodeMap[host.ip]!;
-    //
-    //   for (final other in hosts) {
-    //     if (host != other &&
-    //         host.mac.length >= 6 &&
-    //         other.mac.length >= 6 &&
-    //         host.mac.substring(0, 6) == other.mac.substring(0, 6)) {
-    //       graph.addEdge(currentNode, nodeMap[other.ip]!);
-    //     }
-    //   }
-    //
-    //   for (final other in hosts) {
-    //     if (host != other && host.os == other.os) {
-    //       graph.addEdge(currentNode, nodeMap[other.ip]!);
-    //     }
-    //   }
-    //
-    //   for (final other in hosts) {
-    //     if (host != other && host.cpe == other.cpe) {
-    //       graph.addEdge(currentNode, nodeMap[other.ip]!);
-    //     }
-    //   }
-    // }
+    for (final host in widget.report.hosts) {
+      Node hostNode = Node.Id(host.ip)
+        ..position = Offset(
+          _random.nextDouble() * 1000,
+          _random.nextDouble() * 1000,
+        );
+
+      String subnet = _getSubnet24(host.ip);
+      Node subnetNode = subnetNodeMap[subnet]!;
+
+      setState(() {
+        nodeMap[host.ip] = hostNode;
+        graph.addNode(hostNode);
+        graph.addEdge(subnetNode, hostNode);
+      });
+
+      await Future.delayed(Duration(milliseconds: 50));
+    }
+    setState(() {
+      _isBuildingGraph = false;
+    });
   }
 
   @override
@@ -99,19 +197,25 @@ class _NetworkGraphState extends State<GraphPage> {
         children: [
           InteractiveViewer(
             constrained: false,
-            scaleEnabled: false,
+            boundaryMargin: EdgeInsets.all(100),
+            minScale: 0.01,
+            maxScale: 5.0,
             child: GraphView(
               graph: graph,
               paint: Paint()..color = Color.fromARGB(22, 112, 168, 186),
               algorithm: FruchtermanReingoldAlgorithm(
-                attractionRate: 0.1,
-                attractionPercentage: 0.1,
-                repulsionRate: 0.01,
+                iterations: 1000,
+                attractionRate: 1.0,
+                repulsionRate: 4.0,
               ),
               builder: (node) => nodeWidget(node),
             ),
           ),
           infoPanel(),
+          if (_isBuildingGraph)
+            Center(
+              child: CircularProgressIndicator(),
+            ),
         ],
       ),
     );
@@ -125,7 +229,8 @@ class _NetworkGraphState extends State<GraphPage> {
       onTap: () {
         print("Clicked on node $nodeId");
       },
-      child: Container(
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 300),
         padding: EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: isSubnet ? Colors.green : Colors.blueAccent,
@@ -152,52 +257,77 @@ class _NetworkGraphState extends State<GraphPage> {
       child: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             statCard("Всего просканировано", widget.report.general_info.total),
             statCard("Активны", widget.report.general_info.up),
             statCard("Неактивны", widget.report.general_info.down),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: [
-                    BoxShadow(
-                      offset: Offset(3, 3),
-                      blurRadius: 15,
+            SizedBox(height: 16),
+            Container(
+              width: 200,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    offset: Offset(3, 3),
+                    blurRadius: 15,
+                    color: Colors.grey,
+                  ),
+                ],
+                color: Colors.white,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Группировка узлов',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    SizedBox(height: 8),
+                    _buildGroupingButton(
+                      icon: Icons.view_agenda_outlined,
+                      label: 'Без группировки',
+                      isActive: currentGroupingType == null,
+                      onPressed: _buildUngroupedGraph,
                       color: Colors.grey,
                     ),
-                  ],
-                  color: Colors.white,
-                ),
-                child: Column(
-                  children: [
-                    Text('Ноды'),
-                    OutlinedButton.icon(
-                      onPressed: () {
-                        setState(() {
-                          graph.addEdge(graph.nodes.first, graph.nodes.last);
-                        });
-                      },
-                      label: Text('Добавить'),
-                      icon: Icon(Icons.connect_without_contact),
+                    SizedBox(height: 8),
+                    _buildGroupingButton(
+                      icon: Icons.account_tree_outlined,
+                      label: 'Группировка /16 (X.X.0.0)',
+                      isActive: currentGroupingType == 'subnet16',
+                      onPressed: _buildSubnet16Graph,
+                      color: Colors.blue,
                     ),
-                    OutlinedButton.icon(
-                      onPressed: () {
-                        setState(() {
-                          graph.edges.clear();
-                        });
-                      },
-                      label: Text('Убрать все'),
-                      icon: Icon(Icons.connect_without_contact),
+                    SizedBox(height: 8),
+                    _buildGroupingButton(
+                      icon: Icons.account_tree_outlined,
+                      label: 'Группировка /24 (X.X.X.0)',
+                      isActive: currentGroupingType == 'subnet24',
+                      onPressed: _buildSubnet24Graph,
+                      color: Colors.green,
                     ),
                   ],
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildGroupingButton({
+    required IconData icon,
+    required String label,
+    required bool isActive,
+    required VoidCallback onPressed,
+    required Color color,
+  }) {
+    return ElevatedButton.icon(
+      onPressed: _isBuildingGraph ? null : onPressed,
+      icon: Icon(icon),
+      label: Text(label),
     );
   }
 
@@ -219,7 +349,7 @@ class _NetworkGraphState extends State<GraphPage> {
         ),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Text("$title: $value"),
+          child: Text("$title: $value", style: TextStyle(fontSize: 16)),
         ),
       ),
     );

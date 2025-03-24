@@ -1,295 +1,435 @@
 import 'package:flutter/material.dart';
-import 'package:net_runner/core/data/statusConverter.dart';
-import 'package:net_runner/core/data/typeConverter.dart';
-import 'package:net_runner/core/domain/api/models/task/task_serial.dart';
-import 'package:net_runner/utils/constants/themes/task_status_color.dart';
+import 'package:graphview/GraphView.dart';
+import 'package:net_runner/core/domain/api/models/task_report_serial/networkscan/networkscan_report_serial.dart';
+import 'dart:math';
+import 'dart:async';
 
-class TaskCard extends StatefulWidget {
-  final ModelTask task;
-  const TaskCard({super.key, required this.task});
+class GraphPage extends StatefulWidget {
+  final NetworkScanReport report;
+
+  GraphPage({required this.report});
 
   @override
-  State<TaskCard> createState() => _TaskCardState();
+  _NetworkGraphState createState() => _NetworkGraphState();
 }
 
-class _TaskCardState extends State<TaskCard>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _progressAnimation;
-  double _currentProgress = 0.0;
+class _NetworkGraphState extends State<GraphPage> {
+  final Graph graph = Graph();
+  final Map<String, Node> nodeMap = {};
+  final Map<String, Node> subnetNodeMap = {};
+  String? currentGroupingType;
+  final Random _random = Random();
+  bool _isBuildingGraph = false;
+  StreamController<bool> _loadingController =
+      StreamController<bool>.broadcast();
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 1),
-    );
-
-    _progressAnimation = Tween<double>(
-      begin: 0.0,
-      end: widget.task.percent / 100,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOut,
-    ));
-
-    _controller.forward();
-  }
-
-  void _updateProgress(int newPercent) {
-    double newProgress = newPercent / 100;
-
-    _progressAnimation = Tween<double>(
-      begin: _currentProgress, // Начинаем с текущего значения
-      end: newProgress,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOut,
-    ));
-
-    _controller.forward(from: 0); // Перезапускаем анимацию
-    _currentProgress = newProgress; // Обновляем текущее значение
-  }
-
-  @override
-  void didUpdateWidget(TaskCard oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.task.percent != widget.task.percent) {
-      _updateProgress(widget.task.percent);
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _buildUngroupedGraph();
+    });
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _loadingController.close();
     super.dispose();
+  }
+
+  String _getSubnet16(String ip) {
+    List<String> parts = ip.split('.');
+    if (parts.length >= 2) {
+      return '${parts[0]}.${parts[1]}.0.0/16';
+    }
+    return ip;
+  }
+
+  String _getSubnet24(String ip) {
+    List<String> parts = ip.split('.');
+    if (parts.length >= 3) {
+      return '${parts[0]}.${parts[1]}.${parts[2]}.0/24';
+    }
+    return ip;
+  }
+
+  Future<void> _buildUngroupedGraph() async {
+    if (_isBuildingGraph) return;
+    _isBuildingGraph = true;
+    _loadingController.add(true);
+
+    setState(() {
+      currentGroupingType = null;
+      graph.edges.clear();
+      graph.nodes.clear();
+      nodeMap.clear();
+      subnetNodeMap.clear();
+    });
+
+    try {
+      // Даем время на отрисовку очищенного состояния
+      await Future.delayed(Duration(milliseconds: 50));
+
+      // Добавляем узлы с небольшой задержкой
+      for (final host in widget.report.hosts) {
+        Node hostNode = Node.Id(host.ip)
+          ..position = Offset(
+            _random.nextDouble() * 1000,
+            _random.nextDouble() * 1000,
+          );
+
+        if (!mounted) return;
+        setState(() {
+          nodeMap[host.ip] = hostNode;
+          graph.addNode(hostNode);
+        });
+
+        await Future.delayed(Duration(milliseconds: 30));
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isBuildingGraph = false;
+        });
+      }
+      _loadingController.add(false);
+    }
+  }
+
+  Future<void> _buildSubnet16Graph() async {
+    if (_isBuildingGraph) return;
+    _isBuildingGraph = true;
+    _loadingController.add(true);
+
+    setState(() {
+      currentGroupingType = 'subnet16';
+      graph.edges.clear();
+      graph.nodes.clear();
+      nodeMap.clear();
+      subnetNodeMap.clear();
+    });
+
+    try {
+      // Даем время на отрисовку очищенного состояния
+      await Future.delayed(Duration(milliseconds: 50));
+
+      // Сначала создаем все подсети
+      for (final host in widget.report.hosts) {
+        String subnet = _getSubnet16(host.ip);
+        if (!subnetNodeMap.containsKey(subnet)) {
+          Node subnetNode = Node.Id(subnet)
+            ..position = Offset(
+              _random.nextDouble() * 1000,
+              _random.nextDouble() * 1000,
+            );
+
+          if (!mounted) return;
+          setState(() {
+            subnetNodeMap[subnet] = subnetNode;
+            graph.addNode(subnetNode);
+          });
+          await Future.delayed(Duration(milliseconds: 50));
+        }
+      }
+
+      // Затем добавляем хосты к подсетям
+      for (final host in widget.report.hosts) {
+        Node hostNode = Node.Id(host.ip)
+          ..position = Offset(
+            _random.nextDouble() * 1000,
+            _random.nextDouble() * 1000,
+          );
+
+        String subnet = _getSubnet16(host.ip);
+        Node subnetNode = subnetNodeMap[subnet]!;
+
+        if (!mounted) return;
+        setState(() {
+          nodeMap[host.ip] = hostNode;
+          graph.addNode(hostNode);
+          graph.addEdge(subnetNode, hostNode);
+        });
+
+        await Future.delayed(Duration(milliseconds: 30));
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isBuildingGraph = false;
+        });
+      }
+      _loadingController.add(false);
+    }
+  }
+
+  Future<void> _buildSubnet24Graph() async {
+    if (_isBuildingGraph) return;
+    _isBuildingGraph = true;
+    _loadingController.add(true);
+
+    setState(() {
+      currentGroupingType = 'subnet24';
+      graph.edges.clear();
+      graph.nodes.clear();
+      nodeMap.clear();
+      subnetNodeMap.clear();
+    });
+
+    try {
+      // Даем время на отрисовку очищенного состояния
+      await Future.delayed(Duration(milliseconds: 50));
+
+      // Сначала создаем все подсети
+      for (final host in widget.report.hosts) {
+        String subnet = _getSubnet24(host.ip);
+        if (!subnetNodeMap.containsKey(subnet)) {
+          Node subnetNode = Node.Id(subnet)
+            ..position = Offset(
+              _random.nextDouble() * 1000,
+              _random.nextDouble() * 1000,
+            );
+
+          if (!mounted) return;
+          setState(() {
+            subnetNodeMap[subnet] = subnetNode;
+            graph.addNode(subnetNode);
+          });
+          await Future.delayed(Duration(milliseconds: 50));
+        }
+      }
+
+      // Затем добавляем хосты к подсетям
+      for (final host in widget.report.hosts) {
+        Node hostNode = Node.Id(host.ip)
+          ..position = Offset(
+            _random.nextDouble() * 1000,
+            _random.nextDouble() * 1000,
+          );
+
+        String subnet = _getSubnet24(host.ip);
+        Node subnetNode = subnetNodeMap[subnet]!;
+
+        if (!mounted) return;
+        setState(() {
+          nodeMap[host.ip] = hostNode;
+          graph.addNode(hostNode);
+          graph.addEdge(subnetNode, hostNode);
+        });
+
+        await Future.delayed(Duration(milliseconds: 30));
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isBuildingGraph = false;
+        });
+      }
+      _loadingController.add(false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (constraints.maxWidth > 400) {
-          return Container(
-            decoration: BoxDecoration(
-              border: Border.symmetric(
-                vertical: BorderSide(
-                  color: getTaskStatusColor(widget.task.status),
-                  width: 5,
-                ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+            "${widget.report.general_info.task_number} || ${widget.report.general_info.task_name}"),
+        leading: IconButton(
+          onPressed:
+              _isBuildingGraph ? null : () => Navigator.of(context).pop(),
+          icon: Icon(Icons.arrow_back),
+        ),
+      ),
+      body: Stack(
+        children: [
+          InteractiveViewer(
+            constrained: false,
+            boundaryMargin: EdgeInsets.all(100),
+            minScale: 0.01,
+            maxScale: 5.0,
+            child: GraphView(
+              graph: graph,
+              paint: Paint()..color = Color.fromARGB(22, 112, 168, 186),
+              algorithm: FruchtermanReingoldAlgorithm(
+                iterations: 1000,
+                attractionRate: 1.0,
+                repulsionRate: 1.0,
               ),
-              borderRadius: BorderRadius.circular(15),
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  offset: Offset(3, 3),
-                  color: Colors.grey,
-                  blurRadius: 15,
-                ),
-              ],
+              builder: (node) => nodeWidget(node),
             ),
-            width: double.infinity,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Expanded(
-                    child: Text(widget.task.number_task.toString()),
-                  ),
-                  Expanded(
-                    child: Text(
-                      widget.task.name,
-                      overflow: TextOverflow.ellipsis,
+          ),
+          infoPanel(),
+          StreamBuilder<bool>(
+            stream: _loadingController.stream,
+            initialData: false,
+            builder: (context, snapshot) {
+              return Visibility(
+                visible: snapshot.data ?? false,
+                child: Center(
+                  child: Container(
+                    padding: EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.black54,
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                  ),
-                  Expanded(
-                    child: LayoutBuilder(builder: (context, constraints) {
-                      if (constraints.minWidth <= 600) {
-                        return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                                'Прогресс  ${widget.task.workingStatus ?? ""}'),
-                            Flexible(
-                              fit: FlexFit.loose,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                    width: 200,
-                                    child: AnimatedBuilder(
-                                      animation: _progressAnimation,
-                                      builder: (context, child) {
-                                        return LinearProgressIndicator(
-                                          borderRadius:
-                                              BorderRadius.circular(15),
-                                          value: _progressAnimation.value
-                                              .clamp(0.0, 1.0),
-                                          minHeight: 10,
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Text('${widget.task.percent}%'),
-                                ],
-                              ),
-                            ),
-                          ],
-                        );
-                      } else {
-                        return const SizedBox();
-                      }
-                    }),
-                  ),
-                  Expanded(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text("Статус"),
+                        CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                        SizedBox(height: 10),
                         Text(
-                          statusConverter(widget.task.status),
-                          style: TextStyle(
-                            color: getTaskStatusColor(widget.task.status),
-                          ),
+                          'Построение графа...',
+                          style: TextStyle(color: Colors.white),
                         ),
                       ],
                     ),
                   ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Text("Тип"),
-                        Text(typeConverter(widget.task.type)),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        } else if (constraints.maxWidth >= 600) {
-          return Container(
-            decoration: BoxDecoration(
-              border: Border.symmetric(
-                vertical: BorderSide(
-                  color: getTaskStatusColor(widget.task.status),
-                  width: 5,
                 ),
-              ),
-              borderRadius: BorderRadius.circular(15),
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  offset: Offset(3, 3),
-                  color: Colors.grey,
-                  blurRadius: 15,
-                ),
-              ],
-            ),
-            width: double.infinity,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Expanded(
-                    child: Text(widget.task.number_task.toString()),
-                  ),
-                  Expanded(
-                    child: Text(
-                      widget.task.name,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Text("Статус"),
-                        Text(
-                          statusConverter(widget.task.status),
-                          style: TextStyle(
-                            color: getTaskStatusColor(widget.task.status),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Text("Тип"),
-                        Text(typeConverter(widget.task.type)),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        } else {
-          return Container(
-            decoration: BoxDecoration(
-              border: Border.symmetric(
-                vertical: BorderSide(
-                  color: getTaskStatusColor(widget.task.status),
-                  width: 5,
-                ),
-              ),
-              borderRadius: BorderRadius.circular(15),
-              color: Colors.white,
-              boxShadow: const [
-                BoxShadow(
-                  offset: Offset(3, 3),
-                  color: Colors.grey,
-                  blurRadius: 15,
-                ),
-              ],
-            ),
-            width: double.infinity,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Column(
-                      children: [
-                        Text(widget.task.number_task.toString()),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text("Статус"),
-                        Text(
-                          statusConverter(widget.task.status),
-                          style: TextStyle(
-                            color: getTaskStatusColor(widget.task.status),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(typeConverter(widget.task.type)),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget nodeWidget(Node node) {
+    String nodeId = node.key?.value ?? '';
+    bool isSubnet = subnetNodeMap.containsValue(node);
+
+    return GestureDetector(
+      onTap: () {
+        print("Clicked on node $nodeId");
       },
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 300),
+        padding: EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: isSubnet ? Colors.green : Colors.blueAccent,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(
+              offset: Offset(2, 2),
+              blurRadius: 5,
+              color: Colors.black26,
+            ),
+          ],
+        ),
+        child: Text(
+          nodeId,
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
+    );
+  }
+
+  Widget infoPanel() {
+    return Align(
+      alignment: Alignment.topLeft,
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            statCard("Всего просканировано", widget.report.general_info.total),
+            statCard("Активны", widget.report.general_info.up),
+            statCard("Неактивны", widget.report.general_info.down),
+            SizedBox(height: 16),
+            Container(
+              width: 200,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    offset: Offset(3, 3),
+                    blurRadius: 15,
+                    color: Colors.grey,
+                  ),
+                ],
+                color: Colors.white,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Группировка узлов',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    SizedBox(height: 8),
+                    _buildGroupingButton(
+                      icon: Icons.view_agenda_outlined,
+                      label: 'Без группировки',
+                      isActive: currentGroupingType == null,
+                      onPressed: _buildUngroupedGraph,
+                      color: Colors.grey,
+                    ),
+                    SizedBox(height: 8),
+                    _buildGroupingButton(
+                      icon: Icons.account_tree_outlined,
+                      label: 'Группировка /16 (X.X.0.0)',
+                      isActive: currentGroupingType == 'subnet16',
+                      onPressed: _buildSubnet16Graph,
+                      color: Colors.blue,
+                    ),
+                    SizedBox(height: 8),
+                    _buildGroupingButton(
+                      icon: Icons.account_tree_outlined,
+                      label: 'Группировка /24 (X.X.X.0)',
+                      isActive: currentGroupingType == 'subnet24',
+                      onPressed: _buildSubnet24Graph,
+                      color: Colors.green,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGroupingButton({
+    required IconData icon,
+    required String label,
+    required bool isActive,
+    required VoidCallback onPressed,
+    required Color color,
+  }) {
+    return ElevatedButton.icon(
+      onPressed: _isBuildingGraph ? null : onPressed,
+      icon: Icon(icon),
+      label: Text(label),
+      style: ElevatedButton.styleFrom(
+        minimumSize: Size(double.infinity, 40),
+      ),
+    );
+  }
+
+  Widget statCard(String title, int value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Container(
+        width: 200,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              offset: Offset(3, 3),
+              blurRadius: 15,
+              color: Colors.grey,
+            ),
+          ],
+          color: Colors.white,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text("$title: $value", style: TextStyle(fontSize: 16)),
+        ),
+      ),
     );
   }
 }

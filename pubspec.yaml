@@ -55,6 +55,8 @@ dependencies:
   flutter_graph_view: ^1.1.4
   fl_chart: ^0.70.2
   flip_card: ^0.7.0
+  vector_math: ^2.1.4
+  collection: ^1.19.1
 
 dev_dependencies:
   flutter_test:
