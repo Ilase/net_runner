@@ -54,8 +54,13 @@ class PostHost extends ApiEvent {
 
 class DownloadPdf extends ApiEvent {
   final String type;
+  final int task_ID;
   final String taskNumber;
-  DownloadPdf({required this.taskNumber, required this.type});
+  DownloadPdf({
+    required this.task_ID,
+    required this.type,
+    required this.taskNumber,
+  });
 }
 
 class OpenReportInBrowser extends ApiEvent {

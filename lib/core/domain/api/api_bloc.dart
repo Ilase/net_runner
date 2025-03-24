@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/data/platform.dart';
@@ -292,53 +293,72 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
   Future<void> _downloadReportPdf(DownloadPdf event, Emitter emit) async {
     Dio dio = Dio(BaseOptions(headers: headers));
 
-    if (!platform) {
-      Directory? downloadDir;
-      if (Platform.isLinux || Platform.isWindows) {
-        downloadDir = await getDownloadsDirectory();
-      } else {
-        throw UnsupportedError("Поддерживаются только Windows и Linux");
-      }
+    try {
+      if (!kIsWeb) {
+        Directory? downloadDir;
 
-      if (downloadDir == null)
-        throw Exception("Не удалось получить папку загрузок");
+        if (Platform.isLinux || Platform.isWindows) {
+          downloadDir = await getDownloadsDirectory();
 
-      String fileName = event.taskNumber;
-      String savePath = '${downloadDir.path}/$fileName.pdf';
-      try {
+          if (Platform.isLinux && downloadDir == null) {
+            downloadDir =
+                Directory('${Platform.environment['HOME']}/Downloads');
+            if (!await downloadDir.exists()) {
+              await downloadDir.create(recursive: true);
+            }
+          }
+        } else {
+          throw UnsupportedError("Поддерживаются только Windows и Linux");
+        }
+
+        if (downloadDir == null) {
+          throw Exception("Не удалось получить папку загрузок");
+        }
+
+        // Создаем имя файла без недопустимых символов
+        String fileName =
+            '${event.taskNumber}-${DateTime.now().millisecondsSinceEpoch}.pdf'
+                .replaceAll(RegExp(r'[\\/:*?"<>|]'),
+                    '_'); // Заменяем недопустимые символы
+
+        String savePath = '${downloadDir.path}/$fileName';
+
         await dio.download(
-          apiEndpoints.getUri("check-connection",
-              extraPaths: [event.type, event.taskNumber, "pdf"]).toString(),
+          apiEndpoints.getUri("check-connection", extraPaths: [
+            event.type,
+            event.task_ID.toString(),
+            "pdf"
+          ]).toString(),
           savePath,
         );
+
         _openFileExplorer(downloadDir.path);
         notificationControllerCubit.addNotification(
-          "Успешно ",
-          "Проверьте папку Загрузок на вышем устройстве",
+          "Успешно",
+          "Проверьте папку Загрузок на вашем устройстве",
           NotificationType.success,
         );
-      } catch (e) {
-        notificationControllerCubit.addNotification(
-          "Ошибка",
-          e.toString(),
-          NotificationType.success,
+      } else {
+        String fileName = '${event.taskNumber}.pdf';
+        final response = await dio.get(
+          apiEndpoints.getUri(event.type,
+              extraPaths: [event.taskNumber, "pdf"]).toString(),
+          options: Options(responseType: ResponseType.bytes, headers: headers),
         );
-        ntLogger.e(e.toString());
+        final blob = html.Blob([response.data], 'application/pdf');
+        final anchor =
+            html.AnchorElement(href: html.Url.createObjectUrlFromBlob(blob))
+              ..setAttribute('download', fileName)
+              ..click();
+        html.Url.revokeObjectUrl(anchor.href!);
       }
-    } else {
-      String fileName = event.taskNumber;
-
-      final response = await dio.get(
-        apiEndpoints.getUri(event.type,
-            extraPaths: [event.taskNumber, "pdf"]).toString(),
-        options: Options(responseType: ResponseType.bytes),
+    } catch (e) {
+      notificationControllerCubit.addNotification(
+        "Ошибка",
+        e.toString(),
+        NotificationType.error,
       );
-      final blob = html.Blob([response.data], 'application/octet-stream');
-      final anchor =
-          html.AnchorElement(href: html.Url.createObjectUrlFromBlob(blob))
-            ..setAttribute('download', fileName)
-            ..click();
-      html.Url.revokeObjectUrl(anchor.href!);
+      ntLogger.e("Ошибка при загрузке файла: $e");
     }
   }
 
