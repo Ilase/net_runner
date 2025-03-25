@@ -1,6 +1,7 @@
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:net_runner/core/domain/api/api_bloc.dart';
 import 'package:net_runner/core/domain/api/models/task/task_serial.dart';
 import 'package:net_runner/core/domain/api/models/task_report_serial/networkscan/networkscan_report_serial.dart';
 import 'package:net_runner/core/domain/host_list/host_list_cubit.dart';
@@ -13,7 +14,10 @@ class HostCard extends StatelessWidget {
   final NetworkScanHost networkScanHost;
   final int index;
 
-  const HostCard({
+  final _addingNameController = TextEditingController();
+  final _addingDescriptionController = TextEditingController();
+
+  HostCard({
     super.key,
     required this.networkScanHost,
     required this.index,
@@ -134,32 +138,91 @@ class HostCard extends StatelessWidget {
                         onPressed: () {
                           showDialog(
                             context: context,
+                            barrierColor: Colors.black.withOpacity(0.8),
                             builder: (builder) {
-                              return Container(
-                                width: MediaQuery.of(context).size.height / 2,
-                                height: MediaQuery.of(context).size.height / 2,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(15),
-                                  color: Colors.white,
-                                ),
-                                child: Column(
-                                  children: [
-                                    Column(
-                                      children: [
-                                        Text('ip'),
-                                      ],
-                                    ),
-                                    OutlinedButton.icon(
-                                      onPressed: () {},
-                                      label: Text("Подтвердить"),
-                                    )
-                                  ],
+                              return Dialog(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      SizedBox(
+                                        width: 500,
+                                        child: Column(
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text(networkScanHost.ip),
+                                                  Icon(getIconForCPE(
+                                                      networkScanHost.cpe)),
+                                                ],
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: TextField(
+                                                controller:
+                                                    _addingNameController,
+                                                decoration: InputDecoration(
+                                                  label: Text("Имя хоста"),
+                                                ),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: TextField(
+                                                controller:
+                                                    _addingDescriptionController,
+                                                decoration: InputDecoration(
+                                                  label: Text("Описание"),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      OutlinedButton.icon(
+                                        onPressed: () {
+                                          context.read<ApiBloc>().add(
+                                                PostHost(
+                                                  body: {
+                                                    "ip": networkScanHost.ip,
+                                                    "name":
+                                                        _addingNameController
+                                                            .value.text,
+                                                    "description":
+                                                        _addingDescriptionController
+                                                            .value.text,
+                                                  },
+                                                ),
+                                              );
+                                          _addingDescriptionController.clear();
+                                          _addingNameController.clear();
+
+                                          context
+                                              .read<ApiBloc>()
+                                              .add(GetHostListEvent());
+                                          Navigator.of(context).pop();
+                                        },
+                                        label: Text("Подтвердить"),
+                                        icon: Icon(Icons.check),
+                                      )
+                                    ],
+                                  ),
                                 ),
                               );
                             },
                           );
                         },
-                        label: Text('Добавить в базу'),
+                        label: Text('Добавить хост'),
                         icon: Icon(Icons.add),
                       );
                     }
@@ -343,15 +406,13 @@ class TaskCard extends StatelessWidget {
                 ),
               ],
             ),
-            width: double.infinity, // Контейнер занимает всю ширину
+            width: double.infinity,
             child: Padding(
               padding: EdgeInsets.all(16.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment
-                    .spaceBetween, // Разместить элементы равномерно
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    // Растягиваем колонку по ширине
                     child: Column(
                       children: [
                         Text(task.number_task.toString()),

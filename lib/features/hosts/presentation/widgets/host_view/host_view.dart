@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:net_runner/core/data/converters/byteConverter.dart';
+import 'package:net_runner/core/data/data_converter.dart';
 import 'package:net_runner/core/data/ip_input_formatter.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
 import 'package:net_runner/core/domain/api/models/host/host_serial.dart';
@@ -332,42 +334,6 @@ class _HostViewState extends State<HostView> with TickerProviderStateMixin {
             ),
             Divider(),
             Text("Инвентаризация"),
-            Builder(builder: (builder) {
-              if (_selectedItemForShowInfo!.inventory != null) {
-                final inventory = _selectedItemForShowInfo!.inventory;
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                        'Время получания данных: ${_selectedItemForShowInfo!.UpdatedAt}'),
-                    SizedBox(
-                      height: 8,
-                    ),
-                    Text("Имя хоста: ${inventory!.name}"),
-                    Text("Операционная система: ${inventory.os}"),
-                    Text("Версия системы: ${inventory.os_version}"),
-                    Text("Полное имя ОС: ${inventory.full_os_name}"),
-                    SizedBox(
-                      height: 8,
-                    ),
-                    Text("Версия ядра: ${inventory.kernel_version}"),
-                    Text("Процессор: ${inventory.cpu_name}"),
-                    Text("Кол-во ядер процессора: ${inventory.cpu_cores}"),
-                    Text("Оперативная память: ${inventory.ram}"),
-                    SizedBox(
-                      height: 8,
-                    ),
-                    Text(
-                        "Время работы со времени сканирования: ${inventory.uptime}"),
-                  ],
-                );
-              } else {
-                return Text(
-                  'Для данного хоста инвентаризация не проведена',
-                  style: TextStyle(color: Colors.grey),
-                );
-              }
-            }),
           ],
         ),
       ),
