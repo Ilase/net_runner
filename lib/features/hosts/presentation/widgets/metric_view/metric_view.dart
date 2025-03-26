@@ -44,16 +44,27 @@ class _MetricViewState extends State<MetricView> {
     for (var host in hosts) {
       if (host.Groups != null) {
         for (final group in host.Groups!) {
+          final random = Random();
           if (!addedGroupIds.contains(group.ID)) {
             final groupNode = Node(
               id: group.ID + 1000,
               position: Offset(
-                  Random().nextDouble() * 200, Random().nextDouble() * 200),
+                random.nextDouble() * 600 + 20,
+                random.nextDouble() * 800 + 20,
+              ),
               child: Container(
-                decoration: BoxDecoration(color: Colors.blue),
+                decoration: BoxDecoration(
+                  color: Colors.green,
+                  borderRadius: BorderRadius.circular(15),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(4.0),
-                  child: Text(group.name),
+                  child: Row(
+                    children: [
+                      Text(group.name),
+                      Icon(Icons.group),
+                    ],
+                  ),
                 ),
               ),
             );
@@ -65,15 +76,24 @@ class _MetricViewState extends State<MetricView> {
     }
 
     for (var host in hosts) {
+      final random = Random();
       Node hostNode = Node(
         id: host.ID,
-        position:
-            Offset(Random().nextDouble() * 200, Random().nextDouble() * 200),
+        position: Offset(
+          random.nextDouble() * 600 + 20,
+          random.nextDouble() * 800 + 20,
+        ),
         child: Container(
-          decoration: BoxDecoration(color: Colors.grey),
+          decoration: BoxDecoration(
+              color: Colors.blue, borderRadius: BorderRadius.circular(15)),
           child: Padding(
             padding: const EdgeInsets.all(4.0),
-            child: Text(host.name),
+            child: Row(
+              children: [
+                Text(host.name),
+                Icon(Icons.person),
+              ],
+            ),
           ),
         ),
       );
@@ -108,12 +128,14 @@ class _MetricViewState extends State<MetricView> {
             child: Stack(
               children: [
                 InteractiveViewer(
-                  minScale: 0.1,
-                  maxScale: 2,
+                  minScale: 1.1,
+                  maxScale: 20,
                   child: ForceGraph(
                     nodes: hostNodes,
                     edges: graphEdges,
+                    repulsion: 10000,
                     nodeRadius: 20,
+                    springLength: 200,
                   ),
                 ),
               ],
