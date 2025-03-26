@@ -1,10 +1,11 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:graphview/GraphView.dart';
+import 'package:net_runner/core/data/force_graph/force_graph.dart';
 import 'package:net_runner/core/domain/api/models/group/group_serial.dart';
 import 'package:net_runner/core/domain/api/models/host/host_serial.dart';
 import 'package:net_runner/core/domain/host_list/host_list_cubit.dart';
-import 'package:net_runner/utils/constants/themes/app_themes.dart';
 import 'package:net_runner/utils/constants/themes/text_styles.dart';
 
 class MetricView extends StatefulWidget {
@@ -15,58 +16,78 @@ class MetricView extends StatefulWidget {
 }
 
 class _MetricViewState extends State<MetricView> {
-  final Graph metricGraph = Graph();
-  FruchtermanReingoldAlgorithm algorithm = FruchtermanReingoldAlgorithm();
-  final Map<int, Node> hostNodes = {};
-  final Map<int, Node> groupNodes = {};
+  final List<Node> hostNodes = [];
+  final List<Edge> graphEdges = [];
   List<ModelHost> hosts = [];
   Node? selectedNode;
   bool isSelectedNodeHost = false;
-
-  int _hostKey(int id) => id;
-
-  int _groupKey(int id) => -id;
 
   @override
   void initState() {
     super.initState();
   }
 
-  void _onNodeSelected(Node node) {
-    setState(() {
-      selectedNode = node;
-      final keyValue = (node.key as ValueKey).value;
-      isSelectedNodeHost = keyValue > 0;
-    });
-  }
+  // void _onNodeSelected(Node node) {
+  //   setState(() {
+  //     selectedNode = node;
+  //     final keyValue = (node.key as ValueKey).value;
+  //     isSelectedNodeHost = keyValue > 0;
+  //   });
+  // }
 
   void _buildGraph(List<ModelHost> getHosts) {
     hosts = getHosts;
-    metricGraph.edges.clear();
-    metricGraph.nodes.clear();
     hostNodes.clear();
-    groupNodes.clear();
+    graphEdges.clear();
+
+    final Set<int> addedGroupIds = {};
+    for (var host in hosts) {
+      if (host.Groups != null) {
+        for (final group in host.Groups!) {
+          if (!addedGroupIds.contains(group.ID)) {
+            final groupNode = Node(
+              id: group.ID + 1000,
+              position: Offset(
+                  Random().nextDouble() * 200, Random().nextDouble() * 200),
+              child: Container(
+                decoration: BoxDecoration(color: Colors.blue),
+                child: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Text(group.name),
+                ),
+              ),
+            );
+            hostNodes.add(groupNode);
+            addedGroupIds.add(group.ID);
+          }
+        }
+      }
+    }
 
     for (var host in hosts) {
-      Node hostNode = Node.Id(_hostKey(host.ID));
-      metricGraph.addNode(hostNode);
-      hostNodes[host.ID] = hostNode;
+      Node hostNode = Node(
+        id: host.ID,
+        position:
+            Offset(Random().nextDouble() * 200, Random().nextDouble() * 200),
+        child: Container(
+          decoration: BoxDecoration(color: Colors.grey),
+          child: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Text(host.name),
+          ),
+        ),
+      );
+      hostNodes.add(hostNode);
 
       if (host.Groups != null) {
-        for (var group in host.Groups!) {
-          if (!groupNodes.containsKey(group.ID)) {
-            Node groupNode = Node.Id(_groupKey(group.ID));
-            metricGraph.addNode(groupNode);
-            groupNodes[group.ID] = groupNode;
+        for (final group in host.Groups!) {
+          final groupIndex =
+              hostNodes.indexWhere((node) => node.id == group.ID + 1000);
+          if (groupIndex != -1) {
+            graphEdges.add(
+              Edge(fromId: host.ID, toId: group.ID + 1000),
+            );
           }
-          metricGraph.addEdge(
-            hostNodes[host.ID]!,
-            groupNodes[group.ID]!,
-            paint: Paint()
-              ..color = Colors.black
-              ..strokeWidth = 2
-              ..style = PaintingStyle.stroke,
-          );
         }
       }
     }
@@ -74,8 +95,6 @@ class _MetricViewState extends State<MetricView> {
 
   @override
   void dispose() {
-    metricGraph.edges.clear();
-    metricGraph.nodes.clear();
     super.dispose();
   }
 
@@ -84,113 +103,19 @@ class _MetricViewState extends State<MetricView> {
     return BlocBuilder<HostListCubit, HostListState>(
       builder: (context, state) {
         if (state is HostListFullState) {
-          if (metricGraph.nodes.isEmpty) _buildGraph(state.list);
-
+          if (hostNodes.isEmpty) _buildGraph(state.list);
           return Center(
-            child: Row(
+            child: Stack(
               children: [
-                Expanded(
-                  flex: 4,
-                  child: InteractiveViewer(
-                    scaleEnabled: false,
-                    constrained: false,
-                    child: GraphView(
-                      paint: Paint()
-                        ..color = Colors.black
-                        ..strokeWidth = 1
-                        ..style = PaintingStyle.stroke
-                        ..blendMode = BlendMode.exclusion
-                        ..strokeCap = StrokeCap.butt,
-                      graph: metricGraph,
-                      algorithm: algorithm,
-                      builder: (Node node) {
-                        int id = (node.key as ValueKey).value;
-                        String name = 'Unknown';
-                        bool isHost = id > 0;
-
-                        if (isHost) {
-                          final hostId = id;
-                          final host = state.list
-                              .firstWhere((host) => host.ID == hostId);
-                          name = host.name;
-                        } else {
-                          final groupId = -id;
-                          final group = state.list
-                              .expand((host) => host.Groups ?? [])
-                              .firstWhere((group) => group.ID == groupId);
-                          name = group.name;
-                        }
-
-                        return GestureDetector(
-                          onTap: () => _onNodeSelected(node),
-                          child: Container(
-                            padding: EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: isHost ? Colors.blue : Colors.green,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Row(
-                              children: [
-                                Text(
-                                  name,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Icon(
-                                  isHost ? Icons.person : Icons.group,
-                                  color: Colors.white,
-                                )
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+                InteractiveViewer(
+                  minScale: 0.1,
+                  maxScale: 2,
+                  child: ForceGraph(
+                    nodes: hostNodes,
+                    edges: graphEdges,
+                    nodeRadius: 20,
                   ),
                 ),
-                Expanded(
-                  flex: 2,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: AppTheme.lightTheme.scaffoldBackgroundColor,
-                        borderRadius: BorderRadius.circular(15),
-                        boxShadow: [
-                          BoxShadow(
-                            offset: Offset(3, 3),
-                            color: Colors.grey,
-                            blurRadius: 15,
-                          )
-                        ],
-                      ),
-                      child: Builder(builder: (builder) {
-                        if (selectedNode != null) {
-                          final keyValue =
-                              (selectedNode!.key as ValueKey).value;
-                          if (isSelectedNodeHost) {
-                            final hostId = keyValue;
-                            final host =
-                                hosts.firstWhere((host) => host.ID == hostId);
-                            return _buildHostInfo(host);
-                          } else {
-                            final groupId = -keyValue;
-                            final group = hosts
-                                .expand((host) => host.Groups ?? [])
-                                .firstWhere((group) => group.ID == groupId);
-                            return _buildGroupInfo(group);
-                          }
-                        } else {
-                          return Center(
-                            child: Text('Выберите ноду'),
-                          );
-                        }
-                      }),
-                    ),
-                  ),
-                )
               ],
             ),
           );

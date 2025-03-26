@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
@@ -19,9 +18,9 @@ class Node {
 }
 
 class Edge {
-  final int from;
-  final int to;
-  Edge({required this.from, required this.to});
+  final int fromId;
+  final int toId;
+  Edge({required this.fromId, required this.toId});
 }
 
 class ForceGraph extends StatefulWidget {
@@ -81,16 +80,13 @@ class _ForceGraphState extends State<ForceGraph>
   void _updatePhysics() {
     if (areaSize == Size.zero) return;
 
-    List<Offset> forces = List.generate(
-      widget.nodes.length,
-      (_) => Offset.zero,
-    );
+    List<Offset> forces =
+        List.generate(widget.nodes.length, (_) => Offset.zero);
 
-    // calculating forces
     for (int i = 0; i < widget.nodes.length; i++) {
       for (int j = i + 1; j < widget.nodes.length; j++) {
         Offset delta = widget.nodes[j].position - widget.nodes[i].position;
-        double distance = delta.distance + 0.1; // избегаем деления на 0
+        double distance = delta.distance + 0.1;
         Offset direction = delta / distance;
         double force = repulsion / (distance * distance);
         forces[i] -= direction * force;
@@ -98,37 +94,39 @@ class _ForceGraphState extends State<ForceGraph>
       }
     }
 
-//  calculating spring
     for (Edge edge in widget.edges) {
-      Node n1 = widget.nodes[edge.from];
-      Node n2 = widget.nodes[edge.to];
-      Offset delta = n2.position - n1.position;
+      final fromNode =
+          widget.nodes.firstWhere((node) => node.id == edge.fromId);
+      final toNode = widget.nodes.firstWhere((node) => node.id == edge.toId);
+
+      Offset delta = toNode.position - fromNode.position;
       double distance = delta.distance + 0.1;
       Offset direction = delta / distance;
       double displacement = distance - springLength;
       Offset springForce = direction * (springStiffness * displacement);
-      forces[edge.from] += springForce;
-      forces[edge.to] -= springForce;
+
+      final fromIndex = widget.nodes.indexOf(fromNode);
+      final toIndex = widget.nodes.indexOf(toNode);
+
+      if (fromIndex != -1 && toIndex != -1) {
+        forces[fromIndex] += springForce;
+        forces[toIndex] -= springForce;
+      }
     }
 
-// update with area constraints
     for (int i = 0; i < widget.nodes.length; i++) {
       Node node = widget.nodes[i];
       if (node.isDragging) continue;
+
       Offset acceleration = forces[i];
       node.velocity = (node.velocity + acceleration) * damping;
-      node.position = node.position + node.velocity * 0.1;
+      node.position += node.velocity * 0.1;
 
-      // !!!!
       node.position = Offset(
-        node.position.dx.clamp(
-          widget.nodeRadius,
-          areaSize.width - widget.nodeRadius,
-        ),
-        node.position.dy.clamp(
-          widget.nodeRadius,
-          areaSize.height - widget.nodeRadius,
-        ),
+        node.position.dx
+            .clamp(widget.nodeRadius, areaSize.width - widget.nodeRadius),
+        node.position.dy
+            .clamp(widget.nodeRadius, areaSize.height - widget.nodeRadius),
       );
     }
   }
@@ -196,9 +194,10 @@ class _GraphPainter extends CustomPainter {
       ..strokeWidth = 2;
 
     for (Edge edge in edges) {
-      Offset p1 = nodes[edge.from].position;
-      Offset p2 = nodes[edge.to].position;
-      canvas.drawLine(p1, p2, paint);
+      final fromNode = nodes.firstWhere((node) => node.id == edge.fromId);
+      final toNode = nodes.firstWhere((node) => node.id == edge.toId);
+
+      canvas.drawLine(fromNode.position, toNode.position, paint);
     }
   }
 

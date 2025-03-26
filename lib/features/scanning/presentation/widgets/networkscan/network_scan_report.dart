@@ -6,6 +6,7 @@ import 'package:net_runner/core/domain/api/models/task_report_serial/networkscan
 import 'package:net_runner/core/domain/theme_controller/theme_controller_cubit.dart';
 import 'package:net_runner/features/graph/presentation/graph_page.dart';
 import 'package:net_runner/features/scanning/presentation/widgets/host_network_scan_card.dart';
+import 'package:net_runner/features/scanning/presentation/widgets/task_actions/task_actions.dart';
 import 'package:net_runner/utils/constants/themes/text_styles.dart';
 import 'package:net_runner/utils/routes/router.dart';
 
@@ -104,28 +105,41 @@ class NetworkScanReportWidget extends StatelessWidget {
       child: Column(
         children: [
           const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(
-                width: 2,
-                color: context.read<ThemeControllerCubit>().state.primaryColor,
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(
+                      width: 2,
+                      color: context
+                          .read<ThemeControllerCubit>()
+                          .state
+                          .primaryColor,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Divider(),
+                      Text('Время сканирования (сек): ${generalInfo.elapsed}'),
+                      Text('Время начала: ${generalInfo.start}'),
+                      Text('Время окончания: ${generalInfo.end}'),
+                      const Divider(),
+                      Text('Всего просканировано целей: ${generalInfo.total},'),
+                      Text('Целей доступно: ${generalInfo.up}'),
+                      Text('Целей недоступно: ${generalInfo.down}'),
+                    ],
+                  ),
+                ),
               ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Divider(),
-                Text('Время сканирования (сек): ${generalInfo.elapsed}'),
-                Text('Время начала: ${generalInfo.start}'),
-                Text('Время окончания: ${generalInfo.end}'),
-                const Divider(),
-                Text('Всего просканировано целей: ${generalInfo.total},'),
-                Text('Целей доступно: ${generalInfo.up}'),
-                Text('Целей недоступно: ${generalInfo.down}'),
-              ],
-            ),
+              SizedBox(
+                width: 8,
+              ),
+              TaskActions(),
+            ],
           ),
           const SizedBox(height: 16),
         ],
