@@ -1,6 +1,8 @@
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:net_runner/core/data/converters/statusConverter.dart';
+import 'package:net_runner/core/data/converters/typeConverter.dart';
 import 'package:net_runner/core/domain/api/api_bloc.dart';
 import 'package:net_runner/core/domain/api/models/task/task_serial.dart';
 import 'package:net_runner/core/domain/api/models/task_report_serial/networkscan/networkscan_report_serial.dart';
@@ -325,7 +327,7 @@ class TaskCard extends StatelessWidget {
                       children: [
                         Text("Статус"),
                         Text(
-                          task.status,
+                          statusConverter(task.status),
                           style: TextStyle(
                             color: getTaskStatusColor(task.status),
                           ),
@@ -338,7 +340,7 @@ class TaskCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text("Тип"),
-                        Text(task.type),
+                        Text(typeConverter(task.type)),
                       ],
                     ),
                   ),

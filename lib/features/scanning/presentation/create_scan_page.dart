@@ -414,7 +414,7 @@ class _CreateScanPageState extends State<CreateScanPage> {
   Widget _buildAgentInventory() {
     return Center(
       child:
-          Text('Инвенторизация происходит на хостах с установленным агентом'),
+          Text('Инвентаризация происходит на хостах с установленным агентом'),
     );
   }
 

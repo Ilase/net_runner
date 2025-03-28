@@ -1,8 +1,9 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:graphview/GraphView.dart';
 import 'package:net_runner/core/domain/api/models/task_report_serial/networkscan/networkscan_report_serial.dart';
-import 'dart:math';
-import 'dart:async';
 
 class GraphPage extends StatefulWidget {
   final NetworkScanReport report;
@@ -25,6 +26,14 @@ class _NetworkGraphState extends State<GraphPage> {
   void initState() {
     super.initState();
     _buildUngroupedGraph();
+  }
+
+  String _getSubnet8(String ip) {
+    List<String> parts = ip.split('.');
+    if (parts.length >= 2) {
+      return '${parts[0]}.${parts[1]}.0.0/16';
+    }
+    return ip;
   }
 
   String _getSubnet16(String ip) {

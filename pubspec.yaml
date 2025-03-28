@@ -57,6 +57,8 @@ dependencies:
   flip_card: ^0.7.0
   vector_math: ^2.1.4
   collection: ^1.19.1
+  websocket_universal: ^1.2.5
+  universal_io: ^2.2.2
 
 dev_dependencies:
   flutter_test:

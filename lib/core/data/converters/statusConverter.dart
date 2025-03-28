@@ -1,5 +1,5 @@
 String statusConverter(String status) {
-  if (status == "pending") {
+  if (status == "working") {
     return "В процессе";
   }
   if (status == "error") {
