@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as http;
 import 'package:net_runner/core/data/logger.dart';
 import 'package:net_runner/core/domain/api/api_endpoints.dart';
 import 'package:net_runner/core/domain/api/models/task/task_serial.dart';
@@ -39,6 +38,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
   ///
   late wsch.WebSocketChannel webSocketChannel;
   StreamSubscription? _webSocketSubscription;
+  Dio dio = Dio();
 
   ///
   //static const Map<String, dynamic> apiEndpoints = {};
@@ -120,13 +120,13 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
       FetchTaskListEvent event, Emitter emit) async {
     taskListCubit.clearList();
 
-    final response = await http.get(
+    final response = await dio.getUri(
         apiEndpoints.getUri("get-task-list", queryParams: event.queryParams),
-        headers: headers);
+        options: Options(headers: headers));
 
     if (response.statusCode == 200) {
       // Decode the JSON response into a List<dynamic>
-      final List<dynamic> jsonList = jsonDecode(response.body);
+      final List<dynamic> jsonList = response.data;
 
       // Convert List<dynamic> to List<ModelTask>
       final List<ModelTask> tasks = jsonList
@@ -138,7 +138,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     } else {
       notificationControllerCubit.addNotification(
         "Ошибка данных",
-        "Статус: ${response.statusCode}. ${response.body}",
+        "Статус: ${response.statusCode}. ${response.data}",
         NotificationType.error,
       );
     }
@@ -147,15 +147,15 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
   /// Функция для проверки подключения к серверу
   /// return bool true | false
   Future<bool> _checkConnectionToServer() async {
-    final response = await http.get(apiEndpoints.getUri("check-connection"),
-        headers: headers);
+    final response = await dio.getUri(apiEndpoints.getUri("check-connection"),
+        options: Options(headers: headers));
     if (response.statusCode == 200 &&
-        jsonDecode(response.body)["netrunnerStatus"] == "up") {
+        response.data["netrunnerStatus"] == "up") {
       return true;
     }
     notificationControllerCubit.addNotification(
         "Ошибка данных",
-        "Статус: ${response.statusCode}. ${jsonDecode(response.body)["error"]}",
+        "Статус: ${response.statusCode}. ${jsonDecode(response.data)["error"]}",
         NotificationType.error);
     return false;
   }
@@ -165,11 +165,11 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
 
   Future<void> _getHostList(GetHostListEvent event, Emitter emit) async {
     hostListCubit.setLoadingState();
-    final response =
-        await http.get(apiEndpoints.getUri("get-host-list"), headers: headers);
+    final response = await dio.getUri(apiEndpoints.getUri("get-host-list"),
+        options: Options(headers: headers));
 
     if (response.statusCode == 200) {
-      final List<dynamic> jsonList = jsonDecode(response.body);
+      final List<dynamic> jsonList = response.data;
       final List<Map<String, dynamic>> jsonMapList =
           jsonList.cast<Map<String, dynamic>>();
       hostListCubit.updateState(jsonMapList);
@@ -177,7 +177,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     } else {
       notificationControllerCubit.addNotification(
           "Ошибка данных",
-          "Статус: ${response.statusCode}. ${response.body}",
+          "Статус: ${response.statusCode}. ${response.data}",
           NotificationType.error);
       return;
     }
@@ -185,10 +185,10 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
 
   Future<void> _getGroupList(GetGroupListEvent event, Emitter emit) async {
     groupListCubit.setLoadingState();
-    final response =
-        await http.get(apiEndpoints.getUri("get-group-list"), headers: headers);
+    final response = await dio.getUri(apiEndpoints.getUri("get-group-list"),
+        options: Options(headers: headers));
     if (response.statusCode == 200) {
-      final List<dynamic> jsonList = jsonDecode(response.body);
+      final List<dynamic> jsonList = response.data;
       final List<Map<String, dynamic>> groups =
           jsonList.cast<Map<String, dynamic>>();
 
@@ -197,38 +197,39 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
     } else {
       notificationControllerCubit.addNotification(
           "Ошибка данных",
-          "Статус: ${response.statusCode}. ${response.body}",
+          "Статус: ${response.statusCode}. ${response.data}",
           NotificationType.error);
     }
   }
 
   Future<void> _getPingList(GetPingListEvent event, Emitter emit) async {
     pingListCubit.setLoadingState();
-    final response =
-        await http.get(apiEndpoints.getUri("get-ping-list"), headers: headers);
+    final response = await dio.getUri(apiEndpoints.getUri("get-ping-list"),
+        options: Options(headers: headers));
     if (response.statusCode == 200) {
-      final List<dynamic> pingList = jsonDecode(response.body)["activeHosts"];
+      final List<dynamic> pingList = response.data["activeHosts"];
       pingListCubit.updateState(pingList);
     } else {
       notificationControllerCubit.addNotification(
           "Ошибка данных",
-          "Статус: ${response.statusCode}. ${response.body}",
+          "Статус: ${response.statusCode}. ${response.data}",
           NotificationType.error);
     }
   }
 
   Future<void> _getReport(GetReport event, Emitter emit) async {
-    final response = await http.get(
-        apiEndpoints
-            .getUri(event.task_type, extraPaths: [event.task_ID.toString()]),
-        headers: headers);
+    final response = await dio.getUri(
+      apiEndpoints
+          .getUri(event.task_type, extraPaths: [event.task_ID.toString()]),
+      options: Options(headers: headers),
+    );
     if (response.statusCode == 200) {
-      reportControllerCubit.getTask(jsonDecode(response.body), event.task_type);
+      reportControllerCubit.getTask(jsonDecode(response.data), event.task_type);
     } else {
       reportControllerCubit.errorState();
       notificationControllerCubit.addNotification(
         "Ошибка данных",
-        "Статус: ${response.statusCode}. ${jsonDecode(response.body)["err"]}",
+        "Статус: ${response.statusCode}. ${jsonDecode(response.data)["err"]}",
         NotificationType.error,
       );
     }
@@ -236,15 +237,15 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
 
   Future<void> _postTask(PostTask event, Emitter emit) async {
     try {
-      final response = await http.post(apiEndpoints.getUri("get-task-list"),
-          body: jsonEncode(event.body), headers: headers);
+      final response = await dio.postUri(apiEndpoints.getUri("get-task-list"),
+          data: jsonEncode(event.body), options: Options(headers: headers));
       if (response.statusCode == 200) {
-        int taskId = jsonDecode(response.body)["task_id"];
+        int taskId = jsonDecode(response.data)["task_id"];
         notificationControllerCubit.addNotification(
             "Успешно", "Задача $taskId создана.", NotificationType.success);
         return;
       } else {
-        ntLogger.e(jsonDecode(response.body));
+        ntLogger.e(jsonDecode(response.data));
         notificationControllerCubit.addNotification("Ошибка заполниения",
             "Неправильно заполнены данные.", NotificationType.warning);
         return;
@@ -257,13 +258,14 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
   }
 
   Future<void> _editHost(EditHost event, Emitter emit) async {
-    final response = await http.put(
-        apiEndpoints.getUri(
-          "get-host-list",
-          extraPaths: ["${event.taskId}"],
-        ),
-        body: event.body,
-        headers: headers);
+    final response = await dio.putUri(
+      apiEndpoints.getUri(
+        "get-host-list",
+        extraPaths: ["${event.taskId}"],
+      ),
+      data: event.body,
+      options: Options(headers: headers),
+    );
 
     if (response.statusCode == 200) {
       notificationControllerCubit.addNotification(
@@ -271,14 +273,14 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
       return;
     } else {
       notificationControllerCubit.addNotification(
-          "Ошибка", "${jsonDecode(response.body)}", NotificationType.error);
+          "Ошибка", "${jsonDecode(response.data)}", NotificationType.error);
       return;
     }
   }
 
   Future<void> _postHost(PostHost event, Emitter emit) async {
-    final response = await http.post(apiEndpoints.getUri("get-host-list"),
-        headers: headers, body: jsonEncode(event.body));
+    final response = await dio.postUri(apiEndpoints.getUri("get-host-list"),
+        options: Options(headers: headers), data: jsonEncode(event.body));
 
     if (response.statusCode == 201) {
       notificationControllerCubit.addNotification(
@@ -286,7 +288,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
       return;
     } else {
       notificationControllerCubit.addNotification("Ошибка создания",
-          "${jsonDecode(response.body)["error"]}", NotificationType.error);
+          "${jsonDecode(response.data)["error"]}", NotificationType.error);
 
       return;
     }
@@ -400,46 +402,46 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
   }
 
   Future<void> _deleteGroup(DeleteGroup event, Emitter emit) async {
-    final response = await http.delete(
-        apiEndpoints
-            .getUri("get-group-list", extraPaths: [event.id.toString()]),
-        headers: headers);
+    final response = await dio.deleteUri(
+      apiEndpoints.getUri("get-group-list", extraPaths: [event.id.toString()]),
+      options: Options(headers: headers),
+    );
     if (response.statusCode == 200) {
       notificationControllerCubit.addNotification(
           "Удалено", " Успешно удалён", NotificationType.success);
       return;
     } else {
       notificationControllerCubit.addNotification("Ошибка удаления",
-          "${jsonDecode(response.body)}", NotificationType.error);
+          "${jsonDecode(response.data)}", NotificationType.error);
       return;
     }
   }
 
   Future<void> _deleteHost(DeleteHost event, Emitter emit) async {
-    final response = await http.delete(
+    final response = await dio.deleteUri(
         apiEndpoints.getUri("get-host-list", extraPaths: [event.id.toString()]),
-        headers: headers);
+        options: Options(headers: headers));
     if (response.statusCode == 200) {
       notificationControllerCubit.addNotification(
           "Удалено", " Успешно удалён", NotificationType.success);
       return;
     } else {
       notificationControllerCubit.addNotification("Ошибка удаления",
-          "${jsonDecode(response.body)}", NotificationType.error);
+          "${jsonDecode(response.data)}", NotificationType.error);
       return;
     }
   }
 
   Future<void> _putHost(PutHost event, Emitter emit) async {
-    final response = await http.put(
+    final response = await dio.putUri(
       apiEndpoints.getUri(
         "get-host-list",
         extraPaths: [
           event.hostId.toString(),
         ],
       ),
-      body: jsonEncode(event.body),
-      headers: headers,
+      data: jsonEncode(event.body),
+      options: Options(headers: headers),
     );
     if (response.statusCode == 200) {
       notificationControllerCubit.addNotification(
@@ -447,21 +449,21 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
       return;
     } else {
       notificationControllerCubit.addNotification("Ошибка изменения",
-          "${jsonDecode(response.body)}", NotificationType.error);
+          "${jsonDecode(response.data)}", NotificationType.error);
       return;
     }
   }
 
   Future<void> _putGroup(PutGroup event, Emitter emit) async {
-    final response = await http.put(
+    final response = await dio.putUri(
       apiEndpoints.getUri(
         "get-group-list",
         extraPaths: [
           event.groupId.toString(),
         ],
       ),
-      body: jsonEncode(event.body),
-      headers: headers,
+      data: jsonEncode(event.body),
+      options: Options(headers: headers),
     );
     if (response.statusCode == 200) {
       notificationControllerCubit.addNotification(
@@ -469,23 +471,22 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
       return;
     } else {
       notificationControllerCubit.addNotification("Ошибка изменения",
-          "${jsonDecode(response.body)}", NotificationType.error);
+          "${jsonDecode(response.data)}", NotificationType.error);
       return;
     }
   }
 
   Future<void> _loginToServer(LoginToServer event, Emitter emit) async {
-    final response = await http.post(
+    final response = await dio.postUri(
       apiEndpoints.getUri("login"),
-      body: jsonEncode({
+      data: jsonEncode({
         "login": event.login,
         "password": event.password,
       }),
     );
     if (!kIsWeb) {
       if (response.statusCode == 200) {
-        headers["Authorization"] =
-            'Bearer ' + jsonDecode(response.body)["token"];
+        headers["Authorization"] = 'Bearer ' + response.data["token"];
         userDataCubit.login();
         try {
           webSocketChannel = wsch.WebSocketChannel.connect(
@@ -528,8 +529,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
       }
     } else {
       if (response.statusCode == 200) {
-        headers["Authorization"] =
-            'Bearer ' + jsonDecode(response.body)["token"];
+        headers["Authorization"] = 'Bearer ' + response.data["token"];
         userDataCubit.login();
         try {
           webSocketChannel = wsch.WebSocketChannel.connect(
@@ -571,20 +571,20 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
   }
 
   Future<void> _postGroup(PostGroup event, Emitter emit) async {
-    final response = await http.post(
+    final response = await dio.postUri(
         apiEndpoints.getUri(
           "get-group-list",
           extraPaths: [],
         ),
-        headers: headers,
-        body: jsonEncode(event.body));
+        options: Options(headers: headers),
+        data: jsonEncode(event.body));
     if (response.statusCode == 200) {
       notificationControllerCubit.addNotification(
           "Успешно", " Группа успешно создана", NotificationType.success);
       return;
     } else {
-      notificationControllerCubit.addNotification("Ошибка создания",
-          "${jsonDecode(response.body)}", NotificationType.error);
+      notificationControllerCubit.addNotification(
+          "Ошибка создания", "${response.data}", NotificationType.error);
       return;
     }
   }
