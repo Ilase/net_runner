@@ -7,7 +7,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:net_runner/core/data/logger.dart';
-import 'package:net_runner/core/data/platform.dart';
 import 'package:net_runner/core/domain/api/api_endpoints.dart';
 import 'package:net_runner/core/domain/api/models/task/task_serial.dart';
 import 'package:net_runner/core/domain/group_list/group_list_cubit.dart';
@@ -21,8 +20,7 @@ import 'package:net_runner/core/presentation/widgets/notification_manager.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:url_launcher/url_launcher.dart';
-import 'package:web_socket_channel/io.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket_channel/web_socket_channel.dart' as wsch;
 
 part 'api_event.dart';
 part 'api_state.dart';
@@ -39,7 +37,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
   UserDataCubit userDataCubit;
 
   ///
-  late WebSocketChannel webSocketChannel;
+  late wsch.WebSocketChannel webSocketChannel;
   StreamSubscription? _webSocketSubscription;
 
   ///
@@ -484,45 +482,91 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
         "password": event.password,
       }),
     );
-    if (response.statusCode == 200) {
-      headers["Authorization"] = 'Bearer ' + jsonDecode(response.body)["token"];
-      userDataCubit.login();
-      try {
-        webSocketChannel = IOWebSocketChannel.connect(
-          apiEndpoints.getUri("ws"),
-          headers: {
-            "Sec-WebSocket-Protocol": headers["Authorization"],
-          },
-        );
-        _webSocketSubscription = webSocketChannel.stream.listen(
-          (message) async {
-            try {
-              final Map<String, dynamic> decodedMessage = jsonDecode(message);
-              ntLogger.w('Message from web socket: \n $decodedMessage');
-              final ModelTask newElement = ModelTask.fromJson(decodedMessage);
-              taskListCubit.updateElementInTaskList(newElement);
-            } catch (e) {
-              notificationControllerCubit.addNotification(
-                  "Ошибка подключения",
-                  "Подключение к серверу завершилось ошибкой: ${e.toString()}",
-                  NotificationType.error);
-            } //add error stack
-          },
-        );
-        notificationControllerCubit.addNotification(
-            "Подключено", "", NotificationType.success);
-        emit(ConnectedToServerState());
-      } catch (e) {
+    if (!kIsWeb) {
+      if (response.statusCode == 200) {
+        headers["Authorization"] =
+            'Bearer ' + jsonDecode(response.body)["token"];
+        userDataCubit.login();
+        try {
+          webSocketChannel = wsch.WebSocketChannel.connect(
+            apiEndpoints
+                .getUri("ws")
+                .replace(queryParameters: {"token": headers["Authorization"]}),
+            // headers: {
+            //   "Sec-WebSocket-Protocol": headers["Authorization"],
+            // },
+          );
+          _webSocketSubscription = webSocketChannel.stream.listen(
+            (message) async {
+              try {
+                final Map<String, dynamic> decodedMessage = jsonDecode(message);
+                ntLogger.w('Message from web socket: \n $decodedMessage');
+                final ModelTask newElement = ModelTask.fromJson(decodedMessage);
+                taskListCubit.updateElementInTaskList(newElement);
+              } catch (e) {
+                notificationControllerCubit.addNotification(
+                    "Ошибка подключения",
+                    "Подключение к серверу завершилось ошибкой: ${e.toString()}",
+                    NotificationType.error);
+              } //add error stack
+            },
+          );
+          notificationControllerCubit.addNotification(
+              "Подключено", "", NotificationType.success);
+          emit(ConnectedToServerState());
+        } catch (e) {
+          notificationControllerCubit.addNotification(
+              "Ошибка подключения",
+              "Подключение к серверу завершилось ошибкой: ${e.toString()}",
+              NotificationType.error);
+        }
+      } else {
         notificationControllerCubit.addNotification(
             "Ошибка подключения",
-            "Подключение к серверу завершилось ошибкой: ${e.toString()}",
+            "Подключение к серверу завершилось неизвестной ошибкой",
             NotificationType.error);
       }
     } else {
-      notificationControllerCubit.addNotification(
-          "Ошибка подключения",
-          "Подключение к серверу завершилось неизвестной ошибкой",
-          NotificationType.error);
+      if (response.statusCode == 200) {
+        headers["Authorization"] =
+            'Bearer ' + jsonDecode(response.body)["token"];
+        userDataCubit.login();
+        try {
+          webSocketChannel = wsch.WebSocketChannel.connect(
+            apiEndpoints
+                .getUri("ws")
+                .replace(queryParameters: {"token": headers["Authorization"]}),
+          );
+          _webSocketSubscription = webSocketChannel.stream.listen(
+            (message) async {
+              try {
+                final Map<String, dynamic> decodedMessage = jsonDecode(message);
+                ntLogger.w('Message from web socket: \n $decodedMessage');
+                final ModelTask newElement = ModelTask.fromJson(decodedMessage);
+                taskListCubit.updateElementInTaskList(newElement);
+              } catch (e) {
+                notificationControllerCubit.addNotification(
+                    "Ошибка подключения",
+                    "Подключение к серверу завершилось ошибкой: ${e.toString()}",
+                    NotificationType.error);
+              } //add error stack
+            },
+          );
+          notificationControllerCubit.addNotification(
+              "Подключено", "", NotificationType.success);
+          emit(ConnectedToServerState());
+        } catch (e) {
+          notificationControllerCubit.addNotification(
+              "Ошибка подключения",
+              "Подключение к серверу завершилось ошибкой: ${e.toString()}",
+              NotificationType.error);
+        }
+      } else {
+        notificationControllerCubit.addNotification(
+            "Ошибка подключения",
+            "Подключение к серверу завершилось неизвестной ошибкой",
+            NotificationType.error);
+      }
     }
   }
 
