@@ -39,8 +39,8 @@ dependencies:
   shared_preferences: ^2.3.5
   web: ^1.1.0
   dropdown_button2: ^2.3.9
-  freezed_annotation: ^2.4.4
-  freezed: ^2.5.8
+  freezed_annotation: ^3.0.0
+  freezed: ^3.0.4
   mask_text_input_formatter: ^2.9.0
   graphview: ^1.2.0
   graphic: ^2.5.1
@@ -50,7 +50,7 @@ dependencies:
   icons_flutter: ^0.0.5
   font_awesome_flutter: ^10.8.0
   flutter_svg: ^2.0.17
-  file_picker: ^9.0.2
+  file_picker: ^10.0.0
   webview_flutter: ^4.10.0
   flutter_graph_view: ^1.1.4
   fl_chart: ^0.70.2
